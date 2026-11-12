@@ -10,7 +10,9 @@
     "signUp": "Registrati",
     "signOut": "Esci",
     "profile": "Profilo",
-    "newReview": "Recensisci"
+    "newReview": "Recensisci",
+    "diary": "Diario",
+    "settings": "Modifica profilo"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -115,5 +117,69 @@
     "reviewsTitle": "Recensioni",
     "reviewsEmpty": "Ancora nessuna recensione.",
     "inCategory": "in"
+  },
+  "reviewCard": {
+    "like": "Mi piace",
+    "unlike": "Non mi piace più",
+    "likes": "Mi piace",
+    "delete": "Elimina",
+    "confirmDelete": "Vuoi davvero eliminare questa recensione? Non si può annullare."
+  },
+  "profile": {
+    "reviewsTab": "Profilo",
+    "diaryTab": "Diario",
+    "follow": "Segui",
+    "following": "Segui già ✓",
+    "unfollow": "Smetti di seguire",
+    "edit": "Modifica profilo",
+    "reviews": "Recensioni",
+    "followers": "Follower",
+    "followingCount": "Seguiti",
+    "recentTitle": "Recensioni recenti",
+    "recentEmpty": "Nessuna recensione ancora.",
+    "seeDiary": "Vedi tutto il diario →",
+    "joined": "Iscritto da {date}",
+    "notFound": "Utente non trovato."
+  },
+  "diary": {
+    "title": "Diario di {name}",
+    "empty": "Il diario è vuoto: ancora nessuna recensione.",
+    "day": "Giorno",
+    "item": "Cosa",
+    "category": "Categoria",
+    "rating": "Voto",
+    "likes": "Like",
+    "total": "{n} voci",
+    "totalOne": "1 voce"
+  },
+  "settings": {
+    "title": "Modifica profilo",
+    "avatar": "Foto profilo",
+    "avatarChange": "Cambia foto",
+    "avatarRemove": "Rimuovi foto",
+    "avatarUploading": "Carico la foto…",
+    "avatarHint": "JPG, PNG o WebP, massimo 2 MB.",
+    "avatarError": "Caricamento non riuscito: usa un'immagine JPG, PNG o WebP sotto i 2 MB.",
+    "username": "Username",
+    "usernameHint": "3-30 caratteri: lettere, numeri e _. Cambia anche l'indirizzo del tuo profilo.",
+    "displayName": "Nome visualizzato",
+    "displayNameHint": "Facoltativo, fino a 60 caratteri.",
+    "bio": "Bio",
+    "bioHint": "Fino a 500 caratteri.",
+    "location": "Dove sei",
+    "website": "Sito web",
+    "save": "Salva",
+    "saving": "Salvo…",
+    "cancel": "Annulla",
+    "errors": {
+      "username": "Username non valido: 3-30 caratteri, solo lettere, numeri e _.",
+      "username_taken": "Questo username è già preso.",
+      "display_name": "Nome troppo lungo (massimo 60 caratteri).",
+      "bio": "Bio troppo lunga (massimo 500 caratteri).",
+      "location": "Luogo troppo lungo (massimo 80 caratteri).",
+      "website": "Indirizzo del sito non valido.",
+      "auth": "Devi accedere per modificare il profilo.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
   }
 }

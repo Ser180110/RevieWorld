@@ -24,8 +24,9 @@ export type ReviewRow = {
   body: string | null;
   contains_spoiler: boolean;
   created_at: string;
+  likes_count: number;
   user_id: string;
-  author: { username: string } | null;
+  author: { username: string; display_name: string | null; avatar_url: string | null } | null;
   item?: {
     name: string;
     slug: string;
@@ -39,4 +40,27 @@ export type Suggestion = {
   slug: string;
   reviews_count: number;
   score: number;
+};
+
+export type Profile = {
+  id: string;
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
+  website: string | null;
+  created_at: string;
+};
+
+export type ProfileStats = {
+  reviews: number;
+  followers: number;
+  following: number;
+};
+
+/** Who is looking at a list of reviews: drives the like and delete buttons. */
+export type Viewer = {
+  id: string | null;
+  liked: string[];
 };

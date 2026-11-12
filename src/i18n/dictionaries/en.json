@@ -10,7 +10,9 @@
     "signUp": "Sign up",
     "signOut": "Sign out",
     "profile": "Profile",
-    "newReview": "Review"
+    "newReview": "Review",
+    "diary": "Diary",
+    "settings": "Edit profile"
   },
   "home": {
     "headline": "Review anything.",
@@ -115,5 +117,69 @@
     "reviewsTitle": "Reviews",
     "reviewsEmpty": "No reviews yet.",
     "inCategory": "in"
+  },
+  "reviewCard": {
+    "like": "Like",
+    "unlike": "Unlike",
+    "likes": "Likes",
+    "delete": "Delete",
+    "confirmDelete": "Delete this review? This can't be undone."
+  },
+  "profile": {
+    "reviewsTab": "Profile",
+    "diaryTab": "Diary",
+    "follow": "Follow",
+    "following": "Following ✓",
+    "unfollow": "Unfollow",
+    "edit": "Edit profile",
+    "reviews": "Reviews",
+    "followers": "Followers",
+    "followingCount": "Following",
+    "recentTitle": "Recent reviews",
+    "recentEmpty": "No reviews yet.",
+    "seeDiary": "See the full diary →",
+    "joined": "Joined {date}",
+    "notFound": "User not found."
+  },
+  "diary": {
+    "title": "{name}'s diary",
+    "empty": "The diary is empty: no reviews yet.",
+    "day": "Day",
+    "item": "What",
+    "category": "Category",
+    "rating": "Rating",
+    "likes": "Likes",
+    "total": "{n} entries",
+    "totalOne": "1 entry"
+  },
+  "settings": {
+    "title": "Edit profile",
+    "avatar": "Profile picture",
+    "avatarChange": "Change picture",
+    "avatarRemove": "Remove picture",
+    "avatarUploading": "Uploading…",
+    "avatarHint": "JPG, PNG or WebP, up to 2 MB.",
+    "avatarError": "Upload failed: use a JPG, PNG or WebP image under 2 MB.",
+    "username": "Username",
+    "usernameHint": "3-30 characters: letters, numbers and _. It also changes your profile address.",
+    "displayName": "Display name",
+    "displayNameHint": "Optional, up to 60 characters.",
+    "bio": "Bio",
+    "bioHint": "Up to 500 characters.",
+    "location": "Location",
+    "website": "Website",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "errors": {
+      "username": "Invalid username: 3-30 characters, only letters, numbers and _.",
+      "username_taken": "This username is already taken.",
+      "display_name": "Name too long (max 60 characters).",
+      "bio": "Bio too long (max 500 characters).",
+      "location": "Location too long (max 80 characters).",
+      "website": "Invalid website address.",
+      "auth": "Sign in to edit your profile.",
+      "generic": "Something went wrong, please try again."
+    }
   }
 }

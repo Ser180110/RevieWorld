@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCategory, getCurrentUserId, getItem, getItemReviews } from "@/lib/data/queries";
+import { getCategory, getItem, getItemReviews, getViewer } from "@/lib/data/queries";
 import { count, formatStars } from "@/lib/format";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -17,7 +17,9 @@ async function ItemContent({ lang, slug, itemSlug }: { lang: Locale; slug: strin
   const item = await getItem(category.id, decodeURIComponent(itemSlug));
   if (!item) notFound();
 
-  const [reviews, userId] = await Promise.all([getItemReviews(item.id), getCurrentUserId()]);
+  const reviews = await getItemReviews(item.id);
+  const viewer = await getViewer(reviews);
+  const userId = viewer.id;
   const mine = userId ? reviews.find((r) => r.user_id === userId) : undefined;
   const avg = item.avg_rating === null ? null : Number(item.avg_rating);
 
@@ -68,7 +70,15 @@ async function ItemContent({ lang, slug, itemSlug }: { lang: Locale; slug: strin
           <p className="text-zinc-500">{t.reviewsEmpty}</p>
         ) : (
           reviews.map((r) => (
-            <ReviewCard key={r.id} review={r} lang={lang} spoilerLabel={dict.reviewForm.spoiler} />
+            <ReviewCard
+              key={r.id}
+              review={r}
+              lang={lang}
+              viewer={viewer}
+              back={`/${lang}/c/${category.slug}/${item.slug}`}
+              t={dict.reviewCard}
+              spoilerLabel={dict.reviewForm.spoiler}
+            />
           ))
         )}
       </section>

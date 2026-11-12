@@ -3,16 +3,26 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
-import { getRecentReviews, getTopCategories } from "@/lib/data/queries";
+import { getRecentReviews, getTopCategories, getViewer } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
 
 async function RecentReviews({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const reviews = await getRecentReviews();
   if (!reviews.length) return <p className="text-zinc-500">{dict.home.recentEmpty}</p>;
+  const viewer = await getViewer(reviews);
   return (
     <div>
       {reviews.map((r) => (
-        <ReviewCard key={r.id} review={r} lang={lang} showItem spoilerLabel={dict.reviewForm.spoiler} />
+        <ReviewCard
+          key={r.id}
+          review={r}
+          lang={lang}
+          showItem
+          viewer={viewer}
+          back={`/${lang}`}
+          t={dict.reviewCard}
+          spoilerLabel={dict.reviewForm.spoiler}
+        />
       ))}
     </div>
   );
