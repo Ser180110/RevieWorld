@@ -3,8 +3,8 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Profile, ProfileStats } from "@/lib/data/types";
 import { fill } from "@/lib/format";
-import { setUserFollow } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
+import { FollowButton } from "./FollowButton";
 
 const pill =
   "rounded-full px-4 py-1.5 text-sm font-medium border border-zinc-300 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100";
@@ -23,16 +23,19 @@ export function ProfileHeader({
   stats: ProfileStats;
   viewerId: string | null;
   following: boolean;
-  active: "profile" | "diary";
+  active: "profile" | "diary" | "lists" | "follows";
   lang: Locale;
   t: Dictionary["profile"];
 }) {
   const base = `/${lang}/u/${profile.username}`;
   const own = viewerId === profile.id;
-  const joined = new Intl.DateTimeFormat(lang, { month: "long", year: "numeric" }).format(
-    new Date(profile.created_at),
-  );
-  const website = profile.website?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const joined = new Intl.DateTimeFormat(lang, {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(profile.created_at));
+  const website = profile.website
+    ?.replace(/^https?:\/\//, "")
+    .replace(/\/$/, "");
   const tab = (key: typeof active, href: string, label: string) => (
     <Link
       href={href}
@@ -61,30 +64,26 @@ export function ProfileHeader({
                 {t.edit}
               </Link>
             ) : (
-              <form action={setUserFollow}>
-                <input type="hidden" name="lang" value={lang} />
-                <input type="hidden" name="userId" value={profile.id} />
-                <input type="hidden" name="username" value={profile.username} />
-                <input type="hidden" name="follow" value={following ? "0" : "1"} />
-                <button
-                  type="submit"
-                  title={following ? t.unfollow : undefined}
-                  className={
-                    following
-                      ? `${pill} cursor-pointer`
-                      : "cursor-pointer rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900"
-                  }
-                >
-                  {following ? t.following : t.follow}
-                </button>
-              </form>
+              <FollowButton
+                lang={lang}
+                userId={profile.id}
+                username={profile.username}
+                following={following}
+                signedIn={viewerId !== null}
+                t={t}
+              />
             )}
           </div>
           <p className="text-zinc-500">@{profile.username}</p>
           <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-500">
             {profile.location && <span>📍 {profile.location}</span>}
             {profile.website && website && (
-              <a href={profile.website} target="_blank" rel="noopener noreferrer nofollow" className="hover:underline">
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="hover:underline"
+              >
                 🔗 {website}
               </a>
             )}
@@ -92,22 +91,37 @@ export function ProfileHeader({
           </p>
         </div>
         <dl className="flex gap-6 text-center">
-          {[
-            [stats.reviews, t.reviews],
-            [stats.followers, t.followers],
-            [stats.following, t.followingCount],
-          ].map(([n, label]) => (
-            <div key={label} className="flex flex-col">
-              <dt className="order-2 text-xs uppercase tracking-wide text-zinc-500">{label}</dt>
-              <dd className="order-1 text-2xl font-semibold tabular-nums">{n}</dd>
-            </div>
+          {(
+            [
+              [stats.reviews, t.reviews, `${base}/diary`],
+              [stats.followers, t.followers, `${base}/followers`],
+              [stats.following, t.followingCount, `${base}/following`],
+            ] as const
+          ).map(([n, label, href]) => (
+            <Link
+              key={label}
+              href={href}
+              className="flex flex-col rounded-lg px-1 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+            >
+              <dt className="order-2 text-xs uppercase tracking-wide text-zinc-500">
+                {label}
+              </dt>
+              <dd className="order-1 text-2xl font-semibold tabular-nums">
+                {n}
+              </dd>
+            </Link>
           ))}
         </dl>
       </div>
-      {profile.bio && <p className="max-w-2xl whitespace-pre-line text-zinc-700 dark:text-zinc-300">{profile.bio}</p>}
+      {profile.bio && (
+        <p className="max-w-2xl whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+          {profile.bio}
+        </p>
+      )}
       <nav className="flex gap-6 border-b border-zinc-200 dark:border-zinc-800">
         {tab("profile", base, t.reviewsTab)}
         {tab("diary", `${base}/diary`, t.diaryTab)}
+        {tab("lists", `${base}/lists`, t.listsTab)}
       </nav>
     </header>
   );

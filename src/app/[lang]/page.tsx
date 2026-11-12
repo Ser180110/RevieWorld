@@ -3,12 +3,26 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
-import { getRecentReviews, getTopCategories, getViewer } from "@/lib/data/queries";
+import {
+  getListPreviews,
+  getRecentLists,
+  getRecentReviews,
+  getTopCategories,
+  getViewer,
+} from "@/lib/data/queries";
+import { ListCard } from "@/components/ListCard";
 import { ReviewCard } from "@/components/ReviewCard";
 
-async function RecentReviews({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+async function RecentReviews({
+  lang,
+  dict,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+}) {
   const reviews = await getRecentReviews();
-  if (!reviews.length) return <p className="text-zinc-500">{dict.home.recentEmpty}</p>;
+  if (!reviews.length)
+    return <p className="text-zinc-500">{dict.home.recentEmpty}</p>;
   const viewer = await getViewer(reviews);
   return (
     <div>
@@ -28,7 +42,36 @@ async function RecentReviews({ lang, dict }: { lang: Locale; dict: Dictionary })
   );
 }
 
-async function TopCategories({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+async function RecentLists({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+  const lists = await getRecentLists();
+  if (!lists.length) return null;
+  const previews = await getListPreviews(lists.map((l) => l.id));
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-xl font-semibold">{dict.lists.recentTitle}</h2>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {lists.map((l) => (
+          <ListCard
+            key={l.id}
+            list={l}
+            preview={previews[l.id] ?? []}
+            lang={lang}
+            showOwner
+            t={dict.lists}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+async function TopCategories({
+  lang,
+  dict,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+}) {
   const categories = await getTopCategories();
   if (!categories.length) return null;
   return (
@@ -60,11 +103,19 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-12 px-4 py-16 sm:py-24">
       <section className="flex flex-col gap-4">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{t.headline}</h1>
-        <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">{t.subheadline}</p>
+        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+          {t.headline}
+        </h1>
+        <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
+          {t.subheadline}
+        </p>
       </section>
 
-      <form role="search" className="flex flex-col gap-2 sm:flex-row" action={`/${lang}/new`}>
+      <form
+        role="search"
+        className="flex flex-col gap-2 sm:flex-row"
+        action={`/${lang}/new`}
+      >
         <label htmlFor="q" className="sr-only">
           {t.searchLabel}
         </label>
@@ -91,10 +142,16 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">{t.recentTitle}</h2>
-        <Suspense fallback={<p className="text-zinc-500">{dict.common.loading}</p>}>
+        <Suspense
+          fallback={<p className="text-zinc-500">{dict.common.loading}</p>}
+        >
           <RecentReviews lang={lang} dict={dict} />
         </Suspense>
       </section>
+
+      <Suspense fallback={null}>
+        <RecentLists lang={lang} dict={dict} />
+      </Suspense>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">{t.howTitle}</h2>

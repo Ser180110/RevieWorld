@@ -26,7 +26,11 @@ export type ReviewRow = {
   created_at: string;
   likes_count: number;
   user_id: string;
-  author: { username: string; display_name: string | null; avatar_url: string | null } | null;
+  author: {
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
   item?: {
     name: string;
     slug: string;
@@ -63,4 +67,38 @@ export type ProfileStats = {
 export type Viewer = {
   id: string | null;
   liked: string[];
+};
+
+export type ProfileCard = Pick<
+  Profile,
+  "id" | "username" | "display_name" | "avatar_url" | "bio"
+>;
+
+export type ListSummary = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  ranked: boolean;
+  items_count: number;
+  updated_at: string;
+  owner: { username: string; display_name: string | null } | null;
+};
+
+export type ListEntry = {
+  position: number;
+  item: {
+    id: string;
+    name: string;
+    slug: string;
+    avg_rating: string | null;
+    reviews_count: number;
+    category: { name: string; slug: string } | null;
+  } | null;
+};
+
+export type ItemSearchResult = {
+  id: string;
+  name: string;
+  category: { name: string } | null;
 };

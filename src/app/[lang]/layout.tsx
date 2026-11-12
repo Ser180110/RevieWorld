@@ -43,7 +43,10 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-            <Link href={`/${lang}`} className="text-lg font-semibold tracking-tight">
+            <Link
+              href={`/${lang}`}
+              className="text-lg font-semibold tracking-tight"
+            >
               RevieWorld
             </Link>
             <div className="flex flex-wrap items-center justify-end gap-3">
@@ -52,6 +55,12 @@ export default async function RootLayout({
                 className="rounded-full px-3 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
               >
                 + {dict.nav.newReview}
+              </Link>
+              <Link
+                href={`/${lang}/people`}
+                className="rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                {dict.nav.people}
               </Link>
               {/* usePathname() is request data on dynamic routes: keep it out of the static shell. */}
               <Suspense fallback={<span className="w-36" />}>
