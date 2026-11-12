@@ -9,20 +9,24 @@
     "language": "Language",
     "signUp": "Sign up",
     "signOut": "Sign out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "newReview": "Review"
   },
   "home": {
     "headline": "Review anything.",
     "subheadline": "Manhole covers, sandwiches, motorway restrooms: join a category if it exists, or create it yourself.",
     "searchLabel": "What do you want to review?",
-    "searchPlaceholder": "E.g. the manhole cover on Main Street",
+    "searchPlaceholder": "E.g. manhole covers, sandwiches, vending machines",
     "searchButton": "Start",
     "howTitle": "How it works",
     "steps": [
       "Type what you want to review.",
       "Pick an existing category or create a new one.",
       "Give it a rating and tell how it went."
-    ]
+    ],
+    "recentTitle": "Latest reviews",
+    "recentEmpty": "No reviews yet: write the first one!",
+    "topCategoriesTitle": "Popular categories"
   },
   "footer": {
     "tagline": "RevieWorld · under construction"
@@ -53,5 +57,63 @@
       "confirm_failed": "The confirmation link is invalid or expired.",
       "generic": "Something went wrong, please try again."
     }
+  },
+  "common": {
+    "loading": "Loading…",
+    "signInToContinue": "Sign in to continue.",
+    "reviews": "reviews",
+    "review": "review",
+    "items": "items",
+    "followers": "members",
+    "by": "by",
+    "noRating": "No ratings",
+    "item": "item",
+    "follower": "member"
+  },
+  "newReview": {
+    "title": "What do you want to review?",
+    "step1": "1. Pick the category",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "E.g. manhole covers, sandwiches, vending machines",
+    "suggestionsTitle": "Already there? Join one of these:",
+    "noSuggestions": "No similar categories.",
+    "createCategory": "Create the category “{name}”",
+    "creating": "Creating…",
+    "duplicateFound": "A category with this name already exists: taking you there."
+  },
+  "category": {
+    "follow": "Join",
+    "following": "Joined ✓",
+    "unfollow": "Leave",
+    "itemsTitle": "Top rated",
+    "itemsEmpty": "No items in this category yet.",
+    "reviewSomething": "Review something in {name}",
+    "createdBy": "Created by"
+  },
+  "reviewForm": {
+    "itemLabel": "What are you reviewing?",
+    "itemPlaceholder": "E.g. the manhole cover on Main Street",
+    "itemSuggestions": "Did you mean:",
+    "ratingLabel": "Rating",
+    "bodyLabel": "Tell us (optional)",
+    "bodyPlaceholder": "How was it?",
+    "spoiler": "Contains spoilers",
+    "submit": "Publish review",
+    "update": "Update review",
+    "saving": "Saving…",
+    "yourReview": "Your review",
+    "errors": {
+      "rating": "Pick a rating.",
+      "item": "Type the name of what you are reviewing (2-120 characters).",
+      "category": "Invalid category name (2-60 characters).",
+      "auth": "You need to sign in to review.",
+      "generic": "Something went wrong, please try again."
+    }
+  },
+  "item": {
+    "average": "Average",
+    "reviewsTitle": "Reviews",
+    "reviewsEmpty": "No reviews yet.",
+    "inCategory": "in"
   }
 }

@@ -9,20 +9,24 @@
     "language": "Lingua",
     "signUp": "Registrati",
     "signOut": "Esci",
-    "profile": "Profilo"
+    "profile": "Profilo",
+    "newReview": "Recensisci"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
     "subheadline": "Tombini, panini, bagni degli autogrill: se una categoria esiste ti ci aggreghi, se no la crei tu.",
     "searchLabel": "Cosa vuoi recensire?",
-    "searchPlaceholder": "Es. il tombino di via Roma",
+    "searchPlaceholder": "Es. tombini, panini, distributori automatici",
     "searchButton": "Inizia",
     "howTitle": "Come funziona",
     "steps": [
       "Scrivi cosa vuoi recensire.",
       "Scegli una categoria esistente o creane una nuova.",
       "Dai un voto e racconta com'è andata."
-    ]
+    ],
+    "recentTitle": "Ultime recensioni",
+    "recentEmpty": "Ancora nessuna recensione: scrivi la prima!",
+    "topCategoriesTitle": "Categorie popolari"
   },
   "footer": {
     "tagline": "RevieWorld · in costruzione"
@@ -53,5 +57,63 @@
       "confirm_failed": "Link di conferma non valido o scaduto.",
       "generic": "Qualcosa è andato storto, riprova."
     }
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "signInToContinue": "Accedi per continuare.",
+    "reviews": "recensioni",
+    "review": "recensione",
+    "items": "oggetti",
+    "followers": "aggregati",
+    "by": "di",
+    "noRating": "Nessun voto",
+    "item": "oggetto",
+    "follower": "aggregato"
+  },
+  "newReview": {
+    "title": "Cosa vuoi recensire?",
+    "step1": "1. Scegli la categoria",
+    "categoryLabel": "Categoria",
+    "categoryPlaceholder": "Es. tombini, panini, distributori automatici",
+    "suggestionsTitle": "Esiste già? Aggregati a una di queste:",
+    "noSuggestions": "Nessuna categoria simile.",
+    "createCategory": "Crea la categoria «{name}»",
+    "creating": "Creo…",
+    "duplicateFound": "Esiste già una categoria con questo nome: ti ci porto."
+  },
+  "category": {
+    "follow": "Aggregati",
+    "following": "Aggregato ✓",
+    "unfollow": "Lascia",
+    "itemsTitle": "I più votati",
+    "itemsEmpty": "Ancora nessun oggetto in questa categoria.",
+    "reviewSomething": "Recensisci qualcosa in {name}",
+    "createdBy": "Creata da"
+  },
+  "reviewForm": {
+    "itemLabel": "Cosa recensisci?",
+    "itemPlaceholder": "Es. il tombino di via Roma 12",
+    "itemSuggestions": "Forse intendevi:",
+    "ratingLabel": "Voto",
+    "bodyLabel": "Racconta (facoltativo)",
+    "bodyPlaceholder": "Com'è andata?",
+    "spoiler": "Contiene spoiler",
+    "submit": "Pubblica recensione",
+    "update": "Aggiorna recensione",
+    "saving": "Salvo…",
+    "yourReview": "La tua recensione",
+    "errors": {
+      "rating": "Scegli un voto.",
+      "item": "Scrivi il nome di cosa recensisci (2-120 caratteri).",
+      "category": "Nome categoria non valido (2-60 caratteri).",
+      "auth": "Devi accedere per recensire.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
+  },
+  "item": {
+    "average": "Media",
+    "reviewsTitle": "Recensioni",
+    "reviewsEmpty": "Ancora nessuna recensione.",
+    "inCategory": "in"
   }
 }
