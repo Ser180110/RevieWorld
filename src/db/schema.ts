@@ -170,6 +170,7 @@ export const reviews = pgTable(
     containsSpoiler: boolean("contains_spoiler").notNull().default(false),
     status: contentStatus("status").notNull().default("active"),
     likesCount: integer("likes_count").notNull().default(0),
+    commentsCount: integer("comments_count").notNull().default(0),
     ...timestamps,
   },
   (t) => [
@@ -317,5 +318,59 @@ export const listItems = pgTable(
     primaryKey({ columns: [t.listId, t.itemId] }),
     index("list_items_order_idx").on(t.listId, t.position),
     index("list_items_item_idx").on(t.itemId),
+  ],
+);
+
+/** Up to four favourite items shown at the top of a profile. */
+export const profileFavorites = pgTable(
+  "profile_favorites",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    position: smallint("position").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.itemId] }),
+    uniqueIndex("profile_favorites_position_key").on(t.userId, t.position),
+    check("profile_favorites_position_range", sql`${t.position} between 1 and 4`),
+  ],
+);
+
+/** "Da provare": things a user wants to try (Letterboxd's watchlist). */
+export const watchlist = pgTable(
+  "watchlist",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.itemId] }), index("watchlist_user_idx").on(t.userId, t.createdAt)],
+);
+
+export const reviewComments = pgTable(
+  "review_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reviewId: uuid("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    index("review_comments_review_idx").on(t.reviewId, t.createdAt),
+    check("review_comments_body_length", sql`char_length(${t.body}) between 1 and 1000`),
   ],
 );

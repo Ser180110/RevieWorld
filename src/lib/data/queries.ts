@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import type {
   CategorySummary,
+  Comment,
+  ItemCard,
   ItemSummary,
   ListEntry,
   ListSummary,
@@ -15,7 +17,7 @@ import type {
 } from "./types";
 
 const REVIEW_FIELDS =
-  "id, rating, body, contains_spoiler, created_at, likes_count, user_id, author:profiles!reviews_user_id_profiles_id_fk(username, display_name, avatar_url)";
+  "id, rating, body, contains_spoiler, created_at, likes_count, comments_count, user_id, author:profiles!reviews_user_id_profiles_id_fk(username, display_name, avatar_url)";
 const REVIEW_WITH_ITEM = `${REVIEW_FIELDS}, item:items(name, slug, category:categories(name, slug))`;
 const PROFILE_FIELDS =
   "id, username, display_name, avatar_url, bio, location, website, created_at";
@@ -454,4 +456,94 @@ export async function getMyListsFor(
     title: l.title as string,
     has: has.has(l.id as string),
   }));
+}
+
+// ---------------------------------------------------------------------------
+// Activity, favourites, "Da provare", comments
+// ---------------------------------------------------------------------------
+
+/** Reviews by the people `userId` follows, newest first. `following` = how many they follow. */
+export async function getActivity(
+  userId: string,
+  limit = 50,
+): Promise<{ reviews: ReviewRow[]; following: number }> {
+  const supabase = await db();
+  if (!supabase) return { reviews: [], following: 0 };
+  const { data: follows } = await supabase
+    .from("user_follows")
+    .select("followed_id")
+    .eq("follower_id", userId)
+    .limit(1000);
+  const ids = (follows ?? []).map((f) => f.followed_id as string);
+  if (ids.length === 0) return { reviews: [], following: 0 };
+  const { data } = await supabase
+    .from("reviews")
+    .select(REVIEW_WITH_ITEM)
+    .in("user_id", ids)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return { reviews: (data ?? []) as unknown as ReviewRow[], following: ids.length };
+}
+
+const ITEM_CARD = "item:items(id, name, slug, avg_rating, category:categories(name, slug))";
+
+export async function getFavorites(userId: string): Promise<ItemCard[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("profile_favorites")
+    .select(`position, ${ITEM_CARD}`)
+    .eq("user_id", userId)
+    .order("position", { ascending: true });
+  return ((data ?? []) as unknown as { item: ItemCard | null }[])
+    .map((row) => row.item)
+    .filter((i): i is ItemCard => i !== null);
+}
+
+export async function getWatchlist(userId: string): Promise<ItemCard[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("watchlist")
+    .select(`created_at, ${ITEM_CARD}`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(500);
+  return ((data ?? []) as unknown as { item: ItemCard | null }[])
+    .map((row) => row.item)
+    .filter((i): i is ItemCard => i !== null);
+}
+
+/** Whether an item is in the user's favourites / "Da provare", and how many favourites they have. */
+export async function getItemStatus(
+  userId: string,
+  itemId: string,
+): Promise<{ favorite: boolean; favorites: number; watchlist: boolean }> {
+  const supabase = await db();
+  if (!supabase) return { favorite: false, favorites: 0, watchlist: false };
+  const [{ data: favs }, { data: watch }] = await Promise.all([
+    supabase.from("profile_favorites").select("item_id").eq("user_id", userId),
+    supabase.from("watchlist").select("item_id").eq("user_id", userId).eq("item_id", itemId).maybeSingle(),
+  ]);
+  const list = favs ?? [];
+  return {
+    favorite: list.some((f) => f.item_id === itemId),
+    favorites: list.length,
+    watchlist: Boolean(watch),
+  };
+}
+
+export async function getComments(reviewId: string): Promise<Comment[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("review_comments")
+    .select(
+      "id, body, created_at, user_id, author:profiles!review_comments_user_id_profiles_id_fk(username, display_name, avatar_url)",
+    )
+    .eq("review_id", reviewId)
+    .order("created_at", { ascending: true })
+    .limit(500);
+  return (data ?? []) as unknown as Comment[];
 }

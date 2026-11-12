@@ -11,6 +11,8 @@ import {
   getViewer,
 } from "@/lib/data/queries";
 import { ListCard } from "@/components/ListCard";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { getCurrentUserId } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
 
 async function RecentReviews({
@@ -61,6 +63,19 @@ async function RecentLists({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           />
         ))}
       </div>
+    </section>
+  );
+}
+
+async function HomeActivity({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+  const userId = await getCurrentUserId();
+  if (!userId) return null;
+  const feed = await ActivityFeed({ lang, dict, userId, limit: 5, compact: true });
+  if (!feed) return null;
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-xl font-semibold">{dict.activity.homeTitle}</h2>
+      {feed}
     </section>
   );
 }
@@ -135,6 +150,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           {t.searchButton}
         </button>
       </form>
+
+      <Suspense fallback={null}>
+        <HomeActivity lang={lang} dict={dict} />
+      </Suspense>
 
       <Suspense fallback={null}>
         <TopCategories lang={lang} dict={dict} />

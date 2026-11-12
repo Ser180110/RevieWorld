@@ -213,3 +213,90 @@ export async function updateProfile(
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/u/${input.username}`);
 }
+
+// ---------------------------------------------------------------------------
+// Favourites (max 4) and "Da provare"
+// ---------------------------------------------------------------------------
+
+export async function setFavorite(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const itemId = String(formData.get("itemId") ?? "");
+  const on = formData.get("on") === "1";
+  const back = safePath(formData.get("back"), lang);
+  const s = await session();
+  if (!s) return;
+  if (!s.userId) redirect(`/${lang}/login`);
+  if (!z.guid().safeParse(itemId).success) return;
+
+  if (on) {
+    const { data } = await s.supabase.from("profile_favorites").select("item_id, position").eq("user_id", s.userId);
+    const rows = data ?? [];
+    if (rows.some((r) => r.item_id === itemId)) return;
+    const free = [1, 2, 3, 4].find((n) => !rows.some((r) => r.position === n));
+    if (!free) return;
+    const { error } = await s.supabase
+      .from("profile_favorites")
+      .insert({ user_id: s.userId, item_id: itemId, position: free });
+    if (error) console.error("setFavorite", error);
+  } else {
+    await s.supabase.from("profile_favorites").delete().eq("user_id", s.userId).eq("item_id", itemId);
+  }
+  revalidatePath(back);
+  revalidatePath(`/${lang}/u`, "layout");
+}
+
+export async function setWatchlist(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const itemId = String(formData.get("itemId") ?? "");
+  const on = formData.get("on") === "1";
+  const back = safePath(formData.get("back"), lang);
+  const s = await session();
+  if (!s) return;
+  if (!s.userId) redirect(`/${lang}/login`);
+  if (!z.guid().safeParse(itemId).success) return;
+
+  if (on) {
+    await s.supabase.from("watchlist").upsert({ user_id: s.userId, item_id: itemId }, { ignoreDuplicates: true });
+  } else {
+    await s.supabase.from("watchlist").delete().eq("user_id", s.userId).eq("item_id", itemId);
+  }
+  revalidatePath(back);
+}
+
+// ---------------------------------------------------------------------------
+// Comments
+// ---------------------------------------------------------------------------
+
+export type CommentFormState = { error?: "body" | "auth" | "generic"; ok?: number };
+
+export async function addComment(_prev: CommentFormState, formData: FormData): Promise<CommentFormState> {
+  const lang = localeOf(formData);
+  const reviewId = String(formData.get("reviewId") ?? "");
+  const body = z.string().trim().min(1).max(1000).safeParse(formData.get("body") ?? "");
+  if (!body.success) return { error: "body" };
+  if (!z.guid().safeParse(reviewId).success) return { error: "generic" };
+  const s = await session();
+  if (!s) return { error: "generic" };
+  if (!s.userId) return { error: "auth" };
+
+  const { error } = await s.supabase
+    .from("review_comments")
+    .insert({ review_id: reviewId, user_id: s.userId, body: body.data });
+  if (error) {
+    console.error("addComment", error);
+    return { error: "generic" };
+  }
+  revalidatePath(`/${lang}/r/${reviewId}`);
+  return { ok: Date.now() };
+}
+
+export async function deleteComment(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const commentId = String(formData.get("commentId") ?? "");
+  const reviewId = String(formData.get("reviewId") ?? "");
+  const s = await session();
+  if (!s?.userId || !z.guid().safeParse(commentId).success) return;
+  // RLS allows the comment's author and the review's author.
+  await s.supabase.from("review_comments").delete().eq("id", commentId);
+  revalidatePath(`/${lang}/r/${reviewId}`);
+}
