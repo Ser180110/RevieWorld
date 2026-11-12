@@ -47,7 +47,16 @@ export default async function RootLayout({
               RevieWorld
             </Link>
             <div className="flex flex-wrap items-center justify-end gap-3">
-              <LanguageSwitcher current={lang} label={dict.nav.language} />
+              <Link
+                href={`/${lang}/new`}
+                className="rounded-full px-3 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                + {dict.nav.newReview}
+              </Link>
+              {/* usePathname() is request data on dynamic routes: keep it out of the static shell. */}
+              <Suspense fallback={<span className="w-36" />}>
+                <LanguageSwitcher current={lang} label={dict.nav.language} />
+              </Suspense>
               <Suspense fallback={null}>
                 <UserMenu lang={lang} t={dict.nav} />
               </Suspense>
