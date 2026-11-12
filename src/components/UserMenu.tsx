@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { createClient } from "@/lib/supabase/server";
@@ -9,6 +10,8 @@ const link = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zin
 
 /** Signed-in user's name and a sign-out button, or sign-in / sign-up links. */
 export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"] }) {
+  // Session data is per request: never prerender this part.
+  await connection();
   let username: string | null = null;
 
   if (supabaseEnv()) {
