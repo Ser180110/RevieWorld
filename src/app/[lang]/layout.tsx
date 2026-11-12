@@ -7,6 +7,7 @@ import { hasLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { UserMenu } from "@/components/UserMenu";
+import { SearchBox } from "@/components/SearchBox";
 import "../globals.css";
 
 const navLink = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
@@ -53,6 +54,7 @@ export default async function RootLayout({
             </Link>
             {/* Desktop: everything in one row. */}
             <div className="hidden items-center justify-end gap-3 lg:flex">
+              <SearchBox id="search-desktop" lang={lang} label={dict.search.label} placeholder={dict.search.short} className="w-44 xl:w-56" />
               <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
                 + {dict.nav.newReview}
               </Link>
@@ -71,7 +73,15 @@ export default async function RootLayout({
               </Suspense>
             </div>
             {/* Mobile: "+ Recensisci" and a menu. */}
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex items-center gap-1 lg:hidden">
+              <Link
+                href={`/${lang}/search`}
+                aria-label={dict.search.title}
+                title={dict.search.title}
+                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                🔍
+              </Link>
               <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
                 + {dict.nav.newReview}
               </Link>
@@ -83,7 +93,8 @@ export default async function RootLayout({
                   <span className="group-open:hidden">☰</span>
                   <span className="hidden group-open:inline">✕</span>
                 </summary>
-                <div className="absolute right-0 z-20 mt-2 flex w-60 flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="absolute right-0 z-20 mt-2 flex w-64 flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+                  <SearchBox id="search-mobile" lang={lang} label={dict.search.label} placeholder={dict.search.short} className="w-full" />
                   <Link href={`/${lang}/categories`} className={navLink}>
                     {dict.nav.explore}
                   </Link>

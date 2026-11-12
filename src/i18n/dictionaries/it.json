@@ -324,5 +324,21 @@
   },
   "photos": {
     "open": "Apri la foto"
+  },
+  "search": {
+    "title": "Cerca",
+    "label": "Cerca categorie, oggetti e persone",
+    "placeholder": "Cerca categorie, oggetti, persone…",
+    "short": "Cerca…",
+    "button": "Cerca",
+    "hint": "Scrivi almeno 2 lettere: cerco tra categorie, oggetti e utenti.",
+    "tooShort": "Scrivi almeno 2 lettere.",
+    "all": "Tutto",
+    "categories": "Categorie",
+    "items": "Oggetti",
+    "people": "Persone",
+    "seeAll": "Vedi tutti →",
+    "empty": "Nessun risultato per «{q}».",
+    "create": "Crea la categoria «{q}» o recensisci qualcosa"
   }
 }

@@ -133,7 +133,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           required
           minLength={2}
           placeholder={t.searchPlaceholder}
-          className="h-12 flex-1 rounded-full border border-zinc-300 bg-transparent px-5 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100"
+          className="h-12 min-w-0 shrink-0 rounded-full sm:flex-1 border border-zinc-300 bg-transparent px-5 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100"
         />
         <button
           type="submit"
