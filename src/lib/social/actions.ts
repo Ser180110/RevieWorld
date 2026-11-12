@@ -31,7 +31,10 @@ function safePath(value: FormDataEntryValue | null, lang: Locale): string {
 
 export type LikeResult = { ok: boolean; liked: boolean; count: number };
 
-export async function setLike(reviewId: string, like: boolean): Promise<LikeResult> {
+export async function setLike(
+  reviewId: string,
+  like: boolean,
+): Promise<LikeResult> {
   const s = await session();
   const fail = { ok: false, liked: !like, count: 0 };
   if (!s?.userId || !z.guid().safeParse(reviewId).success) return fail;
@@ -39,13 +42,24 @@ export async function setLike(reviewId: string, like: boolean): Promise<LikeResu
   const { error } = like
     ? await s.supabase
         .from("review_likes")
-        .upsert({ user_id: s.userId, review_id: reviewId }, { ignoreDuplicates: true })
-    : await s.supabase.from("review_likes").delete().eq("user_id", s.userId).eq("review_id", reviewId);
+        .upsert(
+          { user_id: s.userId, review_id: reviewId },
+          { ignoreDuplicates: true },
+        )
+    : await s.supabase
+        .from("review_likes")
+        .delete()
+        .eq("user_id", s.userId)
+        .eq("review_id", reviewId);
   if (error) {
     console.error("setLike", error);
     return fail;
   }
-  const { data } = await s.supabase.from("reviews").select("likes_count").eq("id", reviewId).maybeSingle();
+  const { data } = await s.supabase
+    .from("reviews")
+    .select("likes_count")
+    .eq("id", reviewId)
+    .maybeSingle();
   return { ok: true, liked: like, count: data?.likes_count ?? 0 };
 }
 
@@ -67,11 +81,20 @@ export async function setUserFollow(formData: FormData): Promise<void> {
   if (follow) {
     await s.supabase
       .from("user_follows")
-      .upsert({ follower_id: s.userId, followed_id: userId }, { ignoreDuplicates: true });
+      .upsert(
+        { follower_id: s.userId, followed_id: userId },
+        { ignoreDuplicates: true },
+      );
   } else {
-    await s.supabase.from("user_follows").delete().eq("follower_id", s.userId).eq("followed_id", userId);
+    await s.supabase
+      .from("user_follows")
+      .delete()
+      .eq("follower_id", s.userId)
+      .eq("followed_id", userId);
   }
   revalidatePath(`/${lang}/u/${username}`, "layout");
+  const back = formData.get("back");
+  if (back) revalidatePath(safePath(back, lang));
 }
 
 // ---------------------------------------------------------------------------
@@ -88,7 +111,11 @@ export async function deleteReview(formData: FormData): Promise<void> {
   if (!s.userId) redirect(`/${lang}/login`);
   if (!z.guid().safeParse(reviewId).success) return;
 
-  const { error } = await s.supabase.from("reviews").delete().eq("id", reviewId).eq("user_id", s.userId);
+  const { error } = await s.supabase
+    .from("reviews")
+    .delete()
+    .eq("id", reviewId)
+    .eq("user_id", s.userId);
   if (error) console.error("deleteReview", error);
   revalidatePath(`/${lang}`, "layout");
   redirect(back);
@@ -99,7 +126,15 @@ export async function deleteReview(formData: FormData): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export type ProfileFormState = {
-  error?: "username" | "username_taken" | "display_name" | "bio" | "location" | "website" | "auth" | "generic";
+  error?:
+    | "username"
+    | "username_taken"
+    | "display_name"
+    | "bio"
+    | "location"
+    | "website"
+    | "auth"
+    | "generic";
 };
 
 const optional = (max: number) =>
@@ -110,17 +145,23 @@ const optional = (max: number) =>
     .transform((v) => (v === "" ? null : v));
 
 const profileSchema = z.object({
-  username: z.string().trim().regex(/^[a-zA-Z0-9_]{3,30}$/),
+  username: z
+    .string()
+    .trim()
+    .regex(/^[a-zA-Z0-9_]{3,30}$/),
   display_name: optional(60),
   bio: optional(500),
   location: optional(80),
-  website: optional(200).transform((v) => (v && !/^https?:\/\//i.test(v) ? `https://${v}` : v)).pipe(
-    z.url({ protocol: /^https?$/ }).nullable(),
-  ),
+  website: optional(200)
+    .transform((v) => (v && !/^https?:\/\//i.test(v) ? `https://${v}` : v))
+    .pipe(z.url({ protocol: /^https?$/ }).nullable()),
   avatar_url: optional(500).pipe(z.url({ protocol: /^https?$/ }).nullable()),
 });
 
-export async function updateProfile(_prev: ProfileFormState, formData: FormData): Promise<ProfileFormState> {
+export async function updateProfile(
+  _prev: ProfileFormState,
+  formData: FormData,
+): Promise<ProfileFormState> {
   const lang = localeOf(formData);
   const parsed = profileSchema.safeParse({
     username: formData.get("username") ?? "",
@@ -152,12 +193,18 @@ export async function updateProfile(_prev: ProfileFormState, formData: FormData)
   const { data: taken } = await s.supabase
     .from("profiles")
     .select("id")
-    .ilike("username", input.username.replace(/[\\%_]/g, (c) => `\\${c}`))
+    .ilike(
+      "username",
+      input.username.replace(/[\\%_]/g, (c) => `\\${c}`),
+    )
     .neq("id", s.userId)
     .maybeSingle();
   if (taken) return { error: "username_taken" };
 
-  const { error } = await s.supabase.from("profiles").update(input).eq("id", s.userId);
+  const { error } = await s.supabase
+    .from("profiles")
+    .update(input)
+    .eq("id", s.userId);
   if (error) {
     if (error.code === "23505") return { error: "username_taken" };
     console.error("updateProfile", error);

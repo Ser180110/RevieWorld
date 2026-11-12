@@ -12,7 +12,9 @@
     "profile": "Profilo",
     "newReview": "Recensisci",
     "diary": "Diario",
-    "settings": "Modifica profilo"
+    "settings": "Modifica profilo",
+    "people": "Persone",
+    "lists": "Liste"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -123,7 +125,8 @@
     "unlike": "Non mi piace più",
     "likes": "Mi piace",
     "delete": "Elimina",
-    "confirmDelete": "Vuoi davvero eliminare questa recensione? Non si può annullare."
+    "confirmDelete": "Vuoi davvero eliminare questa recensione? Non si può annullare.",
+    "edit": "Modifica"
   },
   "profile": {
     "reviewsTab": "Profilo",
@@ -139,7 +142,12 @@
     "recentEmpty": "Nessuna recensione ancora.",
     "seeDiary": "Vedi tutto il diario →",
     "joined": "Iscritto da {date}",
-    "notFound": "Utente non trovato."
+    "notFound": "Utente non trovato.",
+    "listsTab": "Liste",
+    "followersTitle": "Follower di {name}",
+    "followingTitle": "Chi segue {name}",
+    "followersEmpty": "Ancora nessun follower.",
+    "followingEmpty": "Non segue ancora nessuno."
   },
   "diary": {
     "title": "Diario di {name}",
@@ -179,6 +187,66 @@
       "location": "Luogo troppo lungo (massimo 80 caratteri).",
       "website": "Indirizzo del sito non valido.",
       "auth": "Devi accedere per modificare il profilo.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
+  },
+  "people": {
+    "title": "Persone",
+    "searchLabel": "Cerca un utente",
+    "searchPlaceholder": "Username o nome",
+    "search": "Cerca",
+    "newest": "Ultimi iscritti",
+    "results": "Risultati per «{q}»",
+    "empty": "Nessun utente trovato.",
+    "you": "Tu"
+  },
+  "editReview": {
+    "title": "Modifica recensione",
+    "back": "← Torna indietro"
+  },
+  "lists": {
+    "title": "Liste",
+    "mine": "Le tue liste",
+    "newList": "+ Nuova lista",
+    "empty": "Nessuna lista ancora.",
+    "emptyOwn": "Non hai ancora creato liste. Creane una con le tue cose preferite!",
+    "recentTitle": "Liste recenti",
+    "by": "di",
+    "itemsOne": "1 oggetto",
+    "items": "{n} oggetti",
+    "createTitle": "Nuova lista",
+    "editTitle": "Modifica lista",
+    "titleLabel": "Titolo",
+    "titlePlaceholder": "Es. I tombini più belli di Roma",
+    "descriptionLabel": "Descrizione (facoltativa)",
+    "rankedLabel": "Classifica numerata",
+    "rankedHint": "Mostra la posizione di ogni oggetto (1, 2, 3…).",
+    "create": "Crea lista",
+    "save": "Salva",
+    "saving": "Salvo…",
+    "cancel": "Annulla",
+    "delete": "Elimina lista",
+    "confirmDelete": "Vuoi davvero eliminare questa lista? Gli oggetti e le recensioni restano.",
+    "edit": "Modifica",
+    "listEmpty": "Questa lista è vuota.",
+    "listEmptyOwn": "La lista è vuota: cerca qui sopra cosa aggiungere, oppure usa «Aggiungi a una lista» nella pagina di un oggetto.",
+    "addLabel": "Aggiungi alla lista",
+    "addPlaceholder": "Cerca in tutte le categorie…",
+    "added": "Aggiunto",
+    "noResults": "Nessun oggetto trovato. Per aggiungere qualcosa di nuovo, prima recensiscilo.",
+    "remove": "Rimuovi",
+    "moveUp": "Su",
+    "moveDown": "Giù",
+    "updated": "Aggiornata il {date}",
+    "addToList": "Aggiungi a una lista",
+    "choose": "Scegli una lista…",
+    "add": "Aggiungi",
+    "alreadyIn": "Già in:",
+    "newWithItem": "Nuova lista con questo oggetto",
+    "errors": {
+      "title": "Il titolo è obbligatorio (massimo 100 caratteri).",
+      "description": "Descrizione troppo lunga (massimo 1000 caratteri).",
+      "auth": "Devi accedere per creare una lista.",
       "generic": "Qualcosa è andato storto, riprova."
     }
   }

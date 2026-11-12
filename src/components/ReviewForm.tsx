@@ -21,14 +21,28 @@ type Props = {
   existing?: { rating: number; body: string | null; contains_spoiler: boolean };
   t: Dictionary["reviewForm"];
   common: Dictionary["common"];
+  /** Where to go after saving (default: the item page). */
+  back?: string;
 };
 
-export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, common }: Props) {
+export function ReviewForm({
+  lang,
+  categoryId,
+  categorySlug,
+  item,
+  existing,
+  t,
+  common,
+  back,
+}: Props) {
   const [state, formAction, pending] = useActionState(submitReview, {});
   const [itemName, setItemName] = useState("");
   const [picked, setPicked] = useState<Suggestion | null>(null);
   const debounced = useDebounced(itemName.trim());
-  const [results, setResults] = useState<{ q: string; list: Suggestion[] }>({ q: "", list: [] });
+  const [results, setResults] = useState<{ q: string; list: Suggestion[] }>({
+    q: "",
+    list: [],
+  });
 
   useEffect(() => {
     if (item || picked || debounced.length < 2) return;
@@ -48,6 +62,7 @@ export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, 
       <input type="hidden" name="lang" value={lang} />
       <input type="hidden" name="categoryId" value={categoryId} />
       <input type="hidden" name="categorySlug" value={categorySlug} />
+      {back && <input type="hidden" name="back" value={back} />}
       {item && <input type="hidden" name="itemId" value={item.id} />}
       {picked && <input type="hidden" name="itemId" value={picked.id} />}
 
@@ -77,7 +92,9 @@ export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, 
           )}
           {suggestions.length > 0 && (
             <div className="flex flex-col gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-400">{t.itemSuggestions}</span>
+              <span className="text-zinc-600 dark:text-zinc-400">
+                {t.itemSuggestions}
+              </span>
               <div className="flex flex-wrap gap-2">
                 {suggestions.map((s) => (
                   <button
@@ -86,7 +103,8 @@ export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, 
                     onClick={() => setPicked(s)}
                     className="rounded-full border border-zinc-300 px-3 py-1 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100"
                   >
-                    {s.name} · {count(s.reviews_count, common.review, common.reviews)}
+                    {s.name} ·{" "}
+                    {count(s.reviews_count, common.review, common.reviews)}
                   </button>
                 ))}
               </div>
@@ -95,7 +113,11 @@ export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, 
         </div>
       )}
 
-      <StarInput name="rating" label={t.ratingLabel} defaultValue={existing?.rating ?? 0} />
+      <StarInput
+        name="rating"
+        label={t.ratingLabel}
+        defaultValue={existing?.rating ?? 0}
+      />
 
       <label className="flex flex-col gap-1">
         <span className="text-sm font-medium">{t.bodyLabel}</span>
@@ -110,7 +132,11 @@ export function ReviewForm({ lang, categoryId, categorySlug, item, existing, t, 
       </label>
 
       <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" name="spoiler" defaultChecked={existing?.contains_spoiler} />
+        <input
+          type="checkbox"
+          name="spoiler"
+          defaultChecked={existing?.contains_spoiler}
+        />
         {t.spoiler}
       </label>
 

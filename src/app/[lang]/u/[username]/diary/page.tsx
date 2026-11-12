@@ -4,14 +4,22 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getProfile, getProfileStats, getUserReviews, getViewer, isFollowingUser } from "@/lib/data/queries";
+import {
+  getProfile,
+  getProfileStats,
+  getUserReviews,
+  getViewer,
+  isFollowingUser,
+} from "@/lib/data/queries";
 import type { ReviewRow } from "@/lib/data/types";
 import { fill } from "@/lib/format";
 import { DeleteReviewButton } from "@/components/DeleteReviewButton";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { Stars } from "@/components/Stars";
 
-export async function generateMetadata({ params }: PageProps<"/[lang]/u/[username]/diary">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/u/[username]/diary">): Promise<Metadata> {
   const { lang, username } = await params;
   const name = `@${decodeURIComponent(username)}`;
   if (!hasLocale(lang)) return { title: name };
@@ -29,17 +37,30 @@ function byMonth(reviews: ReviewRow[]): [string, ReviewRow[]][] {
   return [...groups];
 }
 
-async function DiaryContent({ lang, username }: { lang: Locale; username: string }) {
+async function DiaryContent({
+  lang,
+  username,
+}: {
+  lang: Locale;
+  username: string;
+}) {
   const dict = await getDictionary(lang);
   const t = dict.diary;
   const profile = await getProfile(username);
   if (!profile) notFound();
 
-  const [stats, reviews] = await Promise.all([getProfileStats(profile.id), getUserReviews(profile.id)]);
+  const [stats, reviews] = await Promise.all([
+    getProfileStats(profile.id),
+    getUserReviews(profile.id),
+  ]);
   const viewer = await getViewer([]);
   const following = await isFollowingUser(viewer.id, profile.id);
   const own = viewer.id === profile.id;
-  const monthName = new Intl.DateTimeFormat(lang, { month: "long", year: "numeric", timeZone: "UTC" });
+  const monthName = new Intl.DateTimeFormat(lang, {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
   const back = `/${lang}/u/${profile.username}/diary`;
 
   return (
@@ -58,7 +79,11 @@ async function DiaryContent({ lang, username }: { lang: Locale; username: string
         <p className="text-zinc-500">{t.empty}</p>
       ) : (
         <div className="flex flex-col gap-8">
-          <p className="text-sm text-zinc-500">{reviews.length === 1 ? t.totalOne : fill(t.total, { n: String(reviews.length) })}</p>
+          <p className="text-sm text-zinc-500">
+            {reviews.length === 1
+              ? t.totalOne
+              : fill(t.total, { n: String(reviews.length) })}
+          </p>
           {byMonth(reviews).map(([month, entries]) => (
             <section key={month} className="flex flex-col">
               <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500">
@@ -67,7 +92,9 @@ async function DiaryContent({ lang, username }: { lang: Locale; username: string
               <ol className="divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
                 {entries.map((r) => {
                   const item = r.item;
-                  const href = item?.category ? `/${lang}/c/${item.category.slug}/${item.slug}` : null;
+                  const href = item?.category
+                    ? `/${lang}/c/${item.category.slug}/${item.slug}`
+                    : null;
                   return (
                     <li key={r.id} className="flex items-center gap-4 py-3">
                       <time
@@ -78,11 +105,16 @@ async function DiaryContent({ lang, username }: { lang: Locale; username: string
                       </time>
                       <div className="flex min-w-0 flex-1 flex-col">
                         {href ? (
-                          <Link href={href} className="truncate font-semibold hover:underline">
+                          <Link
+                            href={href}
+                            className="truncate font-semibold hover:underline"
+                          >
                             {item?.name}
                           </Link>
                         ) : (
-                          <span className="truncate font-semibold">{item?.name ?? "?"}</span>
+                          <span className="truncate font-semibold">
+                            {item?.name ?? "?"}
+                          </span>
                         )}
                         {item?.category && (
                           <Link
@@ -96,10 +128,24 @@ async function DiaryContent({ lang, username }: { lang: Locale; username: string
                       <div className="flex shrink-0 flex-col items-end gap-1">
                         <Stars rating={r.rating} />
                         <span className="flex items-center gap-3 text-xs text-zinc-500">
-                          {r.body && <span title={dict.item.reviewsTitle}>✎</span>}
-                          {r.likes_count > 0 && <span title={t.likes}>♥ {r.likes_count}</span>}
+                          {r.body && (
+                            <span title={dict.item.reviewsTitle}>≡</span>
+                          )}
+                          {r.likes_count > 0 && (
+                            <span title={t.likes}>♥ {r.likes_count}</span>
+                          )}
                         </span>
                       </div>
+                      {own && (
+                        <Link
+                          href={`/${lang}/r/${r.id}/edit?back=${encodeURIComponent(back)}`}
+                          title={dict.reviewCard.edit}
+                          aria-label={dict.reviewCard.edit}
+                          className="rounded-full px-2 py-0.5 text-sm text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                        >
+                          {dict.reviewCard.edit}
+                        </Link>
+                      )}
                       {own && (
                         <DeleteReviewButton
                           reviewId={r.id}
@@ -121,13 +167,17 @@ async function DiaryContent({ lang, username }: { lang: Locale; username: string
   );
 }
 
-export default async function DiaryPage({ params }: PageProps<"/[lang]/u/[username]/diary">) {
+export default async function DiaryPage({
+  params,
+}: PageProps<"/[lang]/u/[username]/diary">) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       <Suspense fallback={<p className="text-zinc-500">…</p>}>
         {params.then(({ lang, username }) => {
           if (!hasLocale(lang)) notFound();
-          return <DiaryContent lang={lang} username={decodeURIComponent(username)} />;
+          return (
+            <DiaryContent lang={lang} username={decodeURIComponent(username)} />
+          );
         })}
       </Suspense>
     </div>

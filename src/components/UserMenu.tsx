@@ -7,10 +7,17 @@ import { supabaseEnv } from "@/lib/supabase/env";
 import { signOut } from "@/lib/auth/actions";
 import { Avatar } from "./Avatar";
 
-const link = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
+const link =
+  "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
 
 /** Signed-in user's name and a sign-out button, or sign-in / sign-up links. */
-export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"] }) {
+export async function UserMenu({
+  lang,
+  t,
+}: {
+  lang: Locale;
+  t: Dictionary["nav"];
+}) {
   // Session data is per request: never prerender this part.
   await connection();
   let username: string | null = null;
@@ -55,6 +62,9 @@ export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"]
         <>
           <Link href={`/${lang}/u/${username}/diary`} className={link}>
             {t.diary}
+          </Link>
+          <Link href={`/${lang}/u/${username}/lists`} className={link}>
+            {t.lists}
           </Link>
           <Link
             href={`/${lang}/u/${username}`}

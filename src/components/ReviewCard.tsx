@@ -50,7 +50,10 @@ export function ReviewCard({
       )}
       <div className="flex flex-wrap items-center gap-3 text-sm">
         {showAuthor && username && (
-          <Link href={`/${lang}/u/${username}`} className="flex items-center gap-2 font-medium hover:underline">
+          <Link
+            href={`/${lang}/u/${username}`}
+            className="flex items-center gap-2 font-medium hover:underline"
+          >
             <Avatar url={review.author?.avatar_url} name={username} size={24} />
             {review.author?.display_name || `@${username}`}
           </Link>
@@ -63,11 +66,15 @@ export function ReviewCard({
       {review.body &&
         (review.contains_spoiler ? (
           <details>
-            <summary className="cursor-pointer text-sm text-zinc-500">{spoilerLabel}</summary>
+            <summary className="cursor-pointer text-sm text-zinc-500">
+              {spoilerLabel}
+            </summary>
             <p className="mt-1 whitespace-pre-line">{review.body}</p>
           </details>
         ) : (
-          <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">{review.body}</p>
+          <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
+            {review.body}
+          </p>
         ))}
       <div className="flex items-center gap-4">
         <LikeButton
@@ -79,6 +86,14 @@ export function ReviewCard({
           lang={lang}
           labels={{ like: t.like, unlike: t.unlike, likes: t.likes }}
         />
+        {own && (
+          <Link
+            href={`/${lang}/r/${review.id}/edit?back=${encodeURIComponent(back)}`}
+            className="text-sm text-zinc-500 hover:text-zinc-900 hover:underline dark:hover:text-zinc-100"
+          >
+            {t.edit}
+          </Link>
+        )}
         {own && (
           <DeleteReviewButton
             reviewId={review.id}

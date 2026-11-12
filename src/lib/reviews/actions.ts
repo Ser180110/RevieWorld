@@ -36,7 +36,9 @@ async function uniqueSlug(
   name: string,
   categoryId?: string,
 ): Promise<string> {
-  const base = slugify(name) || `${table === "items" ? "i" : "c"}-${Date.now().toString(36)}`;
+  const base =
+    slugify(name) ||
+    `${table === "items" ? "i" : "c"}-${Date.now().toString(36)}`;
   for (let n = 1; n < 50; n++) {
     const candidate = n === 1 ? base : `${base}-${n}`;
     let query = supabase.from(table).select("id").eq("slug", candidate);
@@ -55,15 +57,25 @@ export async function suggestCategories(q: string): Promise<Suggestion[]> {
   const supabase = await client();
   const query = normalizeName(q);
   if (!supabase || query.length < 2) return [];
-  const { data } = await supabase.rpc("suggest_categories", { q: query, max_results: 6 });
+  const { data } = await supabase.rpc("suggest_categories", {
+    q: query,
+    max_results: 6,
+  });
   return (data ?? []) as Suggestion[];
 }
 
-export async function suggestItems(categoryId: string, q: string): Promise<Suggestion[]> {
+export async function suggestItems(
+  categoryId: string,
+  q: string,
+): Promise<Suggestion[]> {
   const supabase = await client();
   const query = normalizeName(q);
   if (!supabase || query.length < 2) return [];
-  const { data } = await supabase.rpc("suggest_items", { cat: categoryId, q: query, max_results: 5 });
+  const { data } = await supabase.rpc("suggest_items", {
+    cat: categoryId,
+    q: query,
+    max_results: 5,
+  });
   return (data ?? []) as Suggestion[];
 }
 
@@ -73,7 +85,10 @@ export async function suggestItems(categoryId: string, q: string): Promise<Sugge
 
 const categoryName = z.string().trim().min(2).max(60);
 
-export async function createCategory(_prev: FormState, formData: FormData): Promise<FormState> {
+export async function createCategory(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const lang = localeOf(formData);
   const parsed = categoryName.safeParse(formData.get("name"));
   if (!parsed.success) return { error: "category" };
@@ -128,7 +143,10 @@ export async function setFollow(formData: FormData): Promise<void> {
   if (follow) {
     await supabase
       .from("category_follows")
-      .upsert({ user_id: userId, category_id: categoryId }, { ignoreDuplicates: true });
+      .upsert(
+        { user_id: userId, category_id: categoryId },
+        { ignoreDuplicates: true },
+      );
   } else {
     await supabase
       .from("category_follows")
@@ -153,7 +171,10 @@ const reviewSchema = z.object({
   spoiler: z.boolean(),
 });
 
-export async function submitReview(_prev: FormState, formData: FormData): Promise<FormState> {
+export async function submitReview(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const lang = localeOf(formData);
   const raw = {
     categoryId: formData.get("categoryId"),
@@ -200,7 +221,12 @@ export async function submitReview(_prev: FormState, formData: FormData): Promis
       .maybeSingle();
     item = existing;
     if (!item) {
-      const slug = await uniqueSlug(supabase, "items", input.itemName, input.categoryId);
+      const slug = await uniqueSlug(
+        supabase,
+        "items",
+        input.itemName,
+        input.categoryId,
+      );
       const { data: created, error } = await supabase
         .from("items")
         .insert({
@@ -236,7 +262,9 @@ export async function submitReview(_prev: FormState, formData: FormData): Promis
 
   const { error } = mine
     ? await supabase.from("reviews").update(fields).eq("id", mine.id)
-    : await supabase.from("reviews").insert({ ...fields, user_id: userId, item_id: item.id });
+    : await supabase
+        .from("reviews")
+        .insert({ ...fields, user_id: userId, item_id: item.id });
   if (error) {
     console.error("submitReview: save review", error);
     return { error: "generic" };
@@ -245,8 +273,16 @@ export async function submitReview(_prev: FormState, formData: FormData): Promis
   // Writing in a category means joining it.
   await supabase
     .from("category_follows")
-    .upsert({ user_id: userId, category_id: input.categoryId }, { ignoreDuplicates: true });
+    .upsert(
+      { user_id: userId, category_id: input.categoryId },
+      { ignoreDuplicates: true },
+    );
 
   revalidatePath(`/${lang}`, "layout");
-  redirect(`/${lang}/c/${input.categorySlug}/${item.slug}`);
+  const back = String(formData.get("back") ?? "");
+  redirect(
+    back.startsWith(`/${lang}/`) && !back.startsWith("//")
+      ? back
+      : `/${lang}/c/${input.categorySlug}/${item.slug}`,
+  );
 }

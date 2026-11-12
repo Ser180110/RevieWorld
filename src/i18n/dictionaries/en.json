@@ -12,7 +12,9 @@
     "profile": "Profile",
     "newReview": "Review",
     "diary": "Diary",
-    "settings": "Edit profile"
+    "settings": "Edit profile",
+    "people": "People",
+    "lists": "Lists"
   },
   "home": {
     "headline": "Review anything.",
@@ -123,7 +125,8 @@
     "unlike": "Unlike",
     "likes": "Likes",
     "delete": "Delete",
-    "confirmDelete": "Delete this review? This can't be undone."
+    "confirmDelete": "Delete this review? This can't be undone.",
+    "edit": "Edit"
   },
   "profile": {
     "reviewsTab": "Profile",
@@ -139,7 +142,12 @@
     "recentEmpty": "No reviews yet.",
     "seeDiary": "See the full diary →",
     "joined": "Joined {date}",
-    "notFound": "User not found."
+    "notFound": "User not found.",
+    "listsTab": "Lists",
+    "followersTitle": "{name}'s followers",
+    "followingTitle": "Followed by {name}",
+    "followersEmpty": "No followers yet.",
+    "followingEmpty": "Not following anyone yet."
   },
   "diary": {
     "title": "{name}'s diary",
@@ -179,6 +187,66 @@
       "location": "Location too long (max 80 characters).",
       "website": "Invalid website address.",
       "auth": "Sign in to edit your profile.",
+      "generic": "Something went wrong, please try again."
+    }
+  },
+  "people": {
+    "title": "People",
+    "searchLabel": "Find a user",
+    "searchPlaceholder": "Username or name",
+    "search": "Search",
+    "newest": "Newest members",
+    "results": "Results for “{q}”",
+    "empty": "No users found.",
+    "you": "You"
+  },
+  "editReview": {
+    "title": "Edit review",
+    "back": "← Back"
+  },
+  "lists": {
+    "title": "Lists",
+    "mine": "Your lists",
+    "newList": "+ New list",
+    "empty": "No lists yet.",
+    "emptyOwn": "You haven't made any lists yet. Start one with your favourite things!",
+    "recentTitle": "Recent lists",
+    "by": "by",
+    "itemsOne": "1 item",
+    "items": "{n} items",
+    "createTitle": "New list",
+    "editTitle": "Edit list",
+    "titleLabel": "Title",
+    "titlePlaceholder": "E.g. The finest manholes in Rome",
+    "descriptionLabel": "Description (optional)",
+    "rankedLabel": "Ranked list",
+    "rankedHint": "Show each item's position (1, 2, 3…).",
+    "create": "Create list",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete list",
+    "confirmDelete": "Delete this list? The items and reviews stay.",
+    "edit": "Edit",
+    "listEmpty": "This list is empty.",
+    "listEmptyOwn": "The list is empty: search above for something to add, or use “Add to a list” on an item page.",
+    "addLabel": "Add to the list",
+    "addPlaceholder": "Search all categories…",
+    "added": "Added",
+    "noResults": "No items found. To add something new, review it first.",
+    "remove": "Remove",
+    "moveUp": "Up",
+    "moveDown": "Down",
+    "updated": "Updated {date}",
+    "addToList": "Add to a list",
+    "choose": "Choose a list…",
+    "add": "Add",
+    "alreadyIn": "Already in:",
+    "newWithItem": "New list with this item",
+    "errors": {
+      "title": "Title is required (max 100 characters).",
+      "description": "Description too long (max 1000 characters).",
+      "auth": "Sign in to create a list.",
       "generic": "Something went wrong, please try again."
     }
   }

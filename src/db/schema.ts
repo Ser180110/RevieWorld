@@ -99,7 +99,10 @@ export const categories = pgTable(
   (t) => [
     uniqueIndex("categories_slug_key").on(t.slug),
     uniqueIndex("categories_normalized_name_key").on(t.normalizedName),
-    check("categories_name_length", sql`char_length(${t.name}) between 2 and 60`),
+    check(
+      "categories_name_length",
+      sql`char_length(${t.name}) between 2 and 60`,
+    ),
   ],
 );
 
@@ -272,4 +275,47 @@ export const reports = pgTable(
     ...timestamps,
   },
   (t) => [index("reports_open_idx").on(t.status, t.createdAt)],
+);
+
+/** User lists ("I miei tombini preferiti"), Letterboxd style: items from any category. */
+export const lists = pgTable(
+  "lists",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    ranked: boolean("ranked").notNull().default(false),
+    itemsCount: integer("items_count").notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [
+    index("lists_user_idx").on(t.userId, t.updatedAt),
+    check("lists_title_length", sql`char_length(${t.title}) between 1 and 100`),
+    check(
+      "lists_description_length",
+      sql`${t.description} is null or char_length(${t.description}) <= 1000`,
+    ),
+  ],
+);
+
+export const listItems = pgTable(
+  "list_items",
+  {
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => lists.id, { onDelete: "cascade" }),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    primaryKey({ columns: [t.listId, t.itemId] }),
+    index("list_items_order_idx").on(t.listId, t.position),
+    index("list_items_item_idx").on(t.itemId),
+  ],
 );
