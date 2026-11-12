@@ -5,9 +5,11 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { normalizeName, slugify } from "@/lib/normalize";
+import { guessColor, guessEmoji, isColor } from "@/lib/categoryStyle";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import type { Suggestion } from "@/lib/data/types";
+import { isOwnPhotoPath, MAX_REVIEW_PHOTOS } from "@/lib/photos";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -112,7 +114,14 @@ export async function createCategory(
   const slug = await uniqueSlug(supabase, "categories", name);
   const { error } = await supabase
     .from("categories")
-    .insert({ name, slug, normalized_name: normalized, created_by: userId });
+    .insert({
+      name,
+      slug,
+      normalized_name: normalized,
+      created_by: userId,
+      icon: guessEmoji(normalized),
+      color: guessColor(normalized),
+    });
 
   if (error) {
     if (error.code === "23505") {
@@ -260,14 +269,45 @@ export async function submitReview(
     .eq("item_id", item.id)
     .maybeSingle();
 
-  const { error } = mine
-    ? await supabase.from("reviews").update(fields).eq("id", mine.id)
+  const { data: saved, error } = mine
+    ? await supabase.from("reviews").update(fields).eq("id", mine.id).select("id").single()
     : await supabase
         .from("reviews")
-        .insert({ ...fields, user_id: userId, item_id: item.id });
-  if (error) {
+        .insert({ ...fields, user_id: userId, item_id: item.id })
+        .select("id")
+        .single();
+  if (error || !saved) {
     console.error("submitReview: save review", error);
     return { error: "generic" };
+  }
+
+  // 3. Photos: drop the removed ones, attach the new uploads (max 4 per review).
+  const removeIds = formData
+    .getAll("removePhoto")
+    .map(String)
+    .filter((v) => z.guid().safeParse(v).success);
+  if (removeIds.length) {
+    const { data: gone } = await supabase
+      .from("review_photos")
+      .delete()
+      .eq("review_id", saved.id)
+      .in("id", removeIds)
+      .select("storage_path");
+    const paths = (gone ?? []).map((g) => g.storage_path as string);
+    if (paths.length) await supabase.storage.from("review-photos").remove(paths);
+  }
+  const newPaths = [...new Set(formData.getAll("photo").map(String))].filter((p) => isOwnPhotoPath(p, userId));
+  if (newPaths.length) {
+    const { data: current } = await supabase.from("review_photos").select("position").eq("review_id", saved.id);
+    const used = new Set((current ?? []).map((c) => c.position as number));
+    const free = [0, 1, 2, 3].filter((n) => !used.has(n)).slice(0, MAX_REVIEW_PHOTOS);
+    const rows = newPaths
+      .slice(0, free.length)
+      .map((storage_path, i) => ({ review_id: saved.id, storage_path, position: free[i] }));
+    if (rows.length) {
+      const { error: photoError } = await supabase.from("review_photos").insert(rows);
+      if (photoError) console.error("submitReview: photos", photoError);
+    }
   }
 
   // Writing in a category means joining it.
@@ -285,4 +325,32 @@ export async function submitReview(
       ? back
       : `/${lang}/c/${input.categorySlug}/${item.slug}`,
   );
+}
+
+// ---------------------------------------------------------------------------
+// Category look (creator only, enforced by the set_category_style function)
+// ---------------------------------------------------------------------------
+
+export async function setCategoryStyle(_prev: { error?: boolean }, formData: FormData): Promise<{ error?: boolean }> {
+  const lang = localeOf(formData);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const slug = String(formData.get("slug") ?? "");
+  const icon = String(formData.get("icon") ?? "").trim();
+  const color = String(formData.get("color") ?? "");
+  if (!z.guid().safeParse(categoryId).success || !isColor(color) || [...icon].length > 4 || icon.length > 16) {
+    return { error: true };
+  }
+  const supabase = await client();
+  if (!supabase) return { error: true };
+  const { data, error } = await supabase.rpc("set_category_style", {
+    cat: categoryId,
+    new_icon: icon,
+    new_color: color,
+  });
+  if (error || !data) {
+    if (error) console.error("setCategoryStyle", error);
+    return { error: true };
+  }
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/c/${slug}`);
 }

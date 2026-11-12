@@ -9,6 +9,8 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { UserMenu } from "@/components/UserMenu";
 import "../globals.css";
 
+const navLink = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
+
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export function generateStaticParams() {
@@ -49,17 +51,15 @@ export default async function RootLayout({
             >
               RevieWorld
             </Link>
-            <div className="flex flex-wrap items-center justify-end gap-3">
-              <Link
-                href={`/${lang}/new`}
-                className="rounded-full px-3 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
+            {/* Desktop: everything in one row. */}
+            <div className="hidden items-center justify-end gap-3 lg:flex">
+              <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
                 + {dict.nav.newReview}
               </Link>
-              <Link
-                href={`/${lang}/people`}
-                className="rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
+              <Link href={`/${lang}/categories`} className={navLink}>
+                {dict.nav.explore}
+              </Link>
+              <Link href={`/${lang}/people`} className={navLink}>
                 {dict.nav.people}
               </Link>
               {/* usePathname() is request data on dynamic routes: keep it out of the static shell. */}
@@ -69,6 +69,35 @@ export default async function RootLayout({
               <Suspense fallback={null}>
                 <UserMenu lang={lang} t={dict.nav} />
               </Suspense>
+            </div>
+            {/* Mobile: "+ Recensisci" and a menu. */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
+                + {dict.nav.newReview}
+              </Link>
+              <details className="group relative">
+                <summary
+                  aria-label={dict.nav.menu}
+                  className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full text-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 [&::-webkit-details-marker]:hidden"
+                >
+                  <span className="group-open:hidden">☰</span>
+                  <span className="hidden group-open:inline">✕</span>
+                </summary>
+                <div className="absolute right-0 z-20 mt-2 flex w-60 flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+                  <Link href={`/${lang}/categories`} className={navLink}>
+                    {dict.nav.explore}
+                  </Link>
+                  <Link href={`/${lang}/people`} className={navLink}>
+                    {dict.nav.people}
+                  </Link>
+                  <Suspense fallback={null}>
+                    <UserMenu lang={lang} t={dict.nav} column />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <LanguageSwitcher current={lang} label={dict.nav.language} />
+                  </Suspense>
+                </div>
+              </details>
             </div>
           </div>
         </header>

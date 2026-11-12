@@ -11,6 +11,7 @@ import {
   getViewer,
 } from "@/lib/data/queries";
 import { ListCard } from "@/components/ListCard";
+import { CategoryTile } from "@/components/CategoryTile";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { getCurrentUserId } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
@@ -80,31 +81,22 @@ async function HomeActivity({ lang, dict }: { lang: Locale; dict: Dictionary }) 
   );
 }
 
-async function TopCategories({
-  lang,
-  dict,
-}: {
-  lang: Locale;
-  dict: Dictionary;
-}) {
-  const categories = await getTopCategories();
+async function TopCategories({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+  const categories = await getTopCategories(8);
   if (!categories.length) return null;
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">{dict.home.topCategoriesTitle}</h2>
-      <ul className="flex flex-wrap gap-2">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="text-xl font-semibold">{dict.home.topCategoriesTitle}</h2>
+        <Link href={`/${lang}/categories`} className="text-sm font-medium hover:underline">
+          {dict.home.seeAllCategories}
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {categories.map((c) => (
-          <li key={c.id}>
-            <Link
-              href={`/${lang}/c/${c.slug}`}
-              className="inline-flex items-baseline gap-2 rounded-full border border-zinc-300 px-4 py-1.5 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100"
-            >
-              <span className="font-medium">{c.name}</span>
-              <span className="text-xs text-zinc-500">{c.reviews_count}</span>
-            </Link>
-          </li>
+          <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

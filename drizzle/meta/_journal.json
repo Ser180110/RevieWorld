@@ -64,6 +64,20 @@
       "when": 1794495294519,
       "tag": "0008_favorites_watchlist_comments_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794495684592,
+      "tag": "0009_category_style",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794495685436,
+      "tag": "0010_starter_categories",
+      "breakpoints": true
     }
   ]
 }

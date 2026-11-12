@@ -1,0 +1,3 @@
+ALTER TABLE "categories" ADD COLUMN "color" text;--> statement-breakpoint
+ALTER TABLE "categories" ADD CONSTRAINT "categories_icon_length" CHECK ("categories"."icon" is null or char_length("categories"."icon") <= 16);--> statement-breakpoint
+ALTER TABLE "categories" ADD CONSTRAINT "categories_color_palette" CHECK ("categories"."color" is null or "categories"."color" in ('amber','rose','sky','emerald','violet','orange','teal','fuchsia','lime','indigo'));

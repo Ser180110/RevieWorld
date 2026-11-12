@@ -14,9 +14,12 @@ const link =
 export async function UserMenu({
   lang,
   t,
+  column = false,
 }: {
   lang: Locale;
   t: Dictionary["nav"];
+  /** Stacked layout for the mobile menu. */
+  column?: boolean;
 }) {
   // Session data is per request: never prerender this part.
   await connection();
@@ -41,7 +44,7 @@ export async function UserMenu({
 
   if (username === null) {
     return (
-      <div className="flex items-center gap-1">
+      <div className={column ? "flex flex-col items-start gap-2" : "flex items-center gap-1"}>
         <Link href={`/${lang}/login`} className={link}>
           {t.signIn}
         </Link>
@@ -56,7 +59,7 @@ export async function UserMenu({
   }
 
   return (
-    <form action={signOut} className="flex items-center gap-2">
+    <form action={signOut} className={column ? "flex flex-col items-start gap-1" : "flex items-center gap-2"}>
       <input type="hidden" name="lang" value={lang} />
       {username && (
         <>

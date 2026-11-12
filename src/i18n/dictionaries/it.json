@@ -15,7 +15,8 @@
     "settings": "Modifica profilo",
     "people": "Persone",
     "lists": "Liste",
-    "activity": "Attività"
+    "activity": "Attività",
+    "menu": "Menu"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -31,7 +32,8 @@
     ],
     "recentTitle": "Ultime recensioni",
     "recentEmpty": "Ancora nessuna recensione: scrivi la prima!",
-    "topCategoriesTitle": "Categorie popolari"
+    "topCategoriesTitle": "Categorie popolari",
+    "seeAllCategories": "Tutte le categorie →"
   },
   "footer": {
     "tagline": "RevieWorld · in costruzione"
@@ -93,7 +95,13 @@
     "itemsTitle": "I più votati",
     "itemsEmpty": "Ancora nessun oggetto in questa categoria.",
     "reviewSomething": "Recensisci qualcosa in {name}",
-    "createdBy": "Creata da"
+    "createdBy": "Creata da",
+    "editStyle": "Cambia aspetto",
+    "emojiLabel": "Emoji",
+    "colorLabel": "Colore",
+    "saveStyle": "Salva",
+    "cancelStyle": "Annulla",
+    "styleError": "Non è stato possibile salvare: riprova."
   },
   "reviewForm": {
     "itemLabel": "Cosa recensisci?",
@@ -113,7 +121,13 @@
       "category": "Nome categoria non valido (2-60 caratteri).",
       "auth": "Devi accedere per recensire.",
       "generic": "Qualcosa è andato storto, riprova."
-    }
+    },
+    "photosLabel": "Foto (facoltative)",
+    "photosAdd": "Aggiungi",
+    "photosUploading": "Carico…",
+    "photosHint": "Fino a 4 foto, JPG, PNG o WebP, massimo 5 MB l'una. La prima diventa la copertina.",
+    "photosError": "Una foto non è stata caricata: usa JPG, PNG o WebP sotto i 5 MB.",
+    "photosRemove": "Togli foto"
   },
   "item": {
     "average": "Media",
@@ -301,5 +315,14 @@
   "reviewPage": {
     "title": "Recensione di {name}",
     "reviewOf": "Recensione di"
+  },
+  "explore": {
+    "title": "Esplora le categorie",
+    "subtitle": "Scegli una categoria e recensisci, oppure creane una nuova.",
+    "create": "+ Crea una categoria",
+    "all": "Tutte le categorie"
+  },
+  "photos": {
+    "open": "Apri la foto"
   }
 }

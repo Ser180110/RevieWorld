@@ -5,6 +5,7 @@ import { formatDate } from "@/lib/format";
 import { Avatar } from "./Avatar";
 import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LikeButton } from "./LikeButton";
+import { ReviewPhotos } from "./ReviewPhotos";
 import { Stars } from "./Stars";
 
 export function ReviewCard({
@@ -44,6 +45,7 @@ export function ReviewCard({
             href={`/${lang}/c/${item.category.slug}`}
             className="text-sm text-zinc-500 hover:underline"
           >
+            {item.category.icon ? `${item.category.icon} ` : ""}
             {item.category.name}
           </Link>
         </div>
@@ -76,6 +78,7 @@ export function ReviewCard({
             {review.body}
           </p>
         ))}
+      <ReviewPhotos photos={review.photos} openLabel={t.openReview} />
       <div className="flex items-center gap-4">
         <Link
           href={`/${lang}/r/${review.id}#comments`}

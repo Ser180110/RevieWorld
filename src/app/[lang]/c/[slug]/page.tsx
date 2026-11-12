@@ -12,6 +12,9 @@ import {
 import { setFollow } from "@/lib/reviews/actions";
 import { count, fill, formatStars } from "@/lib/format";
 import { ReviewForm } from "@/components/ReviewForm";
+import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
+import { styleOf } from "@/lib/categoryStyle";
+import { photoUrl } from "@/lib/photos";
 
 async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
   const dict = await getDictionary(lang);
@@ -21,10 +24,14 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
 
   const [items, userId] = await Promise.all([getCategoryItems(category.id), getCurrentUserId()]);
   const following = await isFollowing(category.id, userId);
+  const style = styleOf(category);
 
   return (
     <div className="flex flex-col gap-10">
-      <header className="flex flex-col gap-3">
+      <header className={`-mx-4 flex flex-col gap-3 rounded-3xl bg-gradient-to-br px-6 py-8 sm:mx-0 ${style.classes.banner}`}>
+        <span className="text-6xl leading-none" aria-hidden>
+          {style.emoji}
+        </span>
         <h1 className="text-4xl font-semibold tracking-tight">{category.name}</h1>
         {category.description && (
           <p className="text-zinc-600 dark:text-zinc-400">{category.description}</p>
@@ -57,6 +64,16 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
             </button>
           </form>
         </div>
+        {userId && userId === category.created_by && (
+          <CategoryStyleEditor
+            lang={lang}
+            categoryId={category.id}
+            slug={category.slug}
+            emoji={style.emoji}
+            color={style.color}
+            t={t}
+          />
+        )}
       </header>
 
       <section className="flex flex-col gap-3">
@@ -72,6 +89,22 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
                   className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                 >
                   <span className="w-6 text-right text-sm tabular-nums text-zinc-400">{i + 1}</span>
+                  {item.cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={photoUrl(item.cover)}
+                      alt=""
+                      loading="lazy"
+                      className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-2xl ${style.classes.tile}`}
+                    >
+                      {style.emoji}
+                    </span>
+                  )}
                   <span className="flex-1 font-medium">{item.name}</span>
                   <span className="text-sm tabular-nums">★ {formatStars(item.avg_rating)}</span>
                   <span className="w-24 text-right text-sm text-zinc-500">
@@ -88,6 +121,7 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
         <h2 className="text-xl font-semibold">{fill(t.reviewSomething, { name: category.name })}</h2>
         {userId ? (
           <ReviewForm
+            userId={userId}
             lang={lang}
             categoryId={category.id}
             categorySlug={category.slug}

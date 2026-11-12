@@ -5,6 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
 import { submitReview, suggestItems } from "@/lib/reviews/actions";
+import { PhotoPicker } from "./PhotoPicker";
 import { StarInput } from "./StarInput";
 import { count } from "@/lib/format";
 import { useDebounced } from "./useDebounced";
@@ -18,7 +19,14 @@ type Props = {
   categorySlug: string;
   /** Set on an item page: the review is for this item. */
   item?: { id: string; name: string };
-  existing?: { rating: number; body: string | null; contains_spoiler: boolean };
+  existing?: {
+    rating: number;
+    body: string | null;
+    contains_spoiler: boolean;
+    photos?: { id: string; storage_path: string }[];
+  };
+  /** Signed-in user: photos are uploaded to their folder. */
+  userId: string;
   t: Dictionary["reviewForm"];
   common: Dictionary["common"];
   /** Where to go after saving (default: the item page). */
@@ -31,6 +39,7 @@ export function ReviewForm({
   categorySlug,
   item,
   existing,
+  userId,
   t,
   common,
   back,
@@ -130,6 +139,19 @@ export function ReviewForm({
           className={`${field} py-2`}
         />
       </label>
+
+      <PhotoPicker
+        userId={userId}
+        existing={existing?.photos ?? []}
+        t={{
+          label: t.photosLabel,
+          add: t.photosAdd,
+          uploading: t.photosUploading,
+          hint: t.photosHint,
+          error: t.photosError,
+          remove: t.photosRemove,
+        }}
+      />
 
       <label className="flex items-center gap-2 text-sm">
         <input
