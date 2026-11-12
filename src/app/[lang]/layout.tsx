@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Geist } from "next/font/google";
 import Link from "next/link";
+import { Suspense } from "react";
 import { hasLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { UserMenu } from "@/components/UserMenu";
 import "../globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -44,7 +46,12 @@ export default async function RootLayout({
             <Link href={`/${lang}`} className="text-lg font-semibold tracking-tight">
               RevieWorld
             </Link>
-            <LanguageSwitcher current={lang} label={dict.nav.language} />
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <LanguageSwitcher current={lang} label={dict.nav.language} />
+              <Suspense fallback={null}>
+                <UserMenu lang={lang} t={dict.nav} />
+              </Suspense>
+            </div>
           </div>
         </header>
         <main className="flex-1">{children}</main>

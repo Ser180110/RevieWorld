@@ -6,7 +6,10 @@
   "nav": {
     "explore": "Esplora",
     "signIn": "Accedi",
-    "language": "Lingua"
+    "language": "Lingua",
+    "signUp": "Registrati",
+    "signOut": "Esci",
+    "profile": "Profilo"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -23,5 +26,32 @@
   },
   "footer": {
     "tagline": "RevieWorld · in costruzione"
+  },
+  "auth": {
+    "signInTitle": "Accedi",
+    "signUpTitle": "Crea un account",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "usernameHint": "3-30 caratteri: lettere, numeri e _",
+    "passwordHint": "Almeno 8 caratteri",
+    "signInButton": "Accedi",
+    "signUpButton": "Registrati",
+    "noAccount": "Non hai un account?",
+    "haveAccount": "Hai già un account?",
+    "checkEmail": "Ti abbiamo mandato un'email: apri il link per confermare l'account.",
+    "notConfigured": "Il login non è ancora attivo: manca il collegamento a Supabase (vedi README).",
+    "errors": {
+      "invalid_credentials": "Email o password sbagliate.",
+      "email_not_confirmed": "Conferma prima l'email: controlla la posta.",
+      "user_already_exists": "Esiste già un account con questa email.",
+      "username_taken": "Questo username è già preso.",
+      "invalid_username": "Username non valido: 3-30 caratteri, solo lettere, numeri e _.",
+      "invalid_email": "Email non valida.",
+      "weak_password": "Password troppo corta: almeno 8 caratteri.",
+      "rate_limit": "Troppi tentativi, riprova tra qualche minuto.",
+      "confirm_failed": "Link di conferma non valido o scaduto.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
   }
 }
