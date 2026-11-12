@@ -14,7 +14,8 @@
     "diary": "Diario",
     "settings": "Modifica profilo",
     "people": "Persone",
-    "lists": "Liste"
+    "lists": "Liste",
+    "activity": "Attività"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -126,7 +127,9 @@
     "likes": "Mi piace",
     "delete": "Elimina",
     "confirmDelete": "Vuoi davvero eliminare questa recensione? Non si può annullare.",
-    "edit": "Modifica"
+    "edit": "Modifica",
+    "comments": "Commenti",
+    "openReview": "Apri la recensione"
   },
   "profile": {
     "reviewsTab": "Profilo",
@@ -147,7 +150,11 @@
     "followersTitle": "Follower di {name}",
     "followingTitle": "Chi segue {name}",
     "followersEmpty": "Ancora nessun follower.",
-    "followingEmpty": "Non segue ancora nessuno."
+    "followingEmpty": "Non segue ancora nessuno.",
+    "favoritesTitle": "Preferiti",
+    "favoritesEmptyOwn": "Scegli fino a 4 preferiti: apri la pagina di un oggetto e premi «Aggiungi ai preferiti».",
+    "removeFavorite": "Togli dai preferiti",
+    "watchlistTab": "Da provare"
   },
   "diary": {
     "title": "Diario di {name}",
@@ -249,5 +256,50 @@
       "auth": "Devi accedere per creare una lista.",
       "generic": "Qualcosa è andato storto, riprova."
     }
+  },
+  "activity": {
+    "title": "Attività",
+    "subtitle": "Le ultime recensioni delle persone che segui.",
+    "homeTitle": "Dalle persone che segui",
+    "seeAll": "Vedi tutta l'attività →",
+    "empty": "Le persone che segui non hanno ancora scritto recensioni.",
+    "noFollows": "Non segui ancora nessuno. Trova qualcuno da seguire in",
+    "peopleLink": "Persone",
+    "signIn": "Accedi per vedere l'attività delle persone che segui."
+  },
+  "itemActions": {
+    "favorite": "Aggiungi ai preferiti",
+    "unfavorite": "Nei preferiti ✓",
+    "favoritesFull": "Hai già 4 preferiti: togline uno dal tuo profilo.",
+    "watchlist": "+ Da provare",
+    "unwatchlist": "Da provare ✓"
+  },
+  "watchlist": {
+    "title": "Da provare",
+    "empty": "Niente da provare per ora.",
+    "emptyOwn": "La tua lista «Da provare» è vuota. Premi «+ Da provare» nella pagina di un oggetto per ricordartelo; quando lo recensisci sparisce da qui.",
+    "remove": "Togli",
+    "review": "Recensisci",
+    "countOne": "1 cosa da provare",
+    "count": "{n} cose da provare"
+  },
+  "comments": {
+    "title": "Commenti",
+    "empty": "Nessun commento. Scrivi il primo!",
+    "placeholder": "Scrivi un commento…",
+    "submit": "Commenta",
+    "sending": "Invio…",
+    "delete": "Elimina",
+    "confirmDelete": "Eliminare questo commento?",
+    "signIn": "Accedi per commentare.",
+    "errors": {
+      "body": "Il commento deve avere tra 1 e 1000 caratteri.",
+      "auth": "Devi accedere per commentare.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
+  },
+  "reviewPage": {
+    "title": "Recensione di {name}",
+    "reviewOf": "Recensione di"
   }
 }

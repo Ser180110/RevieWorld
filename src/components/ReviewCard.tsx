@@ -59,9 +59,9 @@ export function ReviewCard({
           </Link>
         )}
         <Stars rating={review.rating} />
-        <time className="text-zinc-500" dateTime={review.created_at}>
-          {formatDate(review.created_at, lang)}
-        </time>
+        <Link href={`/${lang}/r/${review.id}`} title={t.openReview} className="text-zinc-500 hover:underline">
+          <time dateTime={review.created_at}>{formatDate(review.created_at, lang)}</time>
+        </Link>
       </div>
       {review.body &&
         (review.contains_spoiler ? (
@@ -77,6 +77,15 @@ export function ReviewCard({
           </p>
         ))}
       <div className="flex items-center gap-4">
+        <Link
+          href={`/${lang}/r/${review.id}#comments`}
+          title={t.comments}
+          className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+        >
+          <span aria-hidden>💬</span>
+          {review.comments_count > 0 && <span className="tabular-nums">{review.comments_count}</span>}
+          <span className="sr-only">{t.comments}</span>
+        </Link>
         <LikeButton
           reviewId={review.id}
           initialLiked={viewer.liked.includes(review.id)}

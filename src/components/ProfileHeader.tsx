@@ -23,7 +23,7 @@ export function ProfileHeader({
   stats: ProfileStats;
   viewerId: string | null;
   following: boolean;
-  active: "profile" | "diary" | "lists" | "follows";
+  active: "profile" | "diary" | "lists" | "watchlist" | "follows";
   lang: Locale;
   t: Dictionary["profile"];
 }) {
@@ -122,6 +122,7 @@ export function ProfileHeader({
         {tab("profile", base, t.reviewsTab)}
         {tab("diary", `${base}/diary`, t.diaryTab)}
         {tab("lists", `${base}/lists`, t.listsTab)}
+        {tab("watchlist", `${base}/watchlist`, t.watchlistTab)}
       </nav>
     </header>
   );

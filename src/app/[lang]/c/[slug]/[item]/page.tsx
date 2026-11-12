@@ -9,9 +9,11 @@ import {
   getItemReviews,
   getMyListsFor,
   getViewer,
+  getItemStatus,
 } from "@/lib/data/queries";
 import { count, formatStars } from "@/lib/format";
 import { AddToList } from "@/components/AddToList";
+import { ItemActions } from "@/components/ItemActions";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewForm } from "@/components/ReviewForm";
 import { Stars } from "@/components/Stars";
@@ -35,7 +37,9 @@ async function ItemContent({
   const reviews = await getItemReviews(item.id);
   const viewer = await getViewer(reviews);
   const userId = viewer.id;
-  const myLists = userId ? await getMyListsFor(userId, item.id) : [];
+  const [myLists, status] = userId
+    ? await Promise.all([getMyListsFor(userId, item.id), getItemStatus(userId, item.id)])
+    : [[], null];
   const here = `/${lang}/c/${category.slug}/${item.slug}`;
   const mine = userId ? reviews.find((r) => r.user_id === userId) : undefined;
   const avg = item.avg_rating === null ? null : Number(item.avg_rating);
@@ -70,6 +74,7 @@ async function ItemContent({
             <span className="text-zinc-500">{dict.common.noRating}</span>
           )}
         </div>
+        {status && <ItemActions lang={lang} itemId={item.id} back={here} status={status} t={dict.itemActions} />}
       </header>
 
       <section className="flex flex-col gap-4 rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">

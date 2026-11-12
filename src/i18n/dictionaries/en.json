@@ -14,7 +14,8 @@
     "diary": "Diary",
     "settings": "Edit profile",
     "people": "People",
-    "lists": "Lists"
+    "lists": "Lists",
+    "activity": "Activity"
   },
   "home": {
     "headline": "Review anything.",
@@ -126,7 +127,9 @@
     "likes": "Likes",
     "delete": "Delete",
     "confirmDelete": "Delete this review? This can't be undone.",
-    "edit": "Edit"
+    "edit": "Edit",
+    "comments": "Comments",
+    "openReview": "Open the review"
   },
   "profile": {
     "reviewsTab": "Profile",
@@ -147,7 +150,11 @@
     "followersTitle": "{name}'s followers",
     "followingTitle": "Followed by {name}",
     "followersEmpty": "No followers yet.",
-    "followingEmpty": "Not following anyone yet."
+    "followingEmpty": "Not following anyone yet.",
+    "favoritesTitle": "Favourites",
+    "favoritesEmptyOwn": "Pick up to 4 favourites: open an item page and press “Add to favourites”.",
+    "removeFavorite": "Remove from favourites",
+    "watchlistTab": "To try"
   },
   "diary": {
     "title": "{name}'s diary",
@@ -249,5 +256,50 @@
       "auth": "Sign in to create a list.",
       "generic": "Something went wrong, please try again."
     }
+  },
+  "activity": {
+    "title": "Activity",
+    "subtitle": "The latest reviews from people you follow.",
+    "homeTitle": "From people you follow",
+    "seeAll": "See all activity →",
+    "empty": "The people you follow haven't written any reviews yet.",
+    "noFollows": "You don't follow anyone yet. Find someone to follow in",
+    "peopleLink": "People",
+    "signIn": "Sign in to see activity from people you follow."
+  },
+  "itemActions": {
+    "favorite": "Add to favourites",
+    "unfavorite": "In favourites ✓",
+    "favoritesFull": "You already have 4 favourites: remove one from your profile.",
+    "watchlist": "+ To try",
+    "unwatchlist": "To try ✓"
+  },
+  "watchlist": {
+    "title": "To try",
+    "empty": "Nothing to try yet.",
+    "emptyOwn": "Your “To try” list is empty. Press “+ To try” on an item page to remember it; once you review it, it disappears from here.",
+    "remove": "Remove",
+    "review": "Review",
+    "countOne": "1 thing to try",
+    "count": "{n} things to try"
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet. Be the first!",
+    "placeholder": "Write a comment…",
+    "submit": "Comment",
+    "sending": "Sending…",
+    "delete": "Delete",
+    "confirmDelete": "Delete this comment?",
+    "signIn": "Sign in to comment.",
+    "errors": {
+      "body": "Comments must be 1 to 1000 characters.",
+      "auth": "Sign in to comment.",
+      "generic": "Something went wrong, please try again."
+    }
+  },
+  "reviewPage": {
+    "title": "Review by {name}",
+    "reviewOf": "Review of"
   }
 }

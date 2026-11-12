@@ -4,7 +4,16 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getProfile, getProfileStats, getUserReviews, getViewer, isFollowingUser } from "@/lib/data/queries";
+import {
+  getFavorites,
+  getProfile,
+  getProfileStats,
+  getUserReviews,
+  getViewer,
+  isFollowingUser,
+} from "@/lib/data/queries";
+import { setFavorite } from "@/lib/social/actions";
+import { ItemTile } from "@/components/ItemTile";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { ReviewCard } from "@/components/ReviewCard";
 
@@ -18,7 +27,11 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
   const profile = await getProfile(username);
   if (!profile) notFound();
 
-  const [stats, reviews] = await Promise.all([getProfileStats(profile.id), getUserReviews(profile.id, 10)]);
+  const [stats, reviews, favorites] = await Promise.all([
+    getProfileStats(profile.id),
+    getUserReviews(profile.id, 10),
+    getFavorites(profile.id),
+  ]);
   const viewer = await getViewer(reviews);
   const following = await isFollowingUser(viewer.id, profile.id);
   const base = `/${lang}/u/${profile.username}`;
@@ -34,6 +47,37 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
         lang={lang}
         t={dict.profile}
       />
+      {(favorites.length > 0 || viewer.id === profile.id) && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">{dict.profile.favoritesTitle}</h2>
+          {favorites.length === 0 ? (
+            <p className="text-sm text-zinc-500">{dict.profile.favoritesEmptyOwn}</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {favorites.map((item) => (
+                <ItemTile key={item.id} item={item} lang={lang}>
+                  {viewer.id === profile.id && (
+                    <form action={setFavorite}>
+                      <input type="hidden" name="lang" value={lang} />
+                      <input type="hidden" name="itemId" value={item.id} />
+                      <input type="hidden" name="back" value={base} />
+                      <input type="hidden" name="on" value="0" />
+                      <button
+                        type="submit"
+                        title={dict.profile.removeFavorite}
+                        aria-label={dict.profile.removeFavorite}
+                        className="cursor-pointer hover:text-red-600"
+                      >
+                        ✕
+                      </button>
+                    </form>
+                  )}
+                </ItemTile>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
       <section className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold">{dict.profile.recentTitle}</h2>
         {reviews.length === 0 ? (

@@ -25,6 +25,7 @@ export type ReviewRow = {
   contains_spoiler: boolean;
   created_at: string;
   likes_count: number;
+  comments_count: number;
   user_id: string;
   author: {
     username: string;
@@ -101,4 +102,20 @@ export type ItemSearchResult = {
   id: string;
   name: string;
   category: { name: string } | null;
+};
+
+export type ItemCard = {
+  id: string;
+  name: string;
+  slug: string;
+  avg_rating: string | null;
+  category: { name: string; slug: string } | null;
+};
+
+export type Comment = {
+  id: string;
+  body: string;
+  created_at: string;
+  user_id: string;
+  author: { username: string; display_name: string | null; avatar_url: string | null } | null;
 };
