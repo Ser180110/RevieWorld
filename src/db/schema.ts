@@ -84,7 +84,10 @@ export const categories = pgTable(
     slug: text("slug").notNull(),
     normalizedName: text("normalized_name").notNull(),
     description: text("description"),
+    /** Emoji shown on the category tile. */
     icon: text("icon"),
+    /** Key of the palette in src/lib/categoryStyle.ts. */
+    color: text("color"),
     coverUrl: text("cover_url"),
     createdBy: uuid("created_by").references(() => profiles.id, {
       onDelete: "set null",
@@ -102,6 +105,11 @@ export const categories = pgTable(
     check(
       "categories_name_length",
       sql`char_length(${t.name}) between 2 and 60`,
+    ),
+    check("categories_icon_length", sql`${t.icon} is null or char_length(${t.icon}) <= 16`),
+    check(
+      "categories_color_palette",
+      sql`${t.color} is null or ${t.color} in ('amber','rose','sky','emerald','violet','orange','teal','fuchsia','lime','indigo')`,
     ),
   ],
 );

@@ -17,8 +17,10 @@ import type {
 } from "./types";
 
 const REVIEW_FIELDS =
-  "id, rating, body, contains_spoiler, created_at, likes_count, comments_count, user_id, author:profiles!reviews_user_id_profiles_id_fk(username, display_name, avatar_url)";
-const REVIEW_WITH_ITEM = `${REVIEW_FIELDS}, item:items(name, slug, category:categories(name, slug))`;
+  "id, rating, body, contains_spoiler, created_at, likes_count, comments_count, user_id, author:profiles!reviews_user_id_profiles_id_fk(username, display_name, avatar_url), photos:review_photos(id, storage_path, position)";
+const REVIEW_WITH_ITEM = `${REVIEW_FIELDS}, item:items(name, slug, category:categories(name, slug, icon, color))`;
+const CATEGORY_FIELDS =
+  "id, name, slug, description, items_count, reviews_count, followers_count, created_by, normalized_name, icon, color";
 const PROFILE_FIELDS =
   "id, username, display_name, avatar_url, bio, location, website, created_at";
 
@@ -54,7 +56,7 @@ export async function getTopCategories(limit = 8): Promise<CategorySummary[]> {
   const { data } = await supabase
     .from("categories")
     .select(
-      "id, name, slug, description, items_count, reviews_count, followers_count, created_by",
+      CATEGORY_FIELDS,
     )
     .eq("status", "active")
     .order("reviews_count", { ascending: false })
@@ -75,7 +77,7 @@ export async function getCategory(
   const { data } = await supabase
     .from("categories")
     .select(
-      "id, name, slug, description, items_count, reviews_count, followers_count, created_by, status, merged_into_id",
+      `${CATEGORY_FIELDS}, status, merged_into_id`,
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -84,7 +86,7 @@ export async function getCategory(
     const { data: target } = await supabase
       .from("categories")
       .select(
-        "id, name, slug, description, items_count, reviews_count, followers_count, created_by",
+        CATEGORY_FIELDS,
       )
       .eq("id", data.merged_into_id)
       .maybeSingle();
@@ -107,7 +109,45 @@ export async function getCategoryItems(
     .order("avg_rating", { ascending: false, nullsFirst: false })
     .order("reviews_count", { ascending: false })
     .limit(limit);
-  return (data ?? []) as ItemSummary[];
+  const items = (data ?? []) as ItemSummary[];
+  const covers = await getItemCovers(items.map((i) => i.id));
+  return items.map((i) => ({ ...i, cover: covers[i.id] ?? null }));
+}
+
+/** One photo per item (from its most recent review with photos). */
+export async function getItemCovers(itemIds: string[]): Promise<Record<string, string>> {
+  const supabase = await db();
+  if (!supabase || itemIds.length === 0) return {};
+  const { data } = await supabase
+    .from("reviews")
+    .select("item_id, created_at, photos:review_photos(storage_path, position)")
+    .in("item_id", itemIds)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  const covers: Record<string, string> = {};
+  for (const row of (data ?? []) as unknown as {
+    item_id: string;
+    photos: { storage_path: string; position: number }[] | null;
+  }[]) {
+    const first = [...(row.photos ?? [])].sort((a, b) => a.position - b.position)[0];
+    if (first && !covers[row.item_id]) covers[row.item_id] = first.storage_path;
+  }
+  return covers;
+}
+
+/** All active categories, most reviewed first. */
+export async function getAllCategories(limit = 300): Promise<CategorySummary[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("categories")
+    .select(CATEGORY_FIELDS)
+    .eq("status", "active")
+    .order("reviews_count", { ascending: false })
+    .order("name", { ascending: true })
+    .limit(limit);
+  return (data ?? []) as CategorySummary[];
 }
 
 export async function isFollowing(

@@ -55,6 +55,7 @@ async function EditReview({
         </p>
       </div>
       <ReviewForm
+            userId={userId!}
         lang={lang}
         categoryId={review.category_id}
         categorySlug={category.slug}

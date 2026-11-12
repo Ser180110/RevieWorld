@@ -7,6 +7,9 @@ export type CategorySummary = {
   reviews_count: number;
   followers_count: number;
   created_by: string | null;
+  normalized_name: string;
+  icon: string | null;
+  color: string | null;
 };
 
 export type ItemSummary = {
@@ -16,6 +19,8 @@ export type ItemSummary = {
   description: string | null;
   reviews_count: number;
   avg_rating: string | null;
+  /** Storage path of a photo from one of its reviews, when there is one. */
+  cover?: string | null;
 };
 
 export type ReviewRow = {
@@ -26,6 +31,7 @@ export type ReviewRow = {
   created_at: string;
   likes_count: number;
   comments_count: number;
+  photos?: { id: string; storage_path: string; position: number }[];
   user_id: string;
   author: {
     username: string;
@@ -35,7 +41,7 @@ export type ReviewRow = {
   item?: {
     name: string;
     slug: string;
-    category: { name: string; slug: string } | null;
+    category: { name: string; slug: string; icon?: string | null; color?: string | null } | null;
   } | null;
 };
 

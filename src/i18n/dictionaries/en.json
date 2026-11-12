@@ -15,7 +15,8 @@
     "settings": "Edit profile",
     "people": "People",
     "lists": "Lists",
-    "activity": "Activity"
+    "activity": "Activity",
+    "menu": "Menu"
   },
   "home": {
     "headline": "Review anything.",
@@ -31,7 +32,8 @@
     ],
     "recentTitle": "Latest reviews",
     "recentEmpty": "No reviews yet: write the first one!",
-    "topCategoriesTitle": "Popular categories"
+    "topCategoriesTitle": "Popular categories",
+    "seeAllCategories": "All categories →"
   },
   "footer": {
     "tagline": "RevieWorld · under construction"
@@ -93,7 +95,13 @@
     "itemsTitle": "Top rated",
     "itemsEmpty": "No items in this category yet.",
     "reviewSomething": "Review something in {name}",
-    "createdBy": "Created by"
+    "createdBy": "Created by",
+    "editStyle": "Change look",
+    "emojiLabel": "Emoji",
+    "colorLabel": "Colour",
+    "saveStyle": "Save",
+    "cancelStyle": "Cancel",
+    "styleError": "Couldn't save, please try again."
   },
   "reviewForm": {
     "itemLabel": "What are you reviewing?",
@@ -113,7 +121,13 @@
       "category": "Invalid category name (2-60 characters).",
       "auth": "You need to sign in to review.",
       "generic": "Something went wrong, please try again."
-    }
+    },
+    "photosLabel": "Photos (optional)",
+    "photosAdd": "Add",
+    "photosUploading": "Uploading…",
+    "photosHint": "Up to 4 photos, JPG, PNG or WebP, max 5 MB each. The first becomes the cover.",
+    "photosError": "A photo wasn't uploaded: use JPG, PNG or WebP under 5 MB.",
+    "photosRemove": "Remove photo"
   },
   "item": {
     "average": "Average",
@@ -301,5 +315,14 @@
   "reviewPage": {
     "title": "Review by {name}",
     "reviewOf": "Review of"
+  },
+  "explore": {
+    "title": "Explore categories",
+    "subtitle": "Pick a category and review something, or create a new one.",
+    "create": "+ Create a category",
+    "all": "All categories"
+  },
+  "photos": {
+    "open": "Open photo"
   }
 }
