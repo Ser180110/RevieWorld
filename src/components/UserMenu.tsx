@@ -5,6 +5,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { signOut } from "@/lib/auth/actions";
+import { Avatar } from "./Avatar";
 
 const link = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
 
@@ -13,6 +14,7 @@ export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"]
   // Session data is per request: never prerender this part.
   await connection();
   let username: string | null = null;
+  let avatarUrl: string | null = null;
 
   if (supabaseEnv()) {
     const supabase = await createClient();
@@ -22,10 +24,11 @@ export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"]
     if (user) {
       const { data } = await supabase
         .from("profiles")
-        .select("username")
+        .select("username, avatar_url")
         .eq("id", user.id)
         .maybeSingle();
-      username = data?.username ?? user.email ?? "";
+      username = data?.username ?? "";
+      avatarUrl = data?.avatar_url ?? null;
     }
   }
 
@@ -48,7 +51,20 @@ export async function UserMenu({ lang, t }: { lang: Locale; t: Dictionary["nav"]
   return (
     <form action={signOut} className="flex items-center gap-2">
       <input type="hidden" name="lang" value={lang} />
-      <span className="text-sm font-medium">@{username}</span>
+      {username && (
+        <>
+          <Link href={`/${lang}/u/${username}/diary`} className={link}>
+            {t.diary}
+          </Link>
+          <Link
+            href={`/${lang}/u/${username}`}
+            title={t.profile}
+            className="flex items-center gap-2 rounded-full py-0.5 pl-0.5 pr-3 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <Avatar url={avatarUrl} name={username} size={26} />@{username}
+          </Link>
+        </>
+      )}
       <button type="submit" className={link}>
         {t.signOut}
       </button>

@@ -61,6 +61,8 @@ export const profiles = pgTable(
     displayName: text("display_name"),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
+    location: text("location"),
+    website: text("website"),
     locale: localeEnum("locale").notNull().default("it"),
     role: userRole("role").notNull().default("user"),
     ...timestamps,
@@ -164,6 +166,7 @@ export const reviews = pgTable(
     body: text("body"),
     containsSpoiler: boolean("contains_spoiler").notNull().default(false),
     status: contentStatus("status").notNull().default("active"),
+    likesCount: integer("likes_count").notNull().default(0),
     ...timestamps,
   },
   (t) => [
@@ -196,6 +199,23 @@ export const reviewPhotos = pgTable(
   (t) => [
     index("review_photos_review_idx").on(t.reviewId),
     check("review_photos_position_range", sql`${t.position} between 0 and 3`),
+  ],
+);
+
+export const reviewLikes = pgTable(
+  "review_likes",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    reviewId: uuid("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.reviewId] }),
+    index("review_likes_review_idx").on(t.reviewId),
   ],
 );
 

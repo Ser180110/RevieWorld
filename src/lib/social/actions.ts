@@ -1,0 +1,168 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
+import { createClient } from "@/lib/supabase/server";
+import { supabaseEnv } from "@/lib/supabase/env";
+
+function localeOf(formData: FormData): Locale {
+  const value = String(formData.get("lang") ?? "");
+  return hasLocale(value) ? value : defaultLocale;
+}
+
+async function session() {
+  if (!supabaseEnv()) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  return { supabase, userId: data.user?.id ?? null };
+}
+
+/** Only redirect back to paths inside the app. */
+function safePath(value: FormDataEntryValue | null, lang: Locale): string {
+  const path = String(value ?? "");
+  return path.startsWith("/") && !path.startsWith("//") ? path : `/${lang}`;
+}
+
+// ---------------------------------------------------------------------------
+// Likes
+// ---------------------------------------------------------------------------
+
+export type LikeResult = { ok: boolean; liked: boolean; count: number };
+
+export async function setLike(reviewId: string, like: boolean): Promise<LikeResult> {
+  const s = await session();
+  const fail = { ok: false, liked: !like, count: 0 };
+  if (!s?.userId || !z.guid().safeParse(reviewId).success) return fail;
+
+  const { error } = like
+    ? await s.supabase
+        .from("review_likes")
+        .upsert({ user_id: s.userId, review_id: reviewId }, { ignoreDuplicates: true })
+    : await s.supabase.from("review_likes").delete().eq("user_id", s.userId).eq("review_id", reviewId);
+  if (error) {
+    console.error("setLike", error);
+    return fail;
+  }
+  const { data } = await s.supabase.from("reviews").select("likes_count").eq("id", reviewId).maybeSingle();
+  return { ok: true, liked: like, count: data?.likes_count ?? 0 };
+}
+
+// ---------------------------------------------------------------------------
+// Following people
+// ---------------------------------------------------------------------------
+
+export async function setUserFollow(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const userId = String(formData.get("userId") ?? "");
+  const username = String(formData.get("username") ?? "");
+  const follow = formData.get("follow") === "1";
+
+  const s = await session();
+  if (!s) return;
+  if (!s.userId) redirect(`/${lang}/login`);
+  if (s.userId === userId || !z.guid().safeParse(userId).success) return;
+
+  if (follow) {
+    await s.supabase
+      .from("user_follows")
+      .upsert({ follower_id: s.userId, followed_id: userId }, { ignoreDuplicates: true });
+  } else {
+    await s.supabase.from("user_follows").delete().eq("follower_id", s.userId).eq("followed_id", userId);
+  }
+  revalidatePath(`/${lang}/u/${username}`, "layout");
+}
+
+// ---------------------------------------------------------------------------
+// Deleting a review
+// ---------------------------------------------------------------------------
+
+export async function deleteReview(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const reviewId = String(formData.get("reviewId") ?? "");
+  const back = safePath(formData.get("back"), lang);
+
+  const s = await session();
+  if (!s) return;
+  if (!s.userId) redirect(`/${lang}/login`);
+  if (!z.guid().safeParse(reviewId).success) return;
+
+  const { error } = await s.supabase.from("reviews").delete().eq("id", reviewId).eq("user_id", s.userId);
+  if (error) console.error("deleteReview", error);
+  revalidatePath(`/${lang}`, "layout");
+  redirect(back);
+}
+
+// ---------------------------------------------------------------------------
+// Editing the profile
+// ---------------------------------------------------------------------------
+
+export type ProfileFormState = {
+  error?: "username" | "username_taken" | "display_name" | "bio" | "location" | "website" | "auth" | "generic";
+};
+
+const optional = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .transform((v) => (v === "" ? null : v));
+
+const profileSchema = z.object({
+  username: z.string().trim().regex(/^[a-zA-Z0-9_]{3,30}$/),
+  display_name: optional(60),
+  bio: optional(500),
+  location: optional(80),
+  website: optional(200).transform((v) => (v && !/^https?:\/\//i.test(v) ? `https://${v}` : v)).pipe(
+    z.url({ protocol: /^https?$/ }).nullable(),
+  ),
+  avatar_url: optional(500).pipe(z.url({ protocol: /^https?$/ }).nullable()),
+});
+
+export async function updateProfile(_prev: ProfileFormState, formData: FormData): Promise<ProfileFormState> {
+  const lang = localeOf(formData);
+  const parsed = profileSchema.safeParse({
+    username: formData.get("username") ?? "",
+    display_name: formData.get("display_name") ?? "",
+    bio: formData.get("bio") ?? "",
+    location: formData.get("location") ?? "",
+    website: formData.get("website") ?? "",
+    avatar_url: formData.get("avatar_url") ?? "",
+  });
+  if (!parsed.success) {
+    const field = parsed.error.issues[0]?.path[0];
+    switch (field) {
+      case "username":
+      case "display_name":
+      case "bio":
+      case "location":
+      case "website":
+        return { error: field };
+      default:
+        return { error: "generic" };
+    }
+  }
+  const input = parsed.data;
+
+  const s = await session();
+  if (!s) return { error: "generic" };
+  if (!s.userId) return { error: "auth" };
+
+  const { data: taken } = await s.supabase
+    .from("profiles")
+    .select("id")
+    .ilike("username", input.username.replace(/[\\%_]/g, (c) => `\\${c}`))
+    .neq("id", s.userId)
+    .maybeSingle();
+  if (taken) return { error: "username_taken" };
+
+  const { error } = await s.supabase.from("profiles").update(input).eq("id", s.userId);
+  if (error) {
+    if (error.code === "23505") return { error: "username_taken" };
+    console.error("updateProfile", error);
+    return { error: "generic" };
+  }
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/u/${input.username}`);
+}
