@@ -32,7 +32,10 @@ La pagina iniziale funziona anche senza Supabase. Il database serve dal primo pa
    ```bash
    npm run db:migrate
    ```
-4. Per diventare admin, dopo esserti registrato nell'app, esegui nel SQL editor di Supabase:
+4. In Supabase, **Authentication → URL Configuration**: imposta Site URL a `http://localhost:3000` e aggiungi `http://localhost:3000/**` tra i Redirect URLs (più avanti anche l'indirizzo pubblico).
+5. Avvia `npm run dev`, apri `/it/signup` e registrati. Riceverai un'email di conferma: il link ti riporta nell'app già connesso.
+   Per provare più in fretta puoi disattivare la conferma in **Authentication → Sign In / Providers → Email → Confirm email**.
+6. Per diventare admin, dopo esserti registrato nell'app, esegui nel SQL editor di Supabase:
    ```sql
    update profiles set role = 'admin' where username = 'iltuousername';
    ```
@@ -47,10 +50,12 @@ src/
   lib/supabase/        client Supabase per browser, server e proxy
   lib/normalize.ts     normalizzazione dei nomi contro i duplicati
   db/schema.ts         schema del database (Drizzle)
+  lib/auth/            azioni di accesso, registrazione e uscita
   proxy.ts             reindirizzamento alla lingua + rinnovo della sessione
 drizzle/
   0000_init.sql        tabelle generate dallo schema
   0001_rules.sql       regole scritte a mano: sicurezza (RLS), contatori, ricerca simili, storage foto
+  0002_grants.sql      permessi espliciti per l'API di Supabase
 ```
 
 ## Database
