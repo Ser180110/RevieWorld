@@ -2,6 +2,7 @@ import "server-only";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
+import { normalizeName } from "@/lib/normalize";
 import type {
   CategorySummary,
   Comment,
@@ -586,4 +587,49 @@ export async function getComments(reviewId: string): Promise<Comment[]> {
     .order("created_at", { ascending: true })
     .limit(500);
   return (data ?? []) as unknown as Comment[];
+}
+
+// ---------------------------------------------------------------------------
+// Global search
+// ---------------------------------------------------------------------------
+
+export type SearchItem = ItemSummary & {
+  category: { name: string; slug: string; icon: string | null; color: string | null } | null;
+};
+
+/** Categories, items and people matching `q` (accents, case and punctuation ignored). */
+export async function searchAll(
+  q: string,
+  limit = 12,
+): Promise<{ categories: CategorySummary[]; items: SearchItem[]; people: ProfileCard[] }> {
+  const empty = { categories: [], items: [], people: [] };
+  const supabase = await db();
+  const term = normalizeName(q).slice(0, 60);
+  if (!supabase || term.length < 2) return empty;
+  const like = `%${term.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+
+  const [categories, items, people] = await Promise.all([
+    supabase
+      .from("categories")
+      .select(CATEGORY_FIELDS)
+      .eq("status", "active")
+      .ilike("normalized_name", like)
+      .order("reviews_count", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("items")
+      .select("id, name, slug, description, reviews_count, avg_rating, category:categories(name, slug, icon, color)")
+      .eq("status", "active")
+      .ilike("normalized_name", like)
+      .order("reviews_count", { ascending: false })
+      .limit(limit * 2),
+    searchProfiles(q, limit),
+  ]);
+  const itemRows = (items.data ?? []) as unknown as SearchItem[];
+  const covers = await getItemCovers(itemRows.map((i) => i.id));
+  return {
+    categories: (categories.data ?? []) as CategorySummary[],
+    items: itemRows.map((i) => ({ ...i, cover: covers[i.id] ?? null })),
+    people: q.trim() ? people : [],
+  };
 }

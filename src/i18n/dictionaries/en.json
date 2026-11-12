@@ -324,5 +324,21 @@
   },
   "photos": {
     "open": "Open photo"
+  },
+  "search": {
+    "title": "Search",
+    "label": "Search categories, items and people",
+    "placeholder": "Search categories, items, people…",
+    "short": "Search…",
+    "button": "Search",
+    "hint": "Type at least 2 letters: I'll look through categories, items and users.",
+    "tooShort": "Type at least 2 letters.",
+    "all": "All",
+    "categories": "Categories",
+    "items": "Items",
+    "people": "People",
+    "seeAll": "See all →",
+    "empty": "No results for “{q}”.",
+    "create": "Create the “{q}” category or review something"
   }
 }

@@ -86,7 +86,7 @@ export default async function PeoplePage({
                   type="search"
                   defaultValue={q}
                   placeholder={t.searchPlaceholder}
-                  className="h-11 flex-1 rounded-full border border-zinc-300 bg-transparent px-4 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100"
+                  className="h-11 min-w-0 flex-1 rounded-full border border-zinc-300 bg-transparent px-4 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100"
                 />
                 <button
                   type="submit"

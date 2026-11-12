@@ -40,6 +40,23 @@ La pagina iniziale funziona anche senza Supabase. Il database serve dal primo pa
    update profiles set role = 'admin' where username = 'iltuousername';
    ```
 
+## Mettere online (gratis, su Vercel)
+
+1. Su [vercel.com](https://vercel.com) registrati con GitHub (piano **Hobby**, gratuito, senza carta).
+2. **Add New → Project**, importa il repository `RevieWorld`.
+3. In **Environment Variables** aggiungi solo:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (o `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+
+   Non serve `DATABASE_URL`: il sito non si collega direttamente al database (la password resta solo sul tuo PC).
+4. **Deploy**. Ottieni un indirizzo tipo `https://revieworld-xxx.vercel.app`.
+5. Su Supabase, **Authentication → URL Configuration**:
+   - **Site URL**: l'indirizzo Vercel
+   - **Redirect URLs**: aggiungi `https://revieworld-xxx.vercel.app/**` (lascia anche `http://localhost:3000/**`)
+6. Ogni volta che qualcosa finisce su `main`, Vercel ripubblica da solo.
+
+Le migrazioni (`npm run db:migrate`) si lanciano sempre dal tuo PC: il database è lo stesso per locale e online.
+
 ## Struttura
 
 ```

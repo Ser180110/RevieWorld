@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
@@ -92,7 +93,9 @@ export async function signUp(
     .maybeSingle();
   if (taken) return { error: "username_taken" };
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  // Confirmation link points back to this site (local, Vercel preview or production).
+  const origin = (await headers()).get("origin");
+  const site = process.env.NEXT_PUBLIC_SITE_URL || origin || "http://localhost:3000";
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
