@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "title": "RevieWorld",
+    "description": "Review anything, in categories created by the community."
+  },
+  "nav": {
+    "explore": "Explore",
+    "signIn": "Sign in",
+    "language": "Language"
+  },
+  "home": {
+    "headline": "Review anything.",
+    "subheadline": "Manhole covers, sandwiches, motorway restrooms: join a category if it exists, or create it yourself.",
+    "searchLabel": "What do you want to review?",
+    "searchPlaceholder": "E.g. the manhole cover on Main Street",
+    "searchButton": "Start",
+    "howTitle": "How it works",
+    "steps": [
+      "Type what you want to review.",
+      "Pick an existing category or create a new one.",
+      "Give it a rating and tell how it went."
+    ]
+  },
+  "footer": {
+    "tagline": "RevieWorld · under construction"
+  }
+}
