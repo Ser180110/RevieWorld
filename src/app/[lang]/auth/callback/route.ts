@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { connection, NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -9,6 +9,7 @@ export async function GET(
   request: NextRequest,
   { params }: RouteContext<"/[lang]/auth/callback">,
 ) {
+  await connection();
   const { lang } = await params;
   const code = request.nextUrl.searchParams.get("code");
 
