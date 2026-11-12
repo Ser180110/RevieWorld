@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "title": "RevieWorld",
+    "description": "Recensisci qualsiasi cosa, in categorie create dagli utenti."
+  },
+  "nav": {
+    "explore": "Esplora",
+    "signIn": "Accedi",
+    "language": "Lingua"
+  },
+  "home": {
+    "headline": "Recensisci qualsiasi cosa.",
+    "subheadline": "Tombini, panini, bagni degli autogrill: se una categoria esiste ti ci aggreghi, se no la crei tu.",
+    "searchLabel": "Cosa vuoi recensire?",
+    "searchPlaceholder": "Es. il tombino di via Roma",
+    "searchButton": "Inizia",
+    "howTitle": "Come funziona",
+    "steps": [
+      "Scrivi cosa vuoi recensire.",
+      "Scegli una categoria esistente o creane una nuova.",
+      "Dai un voto e racconta com'è andata."
+    ]
+  },
+  "footer": {
+    "tagline": "RevieWorld · in costruzione"
+  }
+}
