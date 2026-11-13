@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Geist } from "next/font/google";
 import Link from "next/link";
@@ -8,6 +8,8 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { UserMenu } from "@/components/UserMenu";
 import { SearchBox } from "@/components/SearchBox";
+import { ServiceWorker } from "@/components/ServiceWorker";
+import { InstallApp } from "@/components/InstallApp";
 import "../globals.css";
 
 const navLink = "whitespace-nowrap rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
@@ -18,6 +20,14 @@ export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+  viewportFit: "cover",
+};
+
 export async function generateMetadata({
   params,
 }: LayoutProps<"/[lang]">): Promise<Metadata> {
@@ -27,6 +37,10 @@ export async function generateMetadata({
   return {
     title: { default: dict.meta.title, template: `%s · ${dict.meta.title}` },
     description: dict.meta.description,
+    applicationName: "RevieWorld",
+    appleWebApp: { capable: true, title: "RevieWorld", statusBarStyle: "default" },
+    icons: { apple: "/icons/apple-touch-icon.png" },
+    formatDetection: { telephone: false },
     alternates: {
       languages: Object.fromEntries(locales.map((l) => [l, `/${l}`])),
     },
@@ -115,9 +129,13 @@ export default async function RootLayout({
             </div>
           </div>
         </header>
+        <ServiceWorker />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-zinc-200 px-4 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800">
-          {dict.footer.tagline}
+          <div className="flex flex-col items-center gap-3">
+            <InstallApp t={dict.install} />
+            {dict.footer.tagline}
+          </div>
         </footer>
       </body>
     </html>

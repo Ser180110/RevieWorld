@@ -325,6 +325,10 @@
     "create": "+ Crea una categoria",
     "all": "Tutte le categorie"
   },
+  "install": {
+    "button": "Installa l'app",
+    "iosHint": "Su iPhone: tocca il pulsante Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\"."
+  },
   "photos": {
     "open": "Apri la foto"
   },
