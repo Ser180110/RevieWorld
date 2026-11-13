@@ -336,3 +336,19 @@ export async function markNotificationsRead(): Promise<void> {
     .eq("user_id", userId)
     .is("read_at", null);
 }
+
+export type MentionSuggestion = { username: string; display_name: string | null; avatar_url: string | null };
+
+/** People whose username starts with `q`, for "@" autocomplete in comments. */
+export async function suggestMentions(q: string): Promise<MentionSuggestion[]> {
+  const term = q.replace(/[^A-Za-z0-9_]/g, "").slice(0, 30);
+  if (!term || !supabaseEnv()) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("username, display_name, avatar_url")
+    .ilike("username", `${term.replace(/_/g, "\\_")}%`)
+    .order("username")
+    .limit(5);
+  return (data ?? []) as MentionSuggestion[];
+}

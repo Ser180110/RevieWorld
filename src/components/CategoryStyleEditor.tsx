@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { COLOR_CLASSES, COLORS, type CategoryColor } from "@/lib/categoryStyle";
 import { setCategoryStyle } from "@/lib/reviews/actions";
+import { EmojiPicker } from "./EmojiPicker";
 
 /** Creator-only: change the category emoji and colour. */
 export function CategoryStyleEditor({
@@ -23,6 +24,7 @@ export function CategoryStyleEditor({
 }) {
   const [open, setOpen] = useState(false);
   const [picked, setPicked] = useState(color);
+  const [icon, setIcon] = useState(emoji);
   const [state, formAction, pending] = useActionState(setCategoryStyle, {});
 
   if (!open) {
@@ -42,15 +44,7 @@ export function CategoryStyleEditor({
       <input type="hidden" name="categoryId" value={categoryId} />
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="color" value={picked} />
-      <label className="flex items-center gap-3 text-sm">
-        <span className="w-16 font-medium">{t.emojiLabel}</span>
-        <input
-          name="icon"
-          defaultValue={emoji}
-          maxLength={16}
-          className="h-10 w-20 rounded-lg border border-zinc-300 bg-transparent text-center text-2xl dark:border-zinc-700"
-        />
-      </label>
+      <EmojiPicker value={icon} onChange={setIcon} label={t.emojiLabel} otherLabel={t.emojiOther} />
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <span className="w-16 font-medium">{t.colorLabel}</span>
         {COLORS.map((c) => (

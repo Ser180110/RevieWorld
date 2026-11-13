@@ -79,6 +79,8 @@
     "follower": "member"
   },
   "newReview": {
+    "emojiPick": "Choose the emoji",
+    "emojiOther": "Or type it:",
     "title": "What do you want to review?",
     "step1": "1. Pick the category",
     "categoryLabel": "Category",
@@ -99,6 +101,7 @@
     "createdBy": "Created by",
     "editStyle": "Change look",
     "emojiLabel": "Emoji",
+    "emojiOther": "Or type it:",
     "colorLabel": "Colour",
     "saveStyle": "Save",
     "cancelStyle": "Cancel",
@@ -305,7 +308,7 @@
   "comments": {
     "title": "Comments",
     "empty": "No comments yet. Be the first!",
-    "placeholder": "Write a comment…",
+    "placeholder": "Write a comment… (use @ to mention someone)",
     "submit": "Comment",
     "sending": "Sending…",
     "delete": "Delete",
@@ -335,7 +338,8 @@
     "signIn": "Sign in to see your notifications.",
     "like": "{name} liked your review of {what}",
     "comment": "{name} commented on your review of {what}",
-    "follow": "{name} started following you"
+    "follow": "{name} started following you",
+    "mention": "{name} mentioned you in a comment on {what}"
   },
   "feed": {
     "following": "Following",

@@ -43,13 +43,15 @@ async function NotificationList({ lang }: { lang: Locale }) {
           const href =
             n.type === "follow"
               ? `/${lang}/u/${username}`
-              : `/${lang}/r/${n.review_id}${n.type === "comment" ? "#comments" : "#likes"}`;
+              : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : "#comments"}`;
           const text =
             n.type === "like"
               ? fill(t.like, { name, what })
               : n.type === "comment"
                 ? fill(t.comment, { name, what })
-                : fill(t.follow, { name });
+                : n.type === "mention"
+                  ? fill(t.mention, { name, what })
+                  : fill(t.follow, { name });
           return (
             <li key={n.id}>
               <Link
@@ -63,12 +65,12 @@ async function NotificationList({ lang }: { lang: Locale }) {
                 <span className="relative shrink-0">
                   <Avatar url={n.actor?.avatar_url} name={username} size={40} />
                   <span className="absolute -bottom-1 -right-1 text-sm" aria-hidden>
-                    {n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : "👤"}
+                    {n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "mention" ? "📣" : "👤"}
                   </span>
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">
                   <span className="text-sm">{text}</span>
-                  {n.type === "comment" && n.comment?.body && (
+                  {(n.type === "comment" || n.type === "mention") && n.comment?.body && (
                     <span className="line-clamp-2 text-sm text-zinc-500">“{n.comment.body}”</span>
                   )}
                   <time className="text-xs text-zinc-500" dateTime={n.created_at}>

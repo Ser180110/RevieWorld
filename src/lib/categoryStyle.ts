@@ -60,68 +60,166 @@ export const COLOR_CLASSES: Record<CategoryColor, { tile: string; banner: string
   },
 };
 
-/** Keyword (in the normalized name) -> emoji. First match wins. */
+/**
+ * Keyword (start of a word in the normalized name) -> emoji. First match wins,
+ * so more specific keywords come first.
+ */
 const EMOJI_HINTS: [string[], string][] = [
+  // Food and drink
   [["tombin", "chiusin", "manhole"], "🕳️"],
-  [["panin", "sandwich", "piadin", "tramezzin"], "🥪"],
+  [["panin", "sandwich", "piadin", "tramezzin", "toast"], "🥪"],
   [["pizz"], "🍕"],
-  [["gelat", "ice cream"], "🍦"],
+  [["gelat", "ice cream", "granit"], "🍦"],
   [["caff", "coffee", "espresso", "cappuccin"], "☕"],
-  [["cornett", "brioche", "croissant"], "🥐"],
+  [["te$", "the$", "tea$", "tisan"], "🍵"],
+  [["cornett", "brioche", "croissant", "colazion", "breakfast"], "🥐"],
   [["birr", "beer"], "🍺"],
-  [["vin", "wine"], "🍷"],
-  [["sushi"], "🍣"],
+  [["vino", "vini", "wine", "cantin"], "🍷"],
+  [["cocktail", "spritz", "aperitiv"], "🍹"],
+  [["acqua", "water", "bottigli"], "💧"],
+  [["bibit", "soda", "lattin", "energy drink"], "🥤"],
+  [["succ", "juice", "spremut"], "🧃"],
+  [["sushi", "ramen", "giappones"], "🍣"],
   [["kebab"], "🥙"],
-  [["hamburger", "burger"], "🍔"],
-  [["pasta", "carbonar", "amatrician"], "🍝"],
-  [["dolc", "torta", "cake", "pasticc"], "🍰"],
-  [["bagn", "toilet", "wc"], "🚻"],
-  [["distributor", "vending", "macchinett"], "🍫"],
+  [["hamburger", "burger", "fast food", "mcdonald"], "🍔"],
+  [["patatin", "fries", "patat"], "🍟"],
+  [["pasta", "carbonar", "amatrician", "lasagn", "spaghett"], "🍝"],
+  [["risott", "riso", "rice"], "🍚"],
+  [["dolc", "torta", "cake", "pasticc", "biscott", "cookie"], "🍰"],
+  [["cioccolat", "chocolate", "nutella"], "🍫"],
+  [["caramell", "candy", "merendin", "snack"], "🍬"],
+  [["frutt", "fruit", "mela", "mele", "banan"], "🍎"],
+  [["formagg", "cheese", "mozzarell"], "🧀"],
+  [["carn", "bistecc", "steak", "salum", "prosciutt"], "🥩"],
+  [["pesc", "fish", "frittur"], "🐟"],
+  [["insalat", "salad", "vegan", "veget"], "🥗"],
+  [["supermercat", "supermarket", "spesa", "mercat"], "🛒"],
+  [["ristorant", "trattori", "osteri", "restaurant", "mensa", "cena", "pranz"], "🍽️"],
+  [["bar$", "bari$", "pub", "locali", "discotec", "club"], "🍸"],
+  // Places
+  [["bagn", "toilet", "wc", "gabinett"], "🚻"],
+  [["distributor", "vending", "macchinett"], "🎰"],
   [["panchin", "bench"], "🪑"],
+  [["sedi", "sedia", "poltron", "divan", "sofa", "chair"], "🪑"],
+  [["lett", "materass", "cuscin", "bed"], "🛏️"],
+  [["piscin", "pool", "nuot"], "🏊"],
+  [["palestr", "gym", "fitness"], "🏋️"],
+  [["calc", "football", "soccer", "stadi"], "⚽"],
+  [["basket", "pallacanestr"], "🏀"],
+  [["tennis", "padel"], "🎾"],
+  [["sport"], "🏅"],
   [["fontan", "nason"], "⛲"],
-  [["parc", "giardin", "park"], "🌳"],
-  [["spiagg", "beach", "mare"], "🏖️"],
-  [["montagn", "sentier", "hike", "trekking"], "🥾"],
+  [["parco", "parchi", "giardin", "park", "villa"], "🌳"],
+  [["spiagg", "beach", "mare", "lido"], "🏖️"],
+  [["lago", "laghi", "lake", "fium", "river"], "🏞️"],
+  [["montagn", "sentier", "hike", "trekking", "rifug"], "🥾"],
+  [["sci$", "sciare", "ski", "neve", "snow"], "⛷️"],
   [["tramont", "sunset", "alba"], "🌅"],
-  [["tren", "train"], "🚆"],
-  [["stazion", "station"], "🚉"],
-  [["autobus", "bus", "tram"], "🚌"],
-  [["aeroport", "airport", "aere", "voli"], "✈️"],
-  [["parchegg", "parking"], "🅿️"],
-  [["ascensor", "elevator"], "🛗"],
-  [["muse", "museum", "mostr"], "🏛️"],
-  [["chies", "church", "cattedral"], "⛪"],
+  [["citta", "city", "paes", "borg", "quartier"], "🏘️"],
   [["piazz", "square"], "🏙️"],
-  [["film", "movie", "cinema"], "🎬"],
-  [["libr", "book", "romanz"], "📚"],
-  [["videogioc", "videogame", "game"], "🎮"],
-  [["serie", "tv", "show"], "📺"],
-  [["album", "disc", "music", "canzon", "song"], "💿"],
-  [["concert", "festival"], "🎤"],
-  [["can", "dog"], "🐕"],
+  [["strad", "via$", "vie$", "road", "street"], "🛣️"],
+  [["pont", "bridge"], "🌉"],
+  [["muse", "museum", "mostr", "galleri"], "🏛️"],
+  [["chies", "church", "cattedral", "basilic"], "⛪"],
+  [["castell", "castle"], "🏰"],
+  [["universit", "facolt", "aul", "lezion", "professor", "prof"], "🎓"],
+  [["scuol", "school", "liceo", "class"], "🏫"],
+  [["ufficio", "uffic", "office", "lavor", "job"], "💼"],
+  [["ospedal", "hospital", "medic", "dottor", "farmaci"], "🏥"],
+  [["hotel", "albergh", "b b", "ostell", "airbnb"], "🏨"],
+  [["negoz", "shop", "store", "centro commerc"], "🛍️"],
+  [["cinema", "sala$"], "🎟️"],
+  // Getting around
+  [["tren", "train", "frecciaross", "italo"], "🚆"],
+  [["stazion", "station"], "🚉"],
+  [["metro", "metropolit", "subway"], "🚇"],
+  [["autobus", "bus", "tram", "pullman"], "🚌"],
+  [["aeroport", "airport", "aere", "voli", "volo", "flight"], "✈️"],
+  [["parchegg", "parking"], "🅿️"],
+  [["ascensor", "elevator", "scal"], "🛗"],
+  [["benzin", "carburant", "distributor di benzin", "gas station"], "⛽"],
+  [["auto", "macchin", "car$", "cars$"], "🚗"],
+  [["moto", "scooter", "vesp"], "🛵"],
+  [["bici", "bike", "monopattin"], "🚲"],
+  [["nave", "navi", "traghett", "barc", "boat", "ferry"], "⛴️"],
+  [["viagg", "travel", "vacanz", "holiday", "gita"], "🧳"],
+  // Media and culture
+  [["film", "movie"], "🎬"],
+  [["libr", "book", "romanz", "fumett", "manga"], "📚"],
+  [["videogioc", "videogame", "game", "giochi", "gioco", "playstation", "xbox", "nintendo"], "🎮"],
+  [["giochi da tavol", "board game"], "🎲"],
+  [["serie", "tv$", "show", "netflix", "anime"], "📺"],
+  [["podcast", "radio"], "🎙️"],
+  [["album", "disc", "music", "canzon", "song", "rap$", "trap$", "rock"], "🎧"],
+  [["concert", "festival", "event", "cantant", "singer", "karaoke"], "🎤"],
+  [["teatr", "theatre", "theater"], "🎭"],
+  [["arte$", "art$", "quadr", "dipint"], "🎨"],
+  [["foto", "photo"], "📷"],
+  [["meme", "barzellett", "battut", "joke"], "😂"],
+  // Communication and tech
+  [["messagg", "message", "chat", "whatsapp", "sms"], "💬"],
+  [["email", "mail", "lettera", "letter", "poste"], "✉️"],
+  [["social", "instagram", "tiktok", "facebook", "post$"], "📲"],
+  [["telefon", "smartphone", "phone", "cellular", "iphone"], "📱"],
+  [["computer", "pc$", "laptop", "portatil"], "💻"],
+  [["app$", "apps", "sito", "siti", "website", "software"], "🧑‍💻"],
+  [["cuffi", "auricolar", "headphone"], "🎧"],
+  // People, animals, things
+  [["cane", "cani", "canil", "dog", "cuccioli"], "🐕"],
   [["gatt", "cat"], "🐈"],
+  [["animal", "zoo", "pet"], "🐾"],
+  [["uccell", "bird", "piccion"], "🐦"],
+  [["amic", "friend", "person", "gente"], "🧑‍🤝‍🧑"],
+  [["professor", "insegnant", "teacher"], "🧑‍🏫"],
+  [["appuntament", "date$", "dating", "amor", "love", "ex$"], "💘"],
   [["scarp", "sneaker", "shoe"], "👟"],
-  [["auto", "macchin", "car"], "🚗"],
-  [["bici", "bike"], "🚲"],
-  [["telefon", "smartphone", "phone"], "📱"],
-  [["hotel", "albergh", "b b"], "🏨"],
-  [["ristorant", "trattori", "osteri", "restaurant"], "🍽️"],
-  [["bar", "pub", "cocktail"], "🍸"],
-  [["profum", "perfume"], "🌸"],
+  [["vestit", "magliett", "abbigliament", "cloth", "outfit", "felp"], "👕"],
+  [["occhial", "glasses"], "👓"],
+  [["profum", "perfume", "cosmet", "trucc", "makeup"], "💄"],
+  [["capell", "barbier", "parrucch", "hair"], "💇"],
   [["piant", "fior", "flower", "plant"], "🪴"],
+  [["meteo", "tempo$", "weather", "pioggi", "sole$"], "🌦️"],
+  [["sonn", "dormir", "sleep", "pisolin"], "😴"],
+  [["sogn", "dream"], "💭"],
+  [["regal", "gift", "natal", "christmas"], "🎁"],
+  [["compleann", "birthday", "fest"], "🎂"],
+  [["soldi", "money", "banca", "banche", "prezz", "offert"], "💰"],
+  [["giocattol", "toy", "lego"], "🧸"],
+  [["casa", "case", "home", "appartament", "stanz", "camer"], "🏠"],
+  [["cucin", "kitchen", "ricett", "recipe"], "🍳"],
 ];
+
+/** Neutral fallbacks, picked from the name, so new categories don't all look the same. */
+const FALLBACK_EMOJI = ["✨", "🎯", "🧩", "💡", "📌", "🔖", "🌀", "🎈", "🪄", "🧭", "🔮", "🏷️"];
 
 export function hashOf(text: string): number {
   return [...text].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 }
 
 export function guessEmoji(normalizedName: string): string {
-  const words = ` ${normalizedName} `;
-  for (const [keys, emoji] of EMOJI_HINTS) {
-    if (keys.some((k) => words.includes(` ${k}`))) return emoji;
+  // The first word that matches decides: "cani del quartiere" is about dogs.
+  const words = normalizedName.split(" ");
+  for (let i = 0; i < words.length; i++) {
+    const rest = ` ${words.slice(i).join(" ")} `;
+    for (const [keys, emoji] of EMOJI_HINTS) {
+      const hit = keys.some((k) =>
+        k.endsWith("$") ? words[i] === k.slice(0, -1) : k.includes(" ") ? rest.startsWith(` ${k}`) : words[i].startsWith(k),
+      );
+      if (hit) return emoji;
+    }
   }
-  return "⭐";
+  return FALLBACK_EMOJI[hashOf(normalizedName) % FALLBACK_EMOJI.length];
 }
+
+/** Emoji offered in the picker when creating or editing a category. */
+export const EMOJI_CHOICES = [
+  "🍕", "🍔", "🥪", "🍝", "🍣", "🍦", "☕", "🍺", "🍷", "💧",
+  "🚻", "🪑", "🏊", "🏋️", "⚽", "🌳", "🏖️", "🏔️", "🏛️", "🏫",
+  "🚆", "🚌", "✈️", "🚗", "🚲", "🅿️", "🛒", "🛍️", "🏨", "🏠",
+  "🎬", "📚", "🎮", "📺", "🎧", "🎤", "🎭", "🎨", "📷", "😂",
+  "💬", "📱", "💻", "🐕", "🐈", "👟", "👕", "💄", "🪴", "🎁",
+  "💘", "😴", "💰", "🧸", "✨", "🎯", "💡", "⭐", "🔥", "🌍",
+];
 
 export function guessColor(normalizedName: string): CategoryColor {
   return COLORS[hashOf(normalizedName) % COLORS.length];
@@ -135,5 +233,7 @@ export function isColor(value: unknown): value is CategoryColor {
 export function styleOf(category: { icon?: string | null; color?: string | null; normalized_name?: string; name: string }) {
   const key = category.normalized_name ?? category.name.toLowerCase();
   const color = isColor(category.color) ? category.color : guessColor(key);
-  return { emoji: category.icon || guessEmoji(key), color, classes: COLOR_CLASSES[color] };
+  // "⭐" was the old automatic default: guess again with the better hints.
+  const icon = category.icon && category.icon !== "⭐" ? category.icon : guessEmoji(key);
+  return { emoji: icon, color, classes: COLOR_CLASSES[color] };
 }

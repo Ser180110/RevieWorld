@@ -5,6 +5,9 @@ import { useActionState, useEffect, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
 import { createCategory, suggestCategories } from "@/lib/reviews/actions";
+import { guessEmoji } from "@/lib/categoryStyle";
+import { normalizeName } from "@/lib/normalize";
+import { EmojiPicker } from "./EmojiPicker";
 import { count } from "@/lib/format";
 import { useDebounced } from "./useDebounced";
 
@@ -28,6 +31,7 @@ export function CategoryPicker({
   const debounced = useDebounced(query.trim());
   const [results, setResults] = useState<{ q: string; list: Suggestion[] }>({ q: "", list: [] });
   const [state, formAction, pending] = useActionState(createCategory, {});
+  const [chosenEmoji, setChosenEmoji] = useState<string | null>(null);
 
   useEffect(() => {
     if (debounced.length < 2) return;
@@ -79,13 +83,19 @@ export function CategoryPicker({
             </ul>
           )}
 
-          <form action={formAction}>
+          <form action={formAction} className="flex flex-col gap-3">
             <input type="hidden" name="lang" value={lang} />
             <input type="hidden" name="name" value={query.trim()} />
+            <EmojiPicker
+              value={chosenEmoji ?? guessEmoji(normalizeName(query))}
+              onChange={setChosenEmoji}
+              label={t.emojiPick}
+              otherLabel={t.emojiOther}
+            />
             <button
               type="submit"
               disabled={pending}
-              className="rounded-full border border-zinc-900 px-5 py-2 text-sm font-medium hover:bg-zinc-900 hover:text-white disabled:opacity-50 dark:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
+              className="self-start rounded-full border border-zinc-900 px-5 py-2 text-sm font-medium hover:bg-zinc-900 hover:text-white disabled:opacity-50 dark:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
             >
               {pending ? t.creating : t.createCategory.replace("{name}", query.trim())}
             </button>

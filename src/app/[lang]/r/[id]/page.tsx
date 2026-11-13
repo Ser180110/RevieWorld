@@ -11,6 +11,7 @@ import { Avatar } from "@/components/Avatar";
 import { CommentForm } from "@/components/CommentForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ReviewCard } from "@/components/ReviewCard";
+import { MentionText } from "@/components/MentionText";
 import { ReviewSkeletons } from "@/components/Skeletons";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">): Promise<Metadata> {
@@ -125,7 +126,9 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
                         </form>
                       )}
                     </div>
-                    <p className="whitespace-pre-line break-words">{c.body}</p>
+                    <p className="whitespace-pre-line break-words">
+                      <MentionText text={c.body} lang={lang} />
+                    </p>
                   </div>
                 </li>
               );
