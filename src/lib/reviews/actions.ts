@@ -6,7 +6,7 @@ import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { normalizeName, slugify } from "@/lib/normalize";
 import { guessColor, guessEmoji, isColor } from "@/lib/categoryStyle";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import type { Suggestion } from "@/lib/data/types";
 import { isOwnPhotoPath, MAX_REVIEW_PHOTOS } from "@/lib/photos";
@@ -26,9 +26,9 @@ async function client(): Promise<SupabaseClient | null> {
   return supabaseEnv() ? createClient() : null;
 }
 
-async function currentUserId(supabase: SupabaseClient): Promise<string | null> {
-  const { data } = await supabase.auth.getUser();
-  return data.user?.id ?? null;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function currentUserId(_supabase: SupabaseClient): Promise<string | null> {
+  return getSessionUserId();
 }
 
 /** First free slug in `table` (scoped to a category for items). */

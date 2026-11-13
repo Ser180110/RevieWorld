@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 
 function localeOf(formData: FormData): Locale {
@@ -15,8 +15,7 @@ function localeOf(formData: FormData): Locale {
 async function session() {
   if (!supabaseEnv()) return null;
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  return { supabase, userId: data.user?.id ?? null };
+  return { supabase, userId: await getSessionUserId() };
 }
 
 /** Only redirect back to paths inside the app. */
@@ -67,6 +66,24 @@ export async function setLike(
       .eq("review_id", reviewId),
   ]);
   return { ok: true, liked: Boolean(mine.data), count: total.count ?? 0 };
+}
+
+/** Fresh like state for the reviews on screen (the page itself may be a cached copy). */
+export async function getLikeStates(reviewIds: string[]): Promise<Record<string, { liked: boolean; count: number }>> {
+  const ids = [...new Set(reviewIds)].filter((id) => z.guid().safeParse(id).success).slice(0, 100);
+  if (!ids.length || !supabaseEnv()) return {};
+  const supabase = await createClient();
+  const userId = await getSessionUserId();
+  const [{ data: counts }, { data: mine }] = await Promise.all([
+    supabase.from("reviews").select("id, likes_count").in("id", ids),
+    userId
+      ? supabase.from("review_likes").select("review_id").eq("user_id", userId).in("review_id", ids)
+      : Promise.resolve({ data: [] as { review_id: string }[] }),
+  ]);
+  const liked = new Set((mine ?? []).map((r) => r.review_id as string));
+  return Object.fromEntries(
+    (counts ?? []).map((r) => [r.id as string, { liked: liked.has(r.id as string), count: r.likes_count as number }]),
+  );
 }
 
 // ---------------------------------------------------------------------------

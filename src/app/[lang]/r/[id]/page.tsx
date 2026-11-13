@@ -4,13 +4,14 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getComments, getReview, getViewer } from "@/lib/data/queries";
+import { getComments, getLikers, getReview, getViewer } from "@/lib/data/queries";
 import { deleteComment } from "@/lib/social/actions";
 import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
 import { CommentForm } from "@/components/CommentForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ReviewCard } from "@/components/ReviewCard";
+import { ReviewSkeletons } from "@/components/Skeletons";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">): Promise<Metadata> {
   const { lang, id } = await params;
@@ -26,7 +27,11 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
   const t = dict.comments;
   const review = await getReview(id);
   if (!review || !review.item?.category) notFound();
-  const [comments, viewer] = await Promise.all([getComments(review.id), getViewer([review])]);
+  const [comments, likers, viewer] = await Promise.all([
+    getComments(review.id),
+    getLikers(review.id),
+    getViewer([review]),
+  ]);
   const item = review.item;
   const category = item.category!;
   const itemHref = `/${lang}/c/${category.slug}/${item.slug}`;
@@ -55,7 +60,31 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
         spoilerLabel={dict.reviewForm.spoiler}
       />
 
-      <section id="comments" className="flex scroll-mt-8 flex-col gap-4">
+      <section id="likes" className="flex scroll-mt-24 flex-col gap-3">
+        <h2 className="text-xl font-semibold">
+          ♥ {dict.reviewPage.likedBy}{" "}
+          {likers.length > 0 && <span className="text-zinc-500">({likers.length})</span>}
+        </h2>
+        {likers.length === 0 ? (
+          <p className="text-zinc-500">{dict.reviewPage.noLikes}</p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {likers.map((p) => (
+              <li key={p.username}>
+                <Link
+                  href={`/${lang}/u/${p.username}`}
+                  className="flex items-center gap-2 rounded-full border border-zinc-200 py-1 pl-1 pr-3 text-sm hover:border-rose-300 hover:bg-rose-50 dark:border-zinc-800 dark:hover:border-rose-900 dark:hover:bg-rose-950/40"
+                >
+                  <Avatar url={p.avatar_url} name={p.username} size={24} />
+                  {p.display_name || `@${p.username}`}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section id="comments" className="flex scroll-mt-24 flex-col gap-4">
         <h2 className="text-xl font-semibold">
           {t.title} {comments.length > 0 && <span className="text-zinc-500">({comments.length})</span>}
         </h2>
@@ -114,7 +143,7 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
 export default async function ReviewPage({ params }: PageProps<"/[lang]/r/[id]">) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <Suspense fallback={<p className="text-zinc-500">…</p>}>
+      <Suspense fallback={<ReviewSkeletons count={1} />}>
         {params.then(({ lang, id }) => {
           if (!hasLocale(lang)) notFound();
           return <ReviewContent lang={lang} id={id} />;

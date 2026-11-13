@@ -123,10 +123,11 @@
       "generic": "Qualcosa è andato storto, riprova."
     },
     "photosLabel": "Foto (facoltative)",
-    "photosAdd": "Aggiungi",
+    "photosAdd": "Galleria",
+    "photosCamera": "Scatta",
     "photosUploading": "Carico…",
-    "photosHint": "Fino a 4 foto, JPG, PNG o WebP, massimo 5 MB l'una. La prima diventa la copertina.",
-    "photosError": "Una foto non è stata caricata: usa JPG, PNG o WebP sotto i 5 MB.",
+    "photosHint": "Fino a 4 foto. Puoi scattarle ora o sceglierle dalla galleria: le rimpiccioliamo noi. La prima diventa la copertina.",
+    "photosError": "Una foto non è stata caricata: prova con un'altra immagine (JPG, PNG o WebP).",
     "photosRemove": "Togli foto"
   },
   "item": {
@@ -187,8 +188,8 @@
     "avatarChange": "Cambia foto",
     "avatarRemove": "Rimuovi foto",
     "avatarUploading": "Carico la foto…",
-    "avatarHint": "JPG, PNG o WebP, massimo 2 MB.",
-    "avatarError": "Caricamento non riuscito: usa un'immagine JPG, PNG o WebP sotto i 2 MB.",
+    "avatarHint": "Qualsiasi foto, la rimpiccioliamo noi.",
+    "avatarError": "Caricamento non riuscito: prova con un'altra immagine.",
     "username": "Username",
     "usernameHint": "3-30 caratteri: lettere, numeri e _. Cambia anche l'indirizzo del tuo profilo.",
     "displayName": "Nome visualizzato",
@@ -314,7 +315,9 @@
   },
   "reviewPage": {
     "title": "Recensione di {name}",
-    "reviewOf": "Recensione di"
+    "reviewOf": "Recensione di",
+    "likedBy": "Piace a",
+    "noLikes": "Ancora nessun like."
   },
   "explore": {
     "title": "Esplora le categorie",

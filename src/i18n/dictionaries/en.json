@@ -123,10 +123,11 @@
       "generic": "Something went wrong, please try again."
     },
     "photosLabel": "Photos (optional)",
-    "photosAdd": "Add",
+    "photosAdd": "Gallery",
+    "photosCamera": "Camera",
     "photosUploading": "Uploading…",
-    "photosHint": "Up to 4 photos, JPG, PNG or WebP, max 5 MB each. The first becomes the cover.",
-    "photosError": "A photo wasn't uploaded: use JPG, PNG or WebP under 5 MB.",
+    "photosHint": "Up to 4 photos. Take them now or pick them from your gallery: we resize them for you. The first becomes the cover.",
+    "photosError": "A photo wasn't uploaded: try another image (JPG, PNG or WebP).",
     "photosRemove": "Remove photo"
   },
   "item": {
@@ -187,8 +188,8 @@
     "avatarChange": "Change picture",
     "avatarRemove": "Remove picture",
     "avatarUploading": "Uploading…",
-    "avatarHint": "JPG, PNG or WebP, up to 2 MB.",
-    "avatarError": "Upload failed: use a JPG, PNG or WebP image under 2 MB.",
+    "avatarHint": "Any photo, we resize it for you.",
+    "avatarError": "Upload failed: try another image.",
     "username": "Username",
     "usernameHint": "3-30 characters: letters, numbers and _. It also changes your profile address.",
     "displayName": "Display name",
@@ -314,7 +315,9 @@
   },
   "reviewPage": {
     "title": "Review by {name}",
-    "reviewOf": "Review of"
+    "reviewOf": "Review of",
+    "likedBy": "Liked by",
+    "noLikes": "No likes yet."
   },
   "explore": {
     "title": "Explore categories",

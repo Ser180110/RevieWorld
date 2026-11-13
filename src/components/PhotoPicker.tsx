@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { MAX_PHOTO_BYTES, MAX_REVIEW_PHOTOS, PHOTO_TYPES, photoUrl } from "@/lib/photos";
+import { compressImage } from "@/lib/compressImage";
+import { MAX_PHOTO_BYTES, MAX_REVIEW_PHOTOS, photoUrl } from "@/lib/photos";
 
 type Existing = { id: string; storage_path: string };
 
@@ -17,7 +18,7 @@ export function PhotoPicker({
 }: {
   userId: string;
   existing?: Existing[];
-  t: { label: string; add: string; uploading: string; hint: string; error: string; remove: string };
+  t: { label: string; add: string; camera: string; uploading: string; hint: string; error: string; remove: string };
 }) {
   const [kept, setKept] = useState(existing);
   const [removed, setRemoved] = useState<string[]>([]);
@@ -34,15 +35,15 @@ export function PhotoPicker({
     const room = MAX_REVIEW_PHOTOS - total;
     const paths: string[] = [];
     for (const file of [...files].slice(0, room)) {
-      const ext = PHOTO_TYPES[file.type];
-      if (!ext || file.size > MAX_PHOTO_BYTES) {
+      const photo = await compressImage(file, { maxBytes: MAX_PHOTO_BYTES });
+      if (!photo) {
         setError(true);
         continue;
       }
-      const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+      const path = `${userId}/${crypto.randomUUID()}.${photo.ext}`;
       const { error: err } = await supabase.storage
         .from("review-photos")
-        .upload(path, file, { contentType: file.type });
+        .upload(path, photo.blob, { contentType: photo.type, cacheControl: "31536000" });
       if (err) {
         console.error("photo upload", err);
         setError(true);
@@ -54,10 +55,17 @@ export function PhotoPicker({
     setBusy(false);
   }
 
+  const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    upload(e.target.files);
+    e.target.value = "";
+  };
+  const tile =
+    "flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-zinc-300 text-center text-xs text-zinc-500 transition hover:border-violet-500 hover:text-violet-600 dark:border-zinc-700 dark:hover:border-violet-400 dark:hover:text-violet-300";
+
   const thumb = (key: string, path: string, onRemove: () => void) => (
     <div key={key} className="relative h-20 w-20 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photoUrl(path)} alt="" className="h-full w-full object-cover" />
+      <img src={photoUrl(path)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
       <button
         type="button"
         onClick={onRemove}
@@ -88,21 +96,27 @@ export function PhotoPicker({
         )}
         {added.map((path) => thumb(path, path, () => setAdded((a) => a.filter((x) => x !== path))))}
         {total < MAX_REVIEW_PHOTOS && (
-          <label className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 text-center text-xs text-zinc-500 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100">
-            <span className="text-2xl leading-none">{busy ? "…" : "📷"}</span>
-            {busy ? t.uploading : t.add}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              className="sr-only"
-              disabled={busy}
-              onChange={(e) => {
-                upload(e.target.files);
-                e.target.value = "";
-              }}
-            />
-          </label>
+          <>
+            {/* Two pickers: Android browsers (e.g. Samsung Internet) only offer the
+                camera when the input asks for it with `capture`. */}
+            <label className={tile}>
+              <span className="text-2xl leading-none">{busy ? "…" : "📷"}</span>
+              {busy ? t.uploading : t.camera}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                disabled={busy}
+                onChange={pick}
+              />
+            </label>
+            <label className={tile}>
+              <span className="text-2xl leading-none">{busy ? "…" : "🖼️"}</span>
+              {busy ? t.uploading : t.add}
+              <input type="file" accept="image/*" multiple className="sr-only" disabled={busy} onChange={pick} />
+            </label>
+          </>
         )}
       </div>
       <span className={`text-xs ${error ? "text-red-600" : "text-zinc-500"}`}>{error ? t.error : t.hint}</span>

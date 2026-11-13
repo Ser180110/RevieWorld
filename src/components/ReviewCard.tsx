@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ReviewRow, Viewer } from "@/lib/data/types";
+import { styleOf } from "@/lib/categoryStyle";
 import { formatDate } from "@/lib/format";
 import { Avatar } from "./Avatar";
 import { DeleteReviewButton } from "./DeleteReviewButton";
@@ -32,21 +33,20 @@ export function ReviewCard({
   const username = review.author?.username;
   const own = viewer.id !== null && viewer.id === review.user_id;
   return (
-    <article className="flex flex-col gap-2 border-b border-zinc-200 py-4 last:border-0 dark:border-zinc-800">
+    <article className="mb-3 flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition last:mb-0 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
       {showItem && item?.category && (
-        <div className="flex flex-wrap items-baseline gap-x-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <Link
             href={`/${lang}/c/${item.category.slug}/${item.slug}`}
-            className="font-semibold hover:underline"
+            className="text-lg font-semibold leading-tight hover:underline"
           >
             {item.name}
           </Link>
           <Link
             href={`/${lang}/c/${item.category.slug}`}
-            className="text-sm text-zinc-500 hover:underline"
+            className={`rounded-full px-2 py-0.5 text-xs font-medium transition hover:opacity-80 ${styleOf(item.category).classes.tile}`}
           >
-            {item.category.icon ? `${item.category.icon} ` : ""}
-            {item.category.name}
+            {styleOf(item.category).emoji} {item.category.name}
           </Link>
         </div>
       )}

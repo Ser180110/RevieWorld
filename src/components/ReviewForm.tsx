@@ -146,6 +146,7 @@ export function ReviewForm({
         t={{
           label: t.photosLabel,
           add: t.photosAdd,
+          camera: t.photosCamera,
           uploading: t.photosUploading,
           hint: t.photosHint,
           error: t.photosError,

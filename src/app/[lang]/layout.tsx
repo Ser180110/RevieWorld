@@ -10,7 +10,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { SearchBox } from "@/components/SearchBox";
 import "../globals.css";
 
-const navLink = "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
+const navLink = "whitespace-nowrap rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -43,14 +43,17 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} className={`${geistSans.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <header className="border-b border-zinc-200 dark:border-zinc-800">
+      <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+        <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-zinc-950/80">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
             <Link
               href={`/${lang}`}
-              className="text-lg font-semibold tracking-tight"
+              className="flex items-center gap-1.5 text-lg font-bold tracking-tight"
             >
-              RevieWorld
+              <span aria-hidden className="text-xl">🌍</span>
+              <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-400 bg-clip-text text-transparent">
+                RevieWorld
+              </span>
             </Link>
             {/* Desktop: everything in one row. */}
             <div className="hidden items-center justify-end gap-3 lg:flex">
