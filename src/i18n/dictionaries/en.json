@@ -325,6 +325,10 @@
     "create": "+ Create a category",
     "all": "All categories"
   },
+  "install": {
+    "button": "Install the app",
+    "iosHint": "On iPhone: tap the Share button (the square with the arrow), then \"Add to Home Screen\"."
+  },
   "photos": {
     "open": "Open photo"
   },
