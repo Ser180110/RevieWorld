@@ -112,10 +112,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-12 px-4 py-8 sm:py-12">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400 px-6 py-10 text-white shadow-xl shadow-fuchsia-500/20 sm:px-10 sm:py-14">
+      <section className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-br from-white to-zinc-100 px-6 py-10 shadow-sm sm:px-10 sm:py-14 dark:border-zinc-800 dark:from-zinc-900 dark:to-zinc-950">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-6 -top-4 grid select-none grid-cols-3 gap-3 text-4xl opacity-30 sm:text-6xl sm:opacity-30"
+          className="pointer-events-none absolute -right-6 -top-4 grid select-none grid-cols-3 gap-3 text-4xl opacity-15 grayscale sm:text-6xl sm:opacity-20"
         >
           {HERO_EMOJI.map((e) => (
             <span key={e} className="rotate-12">
@@ -124,8 +124,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           ))}
         </div>
         <div className="relative flex flex-col gap-4">
-          <h1 className="text-4xl font-extrabold tracking-tight drop-shadow-sm sm:text-5xl">{t.headline}</h1>
-          <p className="max-w-xl text-lg text-white/90">{t.subheadline}</p>
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">{t.headline}</h1>
+          <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">{t.subheadline}</p>
           <form role="search" className="mt-2 flex flex-col gap-2 sm:flex-row" action={`/${lang}/new`}>
             <label htmlFor="q" className="sr-only">
               {t.searchLabel}
@@ -137,11 +137,11 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               required
               minLength={2}
               placeholder={t.searchPlaceholder}
-              className="h-12 min-w-0 shrink-0 rounded-full bg-white px-5 text-zinc-900 shadow-sm outline-none ring-white/60 placeholder:text-zinc-400 focus:ring-4 sm:flex-1"
+              className="h-12 min-w-0 shrink-0 rounded-full border border-zinc-300 bg-white px-5 text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-900 sm:flex-1 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-100"
             />
             <button
               type="submit"
-              className="h-12 cursor-pointer rounded-full bg-zinc-900 px-6 font-semibold text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
+              className="h-12 cursor-pointer rounded-full bg-zinc-900 px-6 font-semibold text-white transition hover:bg-zinc-700 active:scale-95 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
             >
               {t.searchButton} →
             </button>
