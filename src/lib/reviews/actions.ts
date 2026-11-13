@@ -87,6 +87,13 @@ export async function suggestItems(
 
 const categoryName = z.string().trim().min(2).max(60);
 
+/** A short emoji typed or picked by the user, or null. */
+function chosenIcon(value: FormDataEntryValue | null): string | null {
+  const icon = String(value ?? "").trim();
+  if (!icon || [...icon].length > 4 || icon.length > 16 || /[\p{L}\p{N}<>]/u.test(icon)) return null;
+  return icon;
+}
+
 export async function createCategory(
   _prev: FormState,
   formData: FormData,
@@ -119,7 +126,7 @@ export async function createCategory(
       slug,
       normalized_name: normalized,
       created_by: userId,
-      icon: guessEmoji(normalized),
+      icon: chosenIcon(formData.get("icon")) ?? guessEmoji(normalized),
       color: guessColor(normalized),
     });
 

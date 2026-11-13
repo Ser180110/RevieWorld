@@ -387,7 +387,7 @@ export const reviewComments = pgTable(
 // Notifications: written by triggers (like, comment, new follower), read and
 // marked as read by their recipient. See drizzle/0013_notifications_rules.sql.
 // ---------------------------------------------------------------------------
-export const notificationType = pgEnum("notification_type", ["like", "comment", "follow"]);
+export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention"]);
 
 export const notifications = pgTable(
   "notifications",

@@ -625,7 +625,7 @@ export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]>
 
 export type NotificationRow = {
   id: string;
-  type: "like" | "comment" | "follow";
+  type: "like" | "comment" | "follow" | "mention";
   created_at: string;
   read_at: string | null;
   review_id: string | null;

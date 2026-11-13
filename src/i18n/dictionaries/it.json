@@ -79,6 +79,8 @@
     "follower": "aggregato"
   },
   "newReview": {
+    "emojiPick": "Scegli l'emoji",
+    "emojiOther": "Oppure scrivila:",
     "title": "Cosa vuoi recensire?",
     "step1": "1. Scegli la categoria",
     "categoryLabel": "Categoria",
@@ -99,6 +101,7 @@
     "createdBy": "Creata da",
     "editStyle": "Cambia aspetto",
     "emojiLabel": "Emoji",
+    "emojiOther": "Oppure scrivila:",
     "colorLabel": "Colore",
     "saveStyle": "Salva",
     "cancelStyle": "Annulla",
@@ -305,7 +308,7 @@
   "comments": {
     "title": "Commenti",
     "empty": "Nessun commento. Scrivi il primo!",
-    "placeholder": "Scrivi un commento…",
+    "placeholder": "Scrivi un commento… (usa @ per menzionare qualcuno)",
     "submit": "Commenta",
     "sending": "Invio…",
     "delete": "Elimina",
@@ -335,7 +338,8 @@
     "signIn": "Accedi per vedere le tue notifiche.",
     "like": "A {name} piace la tua recensione di {what}",
     "comment": "{name} ha commentato la tua recensione di {what}",
-    "follow": "{name} ha iniziato a seguirti"
+    "follow": "{name} ha iniziato a seguirti",
+    "mention": "{name} ti ha menzionato in un commento su {what}"
   },
   "feed": {
     "following": "Seguiti",
