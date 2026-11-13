@@ -11,9 +11,10 @@ import {
   getViewer,
   getItemStatus,
 } from "@/lib/data/queries";
-import { count, formatStars } from "@/lib/format";
+import { count, formatStars, fill } from "@/lib/format";
 import { AddToList } from "@/components/AddToList";
 import { ItemActions } from "@/components/ItemActions";
+import { ShareButton } from "@/components/ShareButton";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 import { ReviewCard } from "@/components/ReviewCard";
@@ -100,6 +101,16 @@ async function ItemContent({
           )}
         </div>
         {status && <ItemActions lang={lang} itemId={item.id} back={here} status={status} t={dict.itemActions} />}
+        <div>
+          <ShareButton
+            variant="pill"
+            path={here}
+            title={item.name}
+            text={fill(dict.share.item, { what: item.name })}
+            label={dict.share.button}
+            copiedLabel={dict.share.copied}
+          />
+        </div>
       </header>
       </div>
 

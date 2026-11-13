@@ -16,6 +16,8 @@ import { setFavorite } from "@/lib/social/actions";
 import { ItemTile } from "@/components/ItemTile";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { ReviewCard } from "@/components/ReviewCard";
+import { ShareButton } from "@/components/ShareButton";
+import { fill } from "@/lib/format";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/u/[username]">): Promise<Metadata> {
   const { username } = await params;
@@ -47,6 +49,16 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
         lang={lang}
         t={dict.profile}
       />
+      <div className="-mt-4">
+        <ShareButton
+          variant="pill"
+          path={base}
+          title={`@${profile.username}`}
+          text={fill(dict.share.profile, { name: profile.display_name || `@${profile.username}` })}
+          label={dict.share.button}
+          copiedLabel={dict.share.copied}
+        />
+      </div>
       {(favorites.length > 0 || viewer.id === profile.id) && (
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">{dict.profile.favoritesTitle}</h2>

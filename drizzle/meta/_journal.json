@@ -85,6 +85,20 @@
       "when": 1794584846286,
       "tag": "0011_recount_likes",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794587416911,
+      "tag": "0012_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794587432262,
+      "tag": "0013_notifications_rules",
+      "breakpoints": true
     }
   ]
 }

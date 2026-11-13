@@ -9,10 +9,11 @@ type InstallEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{
  * install dialog, on iPhone it explains Share → Add to Home Screen.
  * Hidden when the app is already installed.
  */
-export function InstallApp({ t }: { t: { button: string; iosHint: string } }) {
+export function InstallApp({ t }: { t: { button: string; iosHint: string; installing: string; installed: string } }) {
   const [deferred, setDeferred] = useState<InstallEvent | null>(null);
   const [ios, setIos] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [status, setStatus] = useState<"idle" | "installing" | "installed">("idle");
 
   useEffect(() => {
     const standalone =
@@ -23,15 +24,28 @@ export function InstallApp({ t }: { t: { button: string; iosHint: string } }) {
       e.preventDefault();
       setDeferred(e as InstallEvent);
     };
+    const onInstalled = () => {
+      setDeferred(null);
+      setStatus("installed");
+    };
     window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const timer = isIos ? setTimeout(() => setIos(true), 0) : null;
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
       if (timer) clearTimeout(timer);
     };
   }, []);
 
+  if (status !== "idle") {
+    return (
+      <p className="max-w-xs text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        {status === "installed" ? t.installed : t.installing}
+      </p>
+    );
+  }
   if (!deferred && !ios) return null;
 
   return (
@@ -41,8 +55,9 @@ export function InstallApp({ t }: { t: { button: string; iosHint: string } }) {
         onClick={async () => {
           if (deferred) {
             await deferred.prompt();
-            await deferred.userChoice;
+            const { outcome } = await deferred.userChoice;
             setDeferred(null);
+            if (outcome === "accepted") setStatus((s) => (s === "installed" ? s : "installing"));
           } else {
             setShowHint((v) => !v);
           }

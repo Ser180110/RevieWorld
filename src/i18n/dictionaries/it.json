@@ -16,7 +16,8 @@
     "people": "Persone",
     "lists": "Liste",
     "activity": "Attività",
-    "menu": "Menu"
+    "menu": "Menu",
+    "notifications": "Notifiche"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",
@@ -137,6 +138,9 @@
     "inCategory": "in"
   },
   "reviewCard": {
+    "share": "Condividi",
+    "copied": "Link copiato!",
+    "shareText": "{name} ha dato {rating}/5 a {what} su RevieWorld",
     "like": "Mi piace",
     "unlike": "Non mi piace più",
     "likes": "Mi piace",
@@ -325,9 +329,31 @@
     "create": "+ Crea una categoria",
     "all": "Tutte le categorie"
   },
+  "notifications": {
+    "title": "Notifiche",
+    "empty": "Ancora niente. Quando qualcuno mette like, commenta o ti segue lo vedi qui.",
+    "signIn": "Accedi per vedere le tue notifiche.",
+    "like": "A {name} piace la tua recensione di {what}",
+    "comment": "{name} ha commentato la tua recensione di {what}",
+    "follow": "{name} ha iniziato a seguirti"
+  },
+  "feed": {
+    "following": "Seguiti",
+    "all": "Tutti",
+    "findPeople": "Trova persone da seguire →"
+  },
+  "share": {
+    "button": "Condividi",
+    "copied": "Link copiato!",
+    "review": "{name} ha dato {rating}/5 a {what} su RevieWorld",
+    "profile": "Il profilo di {name} su RevieWorld",
+    "item": "{what} su RevieWorld: leggi le recensioni"
+  },
   "install": {
     "button": "Installa l'app",
-    "iosHint": "Su iPhone: tocca il pulsante Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\"."
+    "iosHint": "Su iPhone: tocca il pulsante Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\".",
+    "installing": "⏳ Installazione in corso: può volerci fino a un minuto. Poi trovi l'icona RevieWorld tra le tue app.",
+    "installed": "✅ App installata! La trovi tra le tue app, con l'icona del mondo 🌍."
   },
   "photos": {
     "open": "Apri la foto"

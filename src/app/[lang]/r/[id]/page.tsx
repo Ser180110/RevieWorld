@@ -19,7 +19,11 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">):
   if (!review || !hasLocale(lang)) return {};
   const dict = await getDictionary(lang);
   const name = review.author?.display_name || `@${review.author?.username ?? "?"}`;
-  return { title: `${review.item?.name ?? ""} · ${fill(dict.reviewPage.title, { name })}` };
+  const title = `${review.item?.name ?? ""} · ${fill(dict.reviewPage.title, { name })}`;
+  const description = `${"★".repeat(Math.floor(review.rating / 2))} ${review.rating / 2}/5${
+    review.body && !review.contains_spoiler ? ` · ${review.body.slice(0, 150)}` : ""
+  }`;
+  return { title, description, openGraph: { title, description, type: "article" } };
 }
 
 async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {

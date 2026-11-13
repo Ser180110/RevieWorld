@@ -16,7 +16,8 @@
     "people": "People",
     "lists": "Lists",
     "activity": "Activity",
-    "menu": "Menu"
+    "menu": "Menu",
+    "notifications": "Notifications"
   },
   "home": {
     "headline": "Review anything.",
@@ -137,6 +138,9 @@
     "inCategory": "in"
   },
   "reviewCard": {
+    "share": "Share",
+    "copied": "Link copied!",
+    "shareText": "{name} rated {what} {rating}/5 on RevieWorld",
     "like": "Like",
     "unlike": "Unlike",
     "likes": "Likes",
@@ -325,9 +329,31 @@
     "create": "+ Create a category",
     "all": "All categories"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Nothing yet. When someone likes, comments or follows you, you'll see it here.",
+    "signIn": "Sign in to see your notifications.",
+    "like": "{name} liked your review of {what}",
+    "comment": "{name} commented on your review of {what}",
+    "follow": "{name} started following you"
+  },
+  "feed": {
+    "following": "Following",
+    "all": "Everyone",
+    "findPeople": "Find people to follow →"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Link copied!",
+    "review": "{name} rated {what} {rating}/5 on RevieWorld",
+    "profile": "{name}'s profile on RevieWorld",
+    "item": "{what} on RevieWorld: read the reviews"
+  },
   "install": {
     "button": "Install the app",
-    "iosHint": "On iPhone: tap the Share button (the square with the arrow), then \"Add to Home Screen\"."
+    "iosHint": "On iPhone: tap the Share button (the square with the arrow), then \"Add to Home Screen\".",
+    "installing": "⏳ Installing: it can take up to a minute. Then you'll find RevieWorld among your apps.",
+    "installed": "✅ App installed! You'll find it among your apps, with the globe icon 🌍."
   },
   "photos": {
     "open": "Open photo"

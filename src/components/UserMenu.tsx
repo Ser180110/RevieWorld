@@ -48,9 +48,6 @@ export async function UserMenu({
       <input type="hidden" name="lang" value={lang} />
       {username && (
         <>
-          <Link href={`/${lang}/activity`} className={link}>
-            {t.activity}
-          </Link>
           <Link href={`/${lang}/u/${username}/diary`} className={link}>
             {t.diary}
           </Link>
