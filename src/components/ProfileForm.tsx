@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Profile } from "@/lib/data/types";
+import { compressImage } from "@/lib/compressImage";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
@@ -11,7 +12,6 @@ import { Avatar } from "./Avatar";
 const field =
   "w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100";
 const MAX_BYTES = 2 * 1024 * 1024;
-const TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 export function ProfileForm({
   lang,
@@ -31,19 +31,17 @@ export function ProfileForm({
   async function upload(file: File | undefined) {
     if (!file) return;
     setUploadError(false);
-    const ext = TYPES[file.type];
-    if (!ext || file.size > MAX_BYTES) {
-      setUploadError(true);
-      return;
-    }
     setUploading(true);
     try {
+      const photo = await compressImage(file, { maxSide: 512, quality: 0.85, maxBytes: MAX_BYTES });
+      if (!photo) throw new Error("unsupported image");
+      const ext = photo.ext;
       const supabase = createClient();
       // Path starts with the user id: storage policies only allow your own folder.
       const path = `${profile.id}/${Date.now().toString(36)}.${ext}`;
       const { error } = await supabase.storage
         .from("avatars")
-        .upload(path, file, { contentType: file.type, upsert: true });
+        .upload(path, photo.blob, { contentType: photo.type, upsert: true, cacheControl: "31536000" });
       if (error) throw error;
       setAvatarUrl(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
     } catch (e) {
@@ -75,7 +73,7 @@ export function ProfileForm({
               {uploading ? t.avatarUploading : t.avatarChange}
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/*"
                 className="sr-only"
                 disabled={uploading}
                 onChange={(e) => upload(e.target.files?.[0])}

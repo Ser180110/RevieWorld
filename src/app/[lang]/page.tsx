@@ -15,6 +15,7 @@ import { CategoryTile } from "@/components/CategoryTile";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { getCurrentUserId } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
+import { ReviewSkeletons } from "@/components/Skeletons";
 
 async function RecentReviews({
   lang,
@@ -101,6 +102,8 @@ async function TopCategories({ lang, dict }: { lang: Locale; dict: Dictionary })
   );
 }
 
+const HERO_EMOJI = ["🍕", "🎬", "🚽", "🍔", "🎧", "☕", "🏖️", "📚", "🎮"];
+
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -108,40 +111,43 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const t = dict.home;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-12 px-4 py-16 sm:py-24">
-      <section className="flex flex-col gap-4">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-          {t.headline}
-        </h1>
-        <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
-          {t.subheadline}
-        </p>
-      </section>
-
-      <form
-        role="search"
-        className="flex flex-col gap-2 sm:flex-row"
-        action={`/${lang}/new`}
-      >
-        <label htmlFor="q" className="sr-only">
-          {t.searchLabel}
-        </label>
-        <input
-          id="q"
-          name="q"
-          type="search"
-          required
-          minLength={2}
-          placeholder={t.searchPlaceholder}
-          className="h-12 min-w-0 shrink-0 rounded-full sm:flex-1 border border-zinc-300 bg-transparent px-5 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100"
-        />
-        <button
-          type="submit"
-          className="h-12 rounded-full bg-zinc-900 px-6 font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+    <div className="mx-auto flex max-w-3xl flex-col gap-12 px-4 py-8 sm:py-12">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400 px-6 py-10 text-white shadow-xl shadow-fuchsia-500/20 sm:px-10 sm:py-14">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-6 -top-4 grid select-none grid-cols-3 gap-3 text-4xl opacity-30 sm:text-6xl sm:opacity-30"
         >
-          {t.searchButton}
-        </button>
-      </form>
+          {HERO_EMOJI.map((e) => (
+            <span key={e} className="rotate-12">
+              {e}
+            </span>
+          ))}
+        </div>
+        <div className="relative flex flex-col gap-4">
+          <h1 className="text-4xl font-extrabold tracking-tight drop-shadow-sm sm:text-5xl">{t.headline}</h1>
+          <p className="max-w-xl text-lg text-white/90">{t.subheadline}</p>
+          <form role="search" className="mt-2 flex flex-col gap-2 sm:flex-row" action={`/${lang}/new`}>
+            <label htmlFor="q" className="sr-only">
+              {t.searchLabel}
+            </label>
+            <input
+              id="q"
+              name="q"
+              type="search"
+              required
+              minLength={2}
+              placeholder={t.searchPlaceholder}
+              className="h-12 min-w-0 shrink-0 rounded-full bg-white px-5 text-zinc-900 shadow-sm outline-none ring-white/60 placeholder:text-zinc-400 focus:ring-4 sm:flex-1"
+            />
+            <button
+              type="submit"
+              className="h-12 cursor-pointer rounded-full bg-zinc-900 px-6 font-semibold text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
+            >
+              {t.searchButton} →
+            </button>
+          </form>
+        </div>
+      </section>
 
       <Suspense fallback={null}>
         <HomeActivity lang={lang} dict={dict} />
@@ -153,9 +159,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">{t.recentTitle}</h2>
-        <Suspense
-          fallback={<p className="text-zinc-500">{dict.common.loading}</p>}
-        >
+        <Suspense fallback={<ReviewSkeletons />}>
           <RecentReviews lang={lang} dict={dict} />
         </Suspense>
       </section>

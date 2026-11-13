@@ -2,7 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/data/queries";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { signOut } from "@/lib/auth/actions";
 import { Avatar } from "./Avatar";
@@ -23,24 +23,9 @@ export async function UserMenu({
 }) {
   // Session data is per request: never prerender this part.
   await connection();
-  let username: string | null = null;
-  let avatarUrl: string | null = null;
-
-  if (supabaseEnv()) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("username, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-      username = data?.username ?? "";
-      avatarUrl = data?.avatar_url ?? null;
-    }
-  }
+  const me = supabaseEnv() ? await getCurrentProfile() : null;
+  const username = me ? me.username : null;
+  const avatarUrl = me?.avatar_url ?? null;
 
   if (username === null) {
     return (

@@ -22,7 +22,7 @@ export function ReviewPhotos({
           className="block h-24 w-24 overflow-hidden rounded-lg bg-zinc-100 sm:h-28 sm:w-28 dark:bg-zinc-800"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl(p.storage_path)} alt="" loading="lazy" className="h-full w-full object-cover transition hover:scale-105" />
+          <img src={photoUrl(p.storage_path)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition hover:scale-105" />
         </a>
       ))}
     </div>

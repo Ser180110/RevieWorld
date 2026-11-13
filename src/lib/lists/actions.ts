@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { normalizeName } from "@/lib/normalize";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import type { ItemSearchResult } from "@/lib/data/types";
 
@@ -17,8 +17,7 @@ function localeOf(formData: FormData): Locale {
 async function session() {
   if (!supabaseEnv()) return null;
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  return { supabase, userId: data.user?.id ?? null };
+  return { supabase, userId: await getSessionUserId() };
 }
 
 type Session = NonNullable<Awaited<ReturnType<typeof session>>>;

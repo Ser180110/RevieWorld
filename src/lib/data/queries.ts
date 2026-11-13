@@ -1,6 +1,7 @@
 import "server-only";
 import { connection } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
+import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { normalizeName } from "@/lib/normalize";
 import type {
@@ -33,11 +34,23 @@ export async function db() {
 }
 
 export async function getCurrentUserId(): Promise<string | null> {
-  const supabase = await db();
-  if (!supabase) return null;
-  const { data } = await supabase.auth.getUser();
-  return data.user?.id ?? null;
+  await connection();
+  if (!supabaseEnv()) return null;
+  return getSessionUserId();
 }
+
+/** Signed-in user's username and avatar (header), once per request. */
+export const getCurrentProfile = cache(async function getCurrentProfile(): Promise<{
+  id: string;
+  username: string;
+  avatar_url: string | null;
+} | null> {
+  const userId = await getCurrentUserId();
+  if (!userId) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("profiles").select("id, username, avatar_url").eq("id", userId).maybeSingle();
+  return data ?? { id: userId, username: "", avatar_url: null };
+});
 
 export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
   const supabase = await db();
@@ -587,6 +600,23 @@ export async function getComments(reviewId: string): Promise<Comment[]> {
     .order("created_at", { ascending: true })
     .limit(500);
   return (data ?? []) as unknown as Comment[];
+}
+
+export type Liker = { username: string; display_name: string | null; avatar_url: string | null };
+
+/** People who liked a review, newest first. */
+export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("review_likes")
+    .select("created_at, profile:profiles!review_likes_user_id_profiles_id_fk(username, display_name, avatar_url)")
+    .eq("review_id", reviewId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return ((data ?? []) as unknown as { profile: Liker | null }[])
+    .map((r) => r.profile)
+    .filter((p): p is Liker => !!p);
 }
 
 // ---------------------------------------------------------------------------
