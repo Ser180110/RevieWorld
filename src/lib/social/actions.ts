@@ -42,25 +42,31 @@ export async function setLike(
   const { error } = like
     ? await s.supabase
         .from("review_likes")
-        .upsert(
-          { user_id: s.userId, review_id: reviewId },
-          { ignoreDuplicates: true },
-        )
+        .insert({ user_id: s.userId, review_id: reviewId })
     : await s.supabase
         .from("review_likes")
         .delete()
         .eq("user_id", s.userId)
         .eq("review_id", reviewId);
-  if (error) {
+  // 23505 = already liked (double tap, second tab): not an error.
+  if (error && error.code !== "23505") {
     console.error("setLike", error);
     return fail;
   }
-  const { data } = await s.supabase
-    .from("reviews")
-    .select("likes_count")
-    .eq("id", reviewId)
-    .maybeSingle();
-  return { ok: true, liked: like, count: data?.likes_count ?? 0 };
+  // Answer with the real state, counted from the likes themselves.
+  const [mine, total] = await Promise.all([
+    s.supabase
+      .from("review_likes")
+      .select("review_id")
+      .eq("review_id", reviewId)
+      .eq("user_id", s.userId)
+      .maybeSingle(),
+    s.supabase
+      .from("review_likes")
+      .select("review_id", { count: "exact", head: true })
+      .eq("review_id", reviewId),
+  ]);
+  return { ok: true, liked: Boolean(mine.data), count: total.count ?? 0 };
 }
 
 // ---------------------------------------------------------------------------
