@@ -2,11 +2,12 @@ import Link from "next/link";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { ReviewRow, Viewer } from "@/lib/data/types";
 import { styleOf } from "@/lib/categoryStyle";
-import { formatDate } from "@/lib/format";
+import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "./Avatar";
 import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LikeButton } from "./LikeButton";
 import { ReviewPhotos } from "./ReviewPhotos";
+import { ShareButton } from "./ShareButton";
 import { Stars } from "./Stars";
 
 export function ReviewCard({
@@ -97,6 +98,17 @@ export function ReviewCard({
           own={own}
           lang={lang}
           labels={{ like: t.like, unlike: t.unlike, likes: t.likes }}
+        />
+        <ShareButton
+          path={`/${lang}/r/${review.id}`}
+          title={item?.name ?? "RevieWorld"}
+          text={fill(t.shareText, {
+            name: review.author?.display_name || `@${username ?? "?"}`,
+            rating: String(review.rating / 2),
+            what: item?.name ?? "",
+          })}
+          label={t.share}
+          copiedLabel={t.copied}
         />
         {own && (
           <Link

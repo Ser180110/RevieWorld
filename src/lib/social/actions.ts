@@ -323,3 +323,16 @@ export async function deleteComment(formData: FormData): Promise<void> {
   await s.supabase.from("review_comments").delete().eq("id", commentId);
   revalidatePath(`/${lang}/r/${reviewId}`);
 }
+
+/** Marks all the signed-in user's notifications as read. */
+export async function markNotificationsRead(): Promise<void> {
+  if (!supabaseEnv()) return;
+  const userId = await getSessionUserId();
+  if (!userId) return;
+  const supabase = await createClient();
+  await supabase
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .is("read_at", null);
+}

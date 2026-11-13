@@ -10,6 +10,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { SearchBox } from "@/components/SearchBox";
 import { ServiceWorker } from "@/components/ServiceWorker";
 import { InstallApp } from "@/components/InstallApp";
+import { NotificationBell } from "@/components/NotificationBell";
 import "../globals.css";
 
 const navLink = "whitespace-nowrap rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
@@ -37,6 +38,13 @@ export async function generateMetadata({
   return {
     title: { default: dict.meta.title, template: `%s · ${dict.meta.title}` },
     description: dict.meta.description,
+    metadataBase: new URL(
+      process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "http://localhost:3000",
+    ),
+    openGraph: { siteName: "RevieWorld", type: "website", locale: lang === "it" ? "it_IT" : "en_US" },
+    twitter: { card: "summary_large_image" },
     applicationName: "RevieWorld",
     appleWebApp: { capable: true, title: "RevieWorld", statusBarStyle: "default" },
     icons: { apple: "/icons/apple-touch-icon.png" },
@@ -70,7 +78,7 @@ export default async function RootLayout({
               </span>
             </Link>
             {/* Desktop: everything in one row. */}
-            <div className="hidden items-center justify-end gap-3 lg:flex">
+            <div className="hidden items-center justify-end gap-1 lg:flex">
               <SearchBox id="search-desktop" lang={lang} label={dict.search.label} placeholder={dict.search.short} className="w-44 xl:w-56" />
               <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
                 + {dict.nav.newReview}
@@ -86,6 +94,9 @@ export default async function RootLayout({
                 <LanguageSwitcher current={lang} label={dict.nav.language} />
               </Suspense>
               <Suspense fallback={null}>
+                <NotificationBell lang={lang} label={dict.nav.notifications} />
+              </Suspense>
+              <Suspense fallback={null}>
                 <UserMenu lang={lang} t={dict.nav} />
               </Suspense>
             </div>
@@ -99,6 +110,9 @@ export default async function RootLayout({
               >
                 🔍
               </Link>
+              <Suspense fallback={null}>
+                <NotificationBell lang={lang} label={dict.nav.notifications} />
+              </Suspense>
               <Link href={`/${lang}/new`} className={`${navLink} font-medium`}>
                 + {dict.nav.newReview}
               </Link>

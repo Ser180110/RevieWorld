@@ -382,3 +382,30 @@ export const reviewComments = pgTable(
     check("review_comments_body_length", sql`char_length(${t.body}) between 1 and 1000`),
   ],
 );
+
+// ---------------------------------------------------------------------------
+// Notifications: written by triggers (like, comment, new follower), read and
+// marked as read by their recipient. See drizzle/0013_notifications_rules.sql.
+// ---------------------------------------------------------------------------
+export const notificationType = pgEnum("notification_type", ["like", "comment", "follow"]);
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Who receives it. */
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    /** Who did it. */
+    actorId: uuid("actor_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    type: notificationType("type").notNull(),
+    reviewId: uuid("review_id").references(() => reviews.id, { onDelete: "cascade" }),
+    commentId: uuid("comment_id").references(() => reviewComments.id, { onDelete: "cascade" }),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [index("notifications_user_idx").on(t.userId, t.createdAt)],
+);

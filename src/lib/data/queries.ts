@@ -620,6 +620,50 @@ export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]>
 }
 
 // ---------------------------------------------------------------------------
+// Notifications
+// ---------------------------------------------------------------------------
+
+export type NotificationRow = {
+  id: string;
+  type: "like" | "comment" | "follow";
+  created_at: string;
+  read_at: string | null;
+  review_id: string | null;
+  actor: { username: string; display_name: string | null; avatar_url: string | null } | null;
+  review: { item: { name: string } | null } | null;
+  comment: { body: string } | null;
+};
+
+/** The signed-in user's notifications, newest first. */
+export async function getNotifications(limit = 60): Promise<NotificationRow[]> {
+  const userId = await getCurrentUserId();
+  if (!userId) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("notifications")
+    .select(
+      "id, type, created_at, read_at, review_id, actor:profiles!notifications_actor_id_profiles_id_fk(username, display_name, avatar_url), review:reviews(item:items(name)), comment:review_comments(body)",
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as unknown as NotificationRow[];
+}
+
+/** How many unread notifications the signed-in user has (header bell). */
+export async function getUnreadCount(): Promise<number> {
+  const userId = await getCurrentUserId();
+  if (!userId) return 0;
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .is("read_at", null);
+  return count ?? 0;
+}
+
+// ---------------------------------------------------------------------------
 // Global search
 // ---------------------------------------------------------------------------
 

@@ -69,15 +69,52 @@ async function RecentLists({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   );
 }
 
-async function HomeActivity({ lang, dict }: { lang: Locale; dict: Dictionary }) {
-  const userId = await getCurrentUserId();
-  if (!userId) return null;
-  const feed = await ActivityFeed({ lang, dict, userId, limit: 5, compact: true });
-  if (!feed) return null;
+/** "Seguiti / Tutti" tabs for signed-in users; latest reviews for everyone else. */
+async function HomeFeed({
+  lang,
+  dict,
+  searchParams,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [{ feed }, userId] = await Promise.all([searchParams, getCurrentUserId()]);
+  if (!userId) {
+    return (
+      <section className="flex flex-col gap-3">
+        <h2 className="text-xl font-semibold">{dict.home.recentTitle}</h2>
+        <RecentReviews lang={lang} dict={dict} />
+      </section>
+    );
+  }
+  const tab = feed === "all" ? "all" : "following";
+  const tabClass = (on: boolean) =>
+    `rounded-full px-4 py-1.5 text-sm font-medium transition ${
+      on
+        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+        : "text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
+    }`;
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">{dict.activity.homeTitle}</h2>
-      {feed}
+    <section className="flex flex-col gap-4">
+      <nav className="flex gap-1 self-start rounded-full bg-zinc-100 p-1 dark:bg-zinc-900" aria-label={dict.home.recentTitle}>
+        <Link href={`/${lang}`} scroll={false} className={tabClass(tab === "following")} aria-current={tab === "following" ? "page" : undefined}>
+          {dict.feed.following}
+        </Link>
+        <Link href={`/${lang}?feed=all`} scroll={false} className={tabClass(tab === "all")} aria-current={tab === "all" ? "page" : undefined}>
+          {dict.feed.all}
+        </Link>
+      </nav>
+      {tab === "all" ? (
+        <RecentReviews lang={lang} dict={dict} />
+      ) : (
+        <>
+          <ActivityFeed lang={lang} dict={dict} userId={userId} limit={20} />
+          <Link href={`/${lang}/people`} className="self-start text-sm font-medium hover:underline">
+            {dict.feed.findPeople}
+          </Link>
+        </>
+      )}
     </section>
   );
 }
@@ -104,7 +141,7 @@ async function TopCategories({ lang, dict }: { lang: Locale; dict: Dictionary })
 
 const HERO_EMOJI = ["🍕", "🎬", "🚽", "🍔", "🎧", "☕", "🏖️", "📚", "🎮"];
 
-export default async function Home({ params }: PageProps<"/[lang]">) {
+export default async function Home({ params, searchParams }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = await getDictionary(lang);
@@ -149,20 +186,20 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <Suspense fallback={null}>
-        <HomeActivity lang={lang} dict={dict} />
+      <Suspense
+        fallback={
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xl font-semibold">{t.recentTitle}</h2>
+            <ReviewSkeletons />
+          </section>
+        }
+      >
+        <HomeFeed lang={lang} dict={dict} searchParams={searchParams} />
       </Suspense>
 
       <Suspense fallback={null}>
         <TopCategories lang={lang} dict={dict} />
       </Suspense>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">{t.recentTitle}</h2>
-        <Suspense fallback={<ReviewSkeletons />}>
-          <RecentReviews lang={lang} dict={dict} />
-        </Suspense>
-      </section>
 
       <Suspense fallback={null}>
         <RecentLists lang={lang} dict={dict} />
