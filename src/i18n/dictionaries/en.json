@@ -122,7 +122,13 @@
       "locked": "It can't be renamed any more: other people have already reviewed in it.",
       "duplicate": "A category with this name already exists.",
       "generic": "Couldn't save: try again."
-    }
+    },
+    "insideOf": "Inside",
+    "subTitle": "Subcategories",
+    "subAdd": "+ Create a subcategory",
+    "subPlaceholder": "E.g. Barberini Cinema",
+    "subCreate": "Create",
+    "subCancel": "Cancel"
   },
   "reviewForm": {
     "stickerAdd": "Sticker or GIF",

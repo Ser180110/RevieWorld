@@ -760,3 +760,40 @@ export async function searchAll(
     people: q.trim() ? people : [],
   };
 }
+
+export type CategoryFamily = {
+  parent: { name: string; slug: string; icon: string | null; color: string | null } | null;
+  children: CategorySummary[];
+};
+
+/** The category this one is inside of, and its subcategories (migration 0023). */
+export async function getCategoryFamily(categoryId: string): Promise<CategoryFamily> {
+  const empty = { parent: null, children: [] };
+  const supabase = await db();
+  if (!supabase) return empty;
+  const [self, kids] = await Promise.all([
+    supabase.from("categories").select("parent_id").eq("id", categoryId).maybeSingle(),
+    supabase
+      .from("categories")
+      .select(CATEGORY_FIELDS)
+      .eq("parent_id", categoryId)
+      .eq("status", "active")
+      .order("reviews_count", { ascending: false })
+      .order("name", { ascending: true })
+      .limit(60),
+  ]);
+  // Before the migration both fail: no family yet.
+  if (self.error || kids.error) return empty;
+  const parentId = (self.data as { parent_id: string | null } | null)?.parent_id;
+  let parent: CategoryFamily["parent"] = null;
+  if (parentId) {
+    const { data } = await supabase
+      .from("categories")
+      .select("name, slug, icon, color")
+      .eq("id", parentId)
+      .eq("status", "active")
+      .maybeSingle();
+    parent = (data as CategoryFamily["parent"]) ?? null;
+  }
+  return { parent, children: (kids.data ?? []) as CategorySummary[] };
+}

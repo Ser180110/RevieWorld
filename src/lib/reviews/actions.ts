@@ -111,6 +111,16 @@ export async function createCategory(
   const userId = await currentUserId(supabase);
   if (!userId) return { error: "auth" };
 
+  // Subcategory: the parent must exist.
+  const parentRaw = String(formData.get("parentId") ?? "");
+  let parentId: string | null = null;
+  if (parentRaw) {
+    if (!z.guid().safeParse(parentRaw).success) return { error: "generic" };
+    const { data: parent } = await supabase.from("categories").select("id").eq("id", parentRaw).eq("status", "active").maybeSingle();
+    if (!parent) return { error: "generic" };
+    parentId = parent.id;
+  }
+
   // Same name after normalization ("Tombini!" = "tombini"): join the existing one.
   const { data: existing } = await supabase
     .from("categories")
@@ -120,16 +130,19 @@ export async function createCategory(
   if (existing) redirect(`/${lang}/c/${existing.slug}`);
 
   const slug = await uniqueSlug(supabase, "categories", name);
-  const { error } = await supabase
-    .from("categories")
-    .insert({
-      name,
-      slug,
-      normalized_name: normalized,
-      created_by: userId,
-      icon: chosenIcon(formData.get("icon")) ?? guessEmoji(normalized),
-      color: guessColor(normalized),
-    });
+  const row: Record<string, string | null> = {
+    name,
+    slug,
+    normalized_name: normalized,
+    created_by: userId,
+    icon: chosenIcon(formData.get("icon")) ?? guessEmoji(normalized),
+    color: guessColor(normalized),
+  };
+  let { error } = await supabase.from("categories").insert(parentId ? { ...row, parent_id: parentId } : row);
+  // Database not migrated yet (no parent_id): create it as a normal category.
+  if (error && parentId && (error.code === "PGRST204" || error.code === "42703")) {
+    ({ error } = await supabase.from("categories").insert(row));
+  }
 
   if (error) {
     if (error.code === "23505") {
