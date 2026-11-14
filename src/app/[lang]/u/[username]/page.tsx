@@ -10,10 +10,10 @@ import {
   getProfileStats,
   getUserReviews,
   getViewer,
-  isFollowingUser,
-} from "@/lib/data/queries";
+  isFollowingUser, getFoundedCategories } from "@/lib/data/queries";
 import { setFavorite } from "@/lib/social/actions";
 import { ItemTile } from "@/components/ItemTile";
+import { CategoryTile } from "@/components/CategoryTile";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ShareButton } from "@/components/ShareButton";
@@ -29,10 +29,11 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
   const profile = await getProfile(username);
   if (!profile) notFound();
 
-  const [stats, reviews, favorites] = await Promise.all([
+  const [stats, reviews, favorites, founded] = await Promise.all([
     getProfileStats(profile.id),
     getUserReviews(profile.id, 10),
     getFavorites(profile.id),
+    getFoundedCategories(profile.id),
   ]);
   const viewer = await getViewer(reviews);
   const following = await isFollowingUser(viewer.id, profile.id);
@@ -59,6 +60,18 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
           copiedLabel={dict.share.copied}
         />
       </div>
+      {founded.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            👑 {dict.profile.foundedTitle} <span className="text-zinc-400">({founded.length})</span>
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {founded.map((c) => (
+              <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
+            ))}
+          </div>
+        </section>
+      )}
       {(favorites.length > 0 || viewer.id === profile.id) && (
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">{dict.profile.favoritesTitle}</h2>

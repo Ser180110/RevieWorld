@@ -153,6 +153,21 @@ export async function getItemCovers(itemIds: string[]): Promise<Record<string, s
 }
 
 /** All active categories, most reviewed first. */
+/** Categories a user created ("founded"), most reviewed first. */
+export async function getFoundedCategories(userId: string, limit = 24): Promise<CategorySummary[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("categories")
+    .select(CATEGORY_FIELDS)
+    .eq("created_by", userId)
+    .eq("status", "active")
+    .order("reviews_count", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as CategorySummary[];
+}
+
 export async function getAllCategories(limit = 300): Promise<CategorySummary[]> {
   const supabase = await db();
   if (!supabase) return [];

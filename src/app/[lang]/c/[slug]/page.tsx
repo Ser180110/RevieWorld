@@ -7,11 +7,11 @@ import {
   getCategory,
   getCategoryItems,
   getCurrentUserId,
-  isFollowing,
-} from "@/lib/data/queries";
+  isFollowing, getProfileById } from "@/lib/data/queries";
 import { setFollow } from "@/lib/reviews/actions";
 import { count, fill, formatStars } from "@/lib/format";
 import { ReviewForm } from "@/components/ReviewForm";
+import { Avatar } from "@/components/Avatar";
 import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
 import { CategoryRename } from "@/components/CategoryRename";
 import { styleOf } from "@/lib/categoryStyle";
@@ -23,7 +23,11 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
   const category = await getCategory(decodeURIComponent(slug));
   if (!category) notFound();
 
-  const [items, userId] = await Promise.all([getCategoryItems(category.id), getCurrentUserId()]);
+  const [items, userId, founder] = await Promise.all([
+    getCategoryItems(category.id),
+    getCurrentUserId(),
+    category.created_by ? getProfileById(category.created_by) : Promise.resolve(null),
+  ]);
   const following = await isFollowing(category.id, userId);
   const style = styleOf(category);
 
@@ -34,6 +38,17 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
           {style.emoji}
         </span>
         <h1 className="text-4xl font-semibold tracking-tight">{category.name}</h1>
+        {founder && (
+          <Link
+            href={`/${lang}/u/${founder.username}`}
+            className="flex items-center gap-2 self-start rounded-full bg-white/60 py-1 pl-1 pr-3 text-sm hover:bg-white dark:bg-black/30 dark:hover:bg-black/50"
+          >
+            <Avatar url={founder.avatar_url} name={founder.username} size={24} />
+            <span>
+              👑 {t.foundedBy} <span className="font-semibold">{founder.display_name || `@${founder.username}`}</span>
+            </span>
+          </Link>
+        )}
         {category.description && (
           <p className="text-zinc-600 dark:text-zinc-400">{category.description}</p>
         )}
