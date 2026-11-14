@@ -92,6 +92,14 @@ export function ProfileHeader({
                 👑 {t.founder}
               </span>
             )}
+            {profile.badge === "ideator" && (
+              <span
+                title={t.ideatorTitle}
+                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-sky-200 to-violet-200 px-2.5 py-0.5 text-xs font-semibold text-violet-900 ring-1 ring-violet-300 dark:from-sky-900 dark:to-violet-900 dark:text-violet-100 dark:ring-violet-700"
+              >
+                💡 {t.ideator}
+              </span>
+            )}
           </p>
           <p className={`flex flex-wrap gap-x-4 gap-y-1 text-sm ${muted}`}>
             {profile.location && <span>📍 {profile.location}</span>}

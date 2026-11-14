@@ -134,6 +134,13 @@
       "when": 1794667681973,
       "tag": "0018_profile_theme",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794668061549,
+      "tag": "0019_ideator_badge",
+      "breakpoints": true
     }
   ]
 }

@@ -92,6 +92,7 @@
     "duplicateFound": "A category with this name already exists: taking you there."
   },
   "category": {
+    "foundedBy": "Founded by",
     "follow": "Join",
     "following": "Joined ✓",
     "unfollow": "Leave",
@@ -167,6 +168,9 @@
     "openReview": "Open the review"
   },
   "profile": {
+    "foundedTitle": "Founded categories",
+    "ideator": "RevieWorld's ideator",
+    "ideatorTitle": "Came up with RevieWorld",
     "founder": "RevieWorld founder",
     "founderTitle": "Created RevieWorld",
     "reviewsTab": "Profile",

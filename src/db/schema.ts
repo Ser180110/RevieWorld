@@ -74,7 +74,7 @@ export const profiles = pgTable(
   },
   (t) => [
     check("profiles_theme_length", sql`char_length(coalesce(${t.themeBg}, '')) <= 20 and char_length(coalesce(${t.themeEmoji}, '')) <= 8`),
-    check("profiles_badge_known", sql`${t.badge} is null or ${t.badge} in ('founder')`),
+    check("profiles_badge_known", sql`${t.badge} is null or ${t.badge} in ('founder', 'ideator')`),
     uniqueIndex("profiles_username_key").on(sql`lower(${t.username})`),
     check(
       "profiles_username_format",

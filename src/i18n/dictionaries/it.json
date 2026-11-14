@@ -92,6 +92,7 @@
     "duplicateFound": "Esiste già una categoria con questo nome: ti ci porto."
   },
   "category": {
+    "foundedBy": "Fondata da",
     "follow": "Aggregati",
     "following": "Aggregato ✓",
     "unfollow": "Lascia",
@@ -167,6 +168,9 @@
     "openReview": "Apri la recensione"
   },
   "profile": {
+    "foundedTitle": "Categorie fondate",
+    "ideator": "Ideatrice di RevieWorld",
+    "ideatorTitle": "Ha avuto l'idea di RevieWorld",
     "founder": "Fondatore di RevieWorld",
     "founderTitle": "Ha creato RevieWorld",
     "reviewsTab": "Profilo",
