@@ -13,6 +13,7 @@ import { setFollow } from "@/lib/reviews/actions";
 import { count, fill, formatStars } from "@/lib/format";
 import { ReviewForm } from "@/components/ReviewForm";
 import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
+import { CategoryRename } from "@/components/CategoryRename";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 
@@ -65,14 +66,17 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
           </form>
         </div>
         {userId && userId === category.created_by && (
-          <CategoryStyleEditor
-            lang={lang}
-            categoryId={category.id}
-            slug={category.slug}
-            emoji={style.emoji}
-            color={style.color}
-            t={t}
-          />
+          <div className="flex flex-wrap items-start gap-2">
+            <CategoryStyleEditor
+              lang={lang}
+              categoryId={category.id}
+              slug={category.slug}
+              emoji={style.emoji}
+              color={style.color}
+              t={t}
+            />
+            <CategoryRename lang={lang} categoryId={category.id} slug={category.slug} name={category.name} t={t} />
+          </div>
         )}
       </header>
 

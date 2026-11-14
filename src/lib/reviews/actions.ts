@@ -361,3 +361,38 @@ export async function setCategoryStyle(_prev: { error?: boolean }, formData: For
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/c/${slug}`);
 }
+
+// ---------------------------------------------------------------------------
+// Rename a category (creator, while nobody else has reviewed in it)
+// ---------------------------------------------------------------------------
+
+export type RenameState = { error?: "name" | "forbidden" | "locked" | "duplicate" | "generic" };
+
+export async function renameCategory(_prev: RenameState, formData: FormData): Promise<RenameState> {
+  const lang = localeOf(formData);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const currentSlug = String(formData.get("slug") ?? "");
+  const parsed = categoryName.safeParse(formData.get("name"));
+  if (!parsed.success || !z.guid().safeParse(categoryId).success) return { error: "name" };
+  const name = parsed.data;
+  const normalized = normalizeName(name);
+  if (normalized.length < 2) return { error: "name" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const wanted = slugify(name);
+  const slug = wanted && wanted === currentSlug ? currentSlug : await uniqueSlug(supabase, "categories", name);
+  const { data, error } = await supabase.rpc("rename_category", {
+    cat: categoryId,
+    new_name: name,
+    new_normalized: normalized,
+    new_slug: slug,
+  });
+  if (error) {
+    console.error("renameCategory", error);
+    return { error: "generic" };
+  }
+  if (data !== "ok") return { error: (data as RenameState["error"]) ?? "generic" };
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/c/${slug}`);
+}

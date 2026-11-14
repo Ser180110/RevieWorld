@@ -41,7 +41,7 @@ export function ProfileForm({
       const path = `${profile.id}/${Date.now().toString(36)}.${ext}`;
       const { error } = await supabase.storage
         .from("avatars")
-        .upload(path, photo.blob, { contentType: photo.type, upsert: true, cacheControl: "31536000" });
+        .upload(path, photo.blob, { contentType: photo.type, cacheControl: "31536000" });
       if (error) throw error;
       setAvatarUrl(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
     } catch (e) {
