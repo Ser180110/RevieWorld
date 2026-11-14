@@ -105,7 +105,18 @@
     "colorLabel": "Colore",
     "saveStyle": "Salva",
     "cancelStyle": "Annulla",
-    "styleError": "Non è stato possibile salvare: riprova."
+    "styleError": "Non è stato possibile salvare: riprova.",
+    "rename": "Rinomina",
+      "renameLabel": "Nuovo nome",
+      "renameSave": "Salva nome",
+      "renameHint": "Puoi correggere il nome finché nessun altro ha scritto recensioni in questa categoria.",
+      "renameErrors": {
+        "name": "Il nome deve avere tra 2 e 60 caratteri.",
+        "forbidden": "Solo chi ha creato la categoria può rinominarla.",
+        "locked": "Non si può più rinominare: altre persone hanno già recensito in questa categoria.",
+        "duplicate": "Esiste già una categoria con questo nome.",
+        "generic": "Non è stato possibile salvare: riprova."
+      }
   },
   "reviewForm": {
     "itemLabel": "Cosa recensisci?",
