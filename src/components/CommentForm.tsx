@@ -5,6 +5,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { addComment, suggestMentions, type MentionSuggestion } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
 import { StickerPicker } from "./StickerPicker";
+import { QuickEmoji } from "./QuickEmoji";
 import type { Attachment } from "@/lib/stickers";
 
 /** The "@abc" being typed just before the cursor, if any. */
@@ -113,6 +114,7 @@ export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: str
           </ul>
         )}
       </div>
+      <QuickEmoji target={area} label="Emoji" />
       <StickerPicker lang={lang} value={sticker} onChange={setSticker} t={{ add: t.stickerAdd, remove: t.stickerRemove }} />
       {state.error && (
         <p role="alert" className="text-sm text-red-600">
