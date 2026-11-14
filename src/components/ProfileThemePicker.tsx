@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PROFILE_EMOJI, PROFILE_THEMES, type ProfileThemeKey, isThemeKey, patternEmoji } from "@/lib/profileTheme";
+import { PROFILE_EMOJI, PROFILE_THEMES, type ProfileThemeKey, canUseEmoji, isThemeKey, patternEmoji } from "@/lib/profileTheme";
 import { Avatar } from "./Avatar";
 import { ThemePattern } from "./ThemePattern";
 
@@ -14,6 +14,7 @@ export function ProfileThemePicker({
   name,
   username,
   avatarUrl,
+  badge,
   t,
 }: {
   initialBg: string | null | undefined;
@@ -21,6 +22,8 @@ export function ProfileThemePicker({
   name: string;
   username: string;
   avatarUrl: string | null;
+  /** Founders also get the exclusive emoji (🍓). */
+  badge?: string | null;
   t: { title: string; hint: string; solid: string; gradient: string; pattern: string; none: string };
 }) {
   const [bg, setBg] = useState<ProfileThemeKey>(isThemeKey(initialBg) ? initialBg : "default");
@@ -83,7 +86,7 @@ export function ProfileThemePicker({
           >
             {t.none}
           </button>
-          {PROFILE_EMOJI.map((e) => (
+          {PROFILE_EMOJI.filter((e) => canUseEmoji(e, badge)).map((e) => (
             <button
               key={e}
               type="button"

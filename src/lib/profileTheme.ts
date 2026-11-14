@@ -55,3 +55,10 @@ export function themeOf(key: string | null | undefined): ProfileTheme {
 export function patternEmoji(value: string | null | undefined): string | null {
   return value && PROFILE_EMOJI.includes(value) ? value : null;
 }
+
+/** Only for the founders (profiles with a badge): Sergio and Corinne. */
+export const EXCLUSIVE_EMOJI = ["🍓"];
+
+export function canUseEmoji(emoji: string, badge: string | null | undefined): boolean {
+  return !EXCLUSIVE_EMOJI.includes(emoji) || Boolean(badge);
+}

@@ -102,6 +102,7 @@ export function ProfileForm({
         name={profile.display_name || profile.username}
         username={profile.username}
         avatarUrl={avatarUrl || null}
+        badge={profile.badge}
         t={{
           title: t.themeTitle,
           hint: t.themeHint,
