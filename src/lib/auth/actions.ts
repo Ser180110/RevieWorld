@@ -6,7 +6,12 @@ import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
-import type { AuthErrorCode, AuthFormState } from "./types";
+import type {
+  AuthErrorCode,
+  AuthFormState,
+  NewPasswordFormState,
+  ResetFormState,
+} from "./types";
 
 function localeOf(formData: FormData): Locale {
   const value = String(formData.get("lang") ?? "");
@@ -94,8 +99,7 @@ export async function signUp(
   if (taken) return { error: "username_taken" };
 
   // Confirmation link points back to this site (local, Vercel preview or production).
-  const origin = (await headers()).get("origin");
-  const site = process.env.NEXT_PUBLIC_SITE_URL || origin || "http://localhost:3000";
+  const site = await siteUrl();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -109,6 +113,67 @@ export async function signUp(
   // With email confirmation turned off, Supabase signs the user in right away.
   if (data.session) redirect(`/${lang}`);
   return { done: true };
+}
+
+/** Where links in auth emails should land (local, Vercel preview or production). */
+async function siteUrl(): Promise<string> {
+  const origin = (await headers()).get("origin");
+  return process.env.NEXT_PUBLIC_SITE_URL || origin || "http://localhost:3000";
+}
+
+/**
+ * "Password dimenticata?": emails a link to choose a new password. Always
+ * answers "done" for unknown emails too, so nobody can probe who is signed up.
+ */
+export async function requestPasswordReset(
+  _prev: ResetFormState,
+  formData: FormData,
+): Promise<ResetFormState> {
+  if (!supabaseEnv()) return { error: "generic" };
+  const lang = localeOf(formData);
+  const parsed = z.email().safeParse(String(formData.get("email") ?? "").trim());
+  if (!parsed.success) return { error: "invalid_email" };
+
+  const supabase = await createClient();
+  const site = await siteUrl();
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+    redirectTo: `${site}/${lang}/auth/callback?next=/${lang}/reset-password`,
+  });
+  if (error) {
+    if (error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit" || error.status === 429) {
+      return { error: "rate_limit" };
+    }
+    if (error.code === "email_address_invalid" || error.code === "validation_failed") return { error: "invalid_email" };
+    console.error("requestPasswordReset", error);
+    return { error: "generic" };
+  }
+  return { done: true };
+}
+
+/** Sets a new password for the signed-in user (after the email link, or from the settings). */
+export async function updatePassword(
+  _prev: NewPasswordFormState,
+  formData: FormData,
+): Promise<NewPasswordFormState> {
+  if (!supabaseEnv()) return { error: "generic" };
+  const lang = localeOf(formData);
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+  if (password.length < 8) return { error: "weak_password" };
+  if (password !== confirm) return { error: "mismatch" };
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { error: "expired" };
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    if (error.code === "same_password") return { error: "same_password" };
+    if (error.code === "weak_password") return { error: "weak_password" };
+    if (error.code === "session_not_found" || error.code === "session_expired") return { error: "expired" };
+    console.error("updatePassword", error);
+    return { error: "generic" };
+  }
+  redirect(`/${lang}?password=changed`);
 }
 
 export async function signOut(formData: FormData) {

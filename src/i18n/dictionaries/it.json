@@ -69,6 +69,36 @@
       "rate_limit": "Troppi tentativi, riprova tra qualche minuto.",
       "confirm_failed": "Link di conferma non valido o scaduto.",
       "generic": "Qualcosa è andato storto, riprova."
+    },
+    "forgotLink": "Password dimenticata?",
+    "forgotTitle": "Password dimenticata",
+    "forgotHint": "Scrivi l'email del tuo account: ti mandiamo un link per sceglierne una nuova.",
+    "forgotButton": "Mandami il link",
+    "sending": "Invio…",
+    "forgotSent": "Fatto! Se c'è un account con questa email, tra poco ti arriva un link per cambiare la password (guarda anche in Spam). Il link vale 1 ora.",
+    "backToLogin": "← Torna all'accesso",
+    "linkExpired": "Il link non è più valido o è già stato usato: chiedine uno nuovo qui sotto.",
+    "newPasswordTitle": "Scegli una nuova password",
+    "newPassword": "Nuova password",
+    "confirmPassword": "Ripeti la nuova password",
+    "savePassword": "Salva la nuova password",
+    "saving": "Salvo…",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
+    "passwordChanged": "Password cambiata! ✅",
+    "changePassword": "Cambia password",
+    "changePasswordHint": "Scegli una nuova password per entrare.",
+    "resetErrors": {
+      "invalid_email": "Email non valida.",
+      "rate_limit": "Hai chiesto troppi link: aspetta un minuto e riprova.",
+      "generic": "Qualcosa è andato storto, riprova."
+    },
+    "newPasswordErrors": {
+      "weak_password": "Password troppo corta: almeno 8 caratteri.",
+      "mismatch": "Le due password non coincidono.",
+      "same_password": "È uguale a quella di prima: scegline una diversa.",
+      "expired": "Il link è scaduto, chiedine uno nuovo:",
+      "generic": "Qualcosa è andato storto, riprova."
     }
   },
   "common": {
