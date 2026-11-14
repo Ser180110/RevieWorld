@@ -120,6 +120,13 @@
       "when": 1794664501940,
       "tag": "0016_rename_category",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794665280912,
+      "tag": "0017_profile_badge",
+      "breakpoints": true
     }
   ]
 }
