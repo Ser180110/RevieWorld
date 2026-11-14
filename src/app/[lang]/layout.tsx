@@ -50,7 +50,7 @@ export async function generateMetadata({
     twitter: { card: "summary_large_image" },
     applicationName: "RevieWorld",
     appleWebApp: { capable: true, title: "RevieWorld", statusBarStyle: "default" },
-    icons: { apple: "/icons/apple-touch-icon.png" },
+    icons: { apple: "/brand/apple-touch-icon.png" },
     formatDetection: { telephone: false },
     alternates: {
       languages: Object.fromEntries(locales.map((l) => [l, `/${l}`])),
@@ -76,7 +76,7 @@ export default async function RootLayout({
               className="flex shrink-0 items-center"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-96h.png" alt="RevieWorld" width={72} height={48} className="-my-2 h-12 w-auto dark:rounded-xl dark:bg-white dark:px-1" />
+              <img src="/brand/logo.png" alt="RevieWorld" width={72} height={48} className="-my-2 h-12 w-auto dark:drop-shadow-[0_0_1.5px_rgba(255,255,255,0.9)]" />
             </Link>
             {/* Desktop: everything in one row. */}
             <div className="hidden items-center justify-end gap-1 lg:flex">
