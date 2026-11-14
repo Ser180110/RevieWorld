@@ -2,7 +2,7 @@
 // page when there is no connection. Pages and data always come from the
 // network (nothing is cached), so what you see is never out of date.
 const OFFLINE = "/offline.html";
-const CACHE = "revieworld-offline-v1";
+const CACHE = "revieworld-offline-v2";
 // v2: push notifications.
 
 self.addEventListener("install", (event) => {

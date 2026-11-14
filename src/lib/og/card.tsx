@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OG_LOGO, OG_LOGO_SIZE } from "./logo";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -65,7 +66,8 @@ export function ogCard({
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28 }}>
             <div style={{ color: "#71717a" }}>{footer ? clip(footer, 40) : ""}</div>
-            <div style={{ display: "flex", fontWeight: 700, color: "#18181b" }}>RevieWorld</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={OG_LOGO} width={OG_LOGO_SIZE.width} height={OG_LOGO_SIZE.height} alt="RevieWorld" />
           </div>
         </div>
       </div>
