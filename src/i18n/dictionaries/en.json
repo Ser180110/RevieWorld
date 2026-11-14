@@ -17,7 +17,12 @@
     "lists": "Lists",
     "activity": "Activity",
     "menu": "Menu",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "signOutConfirm": "Do you really want to sign out?",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeAuto": "Automatic"
   },
   "home": {
     "headline": "Review anything.",

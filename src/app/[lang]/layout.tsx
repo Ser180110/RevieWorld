@@ -11,6 +11,7 @@ import { SearchBox } from "@/components/SearchBox";
 import { ServiceWorker } from "@/components/ServiceWorker";
 import { InstallApp } from "@/components/InstallApp";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeToggle, THEME_SCRIPT } from "@/components/ThemeToggle";
 import "../globals.css";
 
 const navLink = "whitespace-nowrap rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
@@ -67,7 +68,10 @@ export default async function RootLayout({
   const dict = await getDictionary(lang);
 
   return (
-    <html lang={lang} className={`${geistSans.variable} ${emoji.variable} h-full antialiased`}>
+    <html lang={lang} className={`${geistSans.variable} ${emoji.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-zinc-950/80">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
@@ -94,6 +98,7 @@ export default async function RootLayout({
               <Suspense fallback={<span className="w-36" />}>
                 <LanguageSwitcher current={lang} label={dict.nav.language} />
               </Suspense>
+              <ThemeToggle t={dict.nav} />
               <Suspense fallback={null}>
                 <NotificationBell lang={lang} label={dict.nav.notifications} />
               </Suspense>
@@ -139,6 +144,7 @@ export default async function RootLayout({
                   <Suspense fallback={null}>
                     <LanguageSwitcher current={lang} label={dict.nav.language} />
                   </Suspense>
+                  <ThemeToggle t={dict.nav} full />
                 </div>
               </details>
             </div>
