@@ -73,12 +73,10 @@ export default async function RootLayout({
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
             <Link
               href={`/${lang}`}
-              className="flex items-center gap-1.5 text-lg font-bold tracking-tight"
+              className="flex shrink-0 items-center"
             >
-              <span aria-hidden className="text-xl">🌍</span>
-              <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-400 bg-clip-text text-transparent">
-                RevieWorld
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-96h.png" alt="RevieWorld" width={72} height={48} className="-my-2 h-12 w-auto rounded-lg" />
             </Link>
             {/* Desktop: everything in one row. */}
             <div className="hidden items-center justify-end gap-1 lg:flex">
