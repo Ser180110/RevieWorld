@@ -78,10 +78,15 @@ async function HomeFeed({
   dict: Dictionary;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [{ feed }, userId] = await Promise.all([searchParams, getCurrentUserId()]);
+  const [{ feed, deleted }, userId] = await Promise.all([searchParams, getCurrentUserId()]);
   if (!userId) {
     return (
       <section className="flex flex-col gap-3">
+        {deleted === "1" && (
+          <p role="status" className="rounded-xl bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">
+            {dict.settings.deleteAccount.deleted}
+          </p>
+        )}
         <h2 className="text-xl font-semibold">{dict.home.recentTitle}</h2>
         <RecentReviews lang={lang} dict={dict} />
       </section>

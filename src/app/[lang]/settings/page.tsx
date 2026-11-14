@@ -5,6 +5,7 @@ import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getCurrentUserId, getProfileById } from "@/lib/data/queries";
 import { ProfileForm } from "@/components/ProfileForm";
+import { DeleteAccount } from "@/components/DeleteAccount";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/settings">): Promise<Metadata> {
   const { lang } = await params;
@@ -18,7 +19,17 @@ async function SettingsContent({ lang }: { lang: Locale }) {
   if (!userId) redirect(`/${lang}/login`);
   const profile = await getProfileById(userId);
   if (!profile) notFound();
-  return <ProfileForm lang={lang} profile={profile} t={dict.settings} />;
+  return (
+    <>
+      <ProfileForm lang={lang} profile={profile} t={dict.settings} />
+      <DeleteAccount
+        lang={lang}
+        username={profile.username}
+        special={Boolean(profile.badge)}
+        t={dict.settings.deleteAccount}
+      />
+    </>
+  );
 }
 
 export default async function SettingsPage({ params }: PageProps<"/[lang]/settings">) {
