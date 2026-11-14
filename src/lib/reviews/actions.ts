@@ -185,7 +185,6 @@ const reviewSchema = z.object({
   itemName: z.string().trim().min(2).max(120).optional(),
   rating: z.coerce.number().int().min(1).max(10),
   body: z.string().trim().max(4950).optional(),
-  spoiler: z.boolean(),
 });
 
 export async function submitReview(
@@ -200,7 +199,6 @@ export async function submitReview(
     itemName: formData.get("itemName") || undefined,
     rating: formData.get("rating"),
     body: formData.get("body") || undefined,
-    spoiler: formData.get("spoiler") === "on",
   };
   const parsed = reviewSchema.safeParse(raw);
   if (!parsed.success) {
@@ -268,7 +266,8 @@ export async function submitReview(
   const fields = {
     rating: input.rating,
     body: joinSticker(input.body ?? "", String(formData.get("sticker") ?? "")) || null,
-    contains_spoiler: input.spoiler,
+    // Spoilers are gone: an edit also clears an old flag.
+    contains_spoiler: false,
   };
   const { data: mine } = await supabase
     .from("reviews")

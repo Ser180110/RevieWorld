@@ -8,6 +8,8 @@ import { markNotificationsRead } from "@/lib/social/actions";
 export function MarkNotificationsRead({ unread }: { unread: number }) {
   const router = useRouter();
   useEffect(() => {
+    // The number on the app icon (installed app) goes away too.
+    (navigator as Navigator & { clearAppBadge?: () => Promise<void> }).clearAppBadge?.().catch(() => {});
     if (unread === 0) return;
     markNotificationsRead().then(() => router.refresh(), () => {});
   }, [unread, router]);

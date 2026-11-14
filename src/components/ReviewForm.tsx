@@ -24,7 +24,7 @@ type Props = {
   existing?: {
     rating: number;
     body: string | null;
-    contains_spoiler: boolean;
+    contains_spoiler?: boolean;
     photos?: { id: string; storage_path: string }[];
   };
   /** Signed-in user: photos are uploaded to their folder. */
@@ -160,14 +160,6 @@ export function ReviewForm({
         }}
       />
 
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="spoiler"
-          defaultChecked={existing?.contains_spoiler}
-        />
-        {t.spoiler}
-      </label>
 
       {state.error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">

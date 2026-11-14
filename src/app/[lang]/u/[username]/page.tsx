@@ -119,7 +119,6 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
                 viewer={viewer}
                 back={base}
                 t={dict.reviewCard}
-                spoilerLabel={dict.reviewForm.spoiler}
               />
             ))}
             {stats.reviews > reviews.length && (

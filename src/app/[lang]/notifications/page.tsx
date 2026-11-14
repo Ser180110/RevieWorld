@@ -8,6 +8,7 @@ import { getCurrentUserId, getNotifications } from "@/lib/data/queries";
 import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
 import { MarkNotificationsRead } from "@/components/MarkNotificationsRead";
+import { PushToggle } from "@/components/PushToggle";
 import { ReviewSkeletons } from "@/components/Skeletons";
 import { previewText } from "@/lib/stickers";
 
@@ -31,11 +32,32 @@ async function NotificationList({ lang }: { lang: Locale }) {
   }
   const list = await getNotifications();
   const unread = list.filter((n) => !n.read_at).length;
-  if (list.length === 0) return <p className="text-zinc-500">{t.empty}</p>;
+  const push = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? (
+    <PushToggle
+      publicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+      t={{
+        on: t.pushOn,
+        hint: t.pushHint,
+        active: t.pushActive,
+        disable: t.pushDisable,
+        blocked: t.pushBlocked,
+        ios: t.pushIos,
+        error: t.pushError,
+      }}
+    />
+  ) : null;
+  if (list.length === 0)
+    return (
+      <>
+        {push}
+        <p className="text-zinc-500">{t.empty}</p>
+      </>
+    );
 
   return (
     <>
       <MarkNotificationsRead unread={unread} />
+      {push}
       <ul className="flex flex-col gap-2">
         {list.map((n) => {
           const username = n.actor?.username ?? "?";
@@ -44,7 +66,7 @@ async function NotificationList({ lang }: { lang: Locale }) {
           const href =
             n.type === "follow"
               ? `/${lang}/u/${username}`
-              : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : "#comments"}`;
+              : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : n.type === "watchlist" ? "" : "#comments"}`;
           const text =
             n.type === "like"
               ? fill(t.like, { name, what })
@@ -52,7 +74,9 @@ async function NotificationList({ lang }: { lang: Locale }) {
                 ? fill(t.comment, { name, what })
                 : n.type === "mention"
                   ? fill(t.mention, { name, what })
-                  : fill(t.follow, { name });
+                  : n.type === "watchlist"
+                    ? fill(t.watchlist, { name, what: what ? `«${what}»` : "" })
+                    : fill(t.follow, { name });
           return (
             <li key={n.id}>
               <Link
@@ -66,7 +90,7 @@ async function NotificationList({ lang }: { lang: Locale }) {
                 <span className="relative shrink-0">
                   <Avatar url={n.actor?.avatar_url} name={username} size={40} />
                   <span className="absolute -bottom-1 -right-1 text-sm" aria-hidden>
-                    {n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "mention" ? "📣" : "👤"}
+                    {n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "mention" ? "📣" : n.type === "watchlist" ? "📌" : "👤"}
                   </span>
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">):
   const title = `${review.item?.name ?? ""} · ${fill(dict.reviewPage.title, { name })}`;
   const bodyText = splitSticker(review.body).text;
   const description = `${"★".repeat(Math.floor(review.rating / 2))} ${review.rating / 2}/5${
-    bodyText && !review.contains_spoiler ? ` · ${bodyText.slice(0, 150)}` : ""
+    bodyText ? ` · ${bodyText.slice(0, 150)}` : ""
   }`;
   return { title, description, openGraph: { title, description, type: "article" } };
 }
@@ -65,7 +65,6 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
         viewer={viewer}
         back={itemHref}
         t={dict.reviewCard}
-        spoilerLabel={dict.reviewForm.spoiler}
       />
 
       <section id="likes" className="flex scroll-mt-24 flex-col gap-3">
