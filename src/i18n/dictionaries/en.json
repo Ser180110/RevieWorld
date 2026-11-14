@@ -253,6 +253,25 @@
       "website": "Invalid website address.",
       "auth": "Sign in to edit your profile.",
       "generic": "Something went wrong, please try again."
+    },
+    "deleteAccount": {
+      "title": "Delete account",
+      "hint": "Permanently delete your account with your reviews, comments, likes, lists and photos. Categories you created stay for everyone else.",
+      "button": "Delete my account",
+      "confirmTitle": "Are you sure you want to delete your account?",
+      "confirmText": "You will permanently lose all your data: reviews, comments, likes, lists, followers and photos. This cannot be undone.",
+      "badgeWarning": "Heads up: your profile's special badge won't come back by itself if you sign up again.",
+      "typeUsername": "To confirm, type your username:",
+      "cancel": "Cancel",
+      "confirm": "Delete forever",
+      "deleting": "Deleting…",
+      "deleted": "Your account has been deleted. We'll miss you! 👋",
+      "errors": {
+        "username": "The username you typed doesn't match.",
+        "auth": "You need to sign in to delete your account.",
+        "unavailable": "Not available yet: the database needs an update.",
+        "generic": "Something went wrong, please try again."
+      }
     }
   },
   "people": {

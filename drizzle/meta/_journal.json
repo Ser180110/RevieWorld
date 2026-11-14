@@ -169,6 +169,13 @@
       "when": 1794673278082,
       "tag": "0023_subcategories",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794685854470,
+      "tag": "0024_delete_account",
+      "breakpoints": true
     }
   ]
 }

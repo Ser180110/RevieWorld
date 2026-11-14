@@ -253,6 +253,25 @@
       "website": "Indirizzo del sito non valido.",
       "auth": "Devi accedere per modificare il profilo.",
       "generic": "Qualcosa è andato storto, riprova."
+    },
+    "deleteAccount": {
+      "title": "Elimina account",
+      "hint": "Cancella per sempre il tuo account con recensioni, commenti, like, liste e foto. Le categorie che hai creato restano per gli altri.",
+      "button": "Elimina il mio account",
+      "confirmTitle": "Sei sicuro di voler eliminare l'account?",
+      "confirmText": "Perderai tutti i tuoi dati in modo permanente: recensioni, commenti, like, liste, follower e foto. Non si può annullare.",
+      "badgeWarning": "Attenzione: il badge speciale del tuo profilo non tornerà da solo se ricrei l'account.",
+      "typeUsername": "Per confermare scrivi il tuo username:",
+      "cancel": "Annulla",
+      "confirm": "Elimina per sempre",
+      "deleting": "Elimino…",
+      "deleted": "Il tuo account è stato eliminato. Ci mancherai! 👋",
+      "errors": {
+        "username": "Lo username scritto non corrisponde.",
+        "auth": "Devi accedere per eliminare l'account.",
+        "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+        "generic": "Qualcosa è andato storto, riprova."
+      }
     }
   },
   "people": {
