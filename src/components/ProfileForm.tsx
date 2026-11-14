@@ -8,6 +8,7 @@ import { compressImage } from "@/lib/compressImage";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
+import { ProfileThemePicker } from "./ProfileThemePicker";
 
 const field =
   "w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:focus:border-zinc-100";
@@ -94,6 +95,22 @@ export function ProfileForm({
           </span>
         </div>
       </div>
+
+      <ProfileThemePicker
+        initialBg={profile.theme_bg}
+        initialEmoji={profile.theme_emoji}
+        name={profile.display_name || profile.username}
+        username={profile.username}
+        avatarUrl={avatarUrl || null}
+        t={{
+          title: t.themeTitle,
+          hint: t.themeHint,
+          solid: t.themeSolid,
+          gradient: t.themeGradient,
+          pattern: t.themePattern,
+          none: t.themeNone,
+        }}
+      />
 
       <label className="flex flex-col gap-1">
         {label(t.username, t.usernameHint)}

@@ -12,6 +12,8 @@ import { CommentForm } from "@/components/CommentForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ReviewCard } from "@/components/ReviewCard";
 import { MentionText } from "@/components/MentionText";
+import { Sticker } from "@/components/Sticker";
+import { splitSticker } from "@/lib/stickers";
 import { ReviewSkeletons } from "@/components/Skeletons";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">): Promise<Metadata> {
@@ -21,8 +23,9 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">):
   const dict = await getDictionary(lang);
   const name = review.author?.display_name || `@${review.author?.username ?? "?"}`;
   const title = `${review.item?.name ?? ""} · ${fill(dict.reviewPage.title, { name })}`;
+  const bodyText = splitSticker(review.body).text;
   const description = `${"★".repeat(Math.floor(review.rating / 2))} ${review.rating / 2}/5${
-    review.body && !review.contains_spoiler ? ` · ${review.body.slice(0, 150)}` : ""
+    bodyText && !review.contains_spoiler ? ` · ${bodyText.slice(0, 150)}` : ""
   }`;
   return { title, description, openGraph: { title, description, type: "article" } };
 }
@@ -127,8 +130,13 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
                       )}
                     </div>
                     <p className="whitespace-pre-line break-words">
-                      <MentionText text={c.body} lang={lang} />
+                      <MentionText text={splitSticker(c.body).text} lang={lang} />
                     </p>
+                    {splitSticker(c.body).sticker && (
+                      <div className="py-1">
+                        <Sticker k={splitSticker(c.body).sticker!} lang={lang} size="sm" />
+                      </div>
+                    )}
                   </div>
                 </li>
               );

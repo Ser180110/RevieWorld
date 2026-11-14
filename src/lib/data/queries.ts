@@ -25,8 +25,8 @@ const CATEGORY_FIELDS =
   "id, name, slug, description, items_count, reviews_count, followers_count, created_by, normalized_name, icon, color";
 const PROFILE_FIELDS =
   "id, username, display_name, avatar_url, bio, location, website, created_at";
-/** With the founder badge (column added by migration 0017). */
-const PROFILE_FIELDS_BADGE = `${PROFILE_FIELDS}, badge`;
+/** With the founder badge and the profile look (migrations 0017-0018). */
+const PROFILE_FIELDS_BADGE = `${PROFILE_FIELDS}, badge, theme_bg, theme_emoji`;
 
 /** Supabase client for request-time reads, or null when Supabase is not configured. */
 export async function db() {
@@ -232,12 +232,10 @@ export async function getProfile(username: string): Promise<Profile | null> {
 export async function getProfileById(id: string): Promise<Profile | null> {
   const supabase = await db();
   if (!supabase) return null;
-  const { data } = await supabase
-    .from("profiles")
-    .select(PROFILE_FIELDS)
-    .eq("id", id)
-    .maybeSingle();
-  return (data as Profile) ?? null;
+  const find = (fields: string) => supabase.from("profiles").select(fields).eq("id", id).maybeSingle();
+  let { data, error } = await find(PROFILE_FIELDS_BADGE);
+  if (error?.code === "42703") ({ data, error } = await find(PROFILE_FIELDS));
+  return (data as unknown as Profile) ?? null;
 }
 
 export async function getProfileStats(userId: string): Promise<ProfileStats> {

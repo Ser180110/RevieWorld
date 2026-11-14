@@ -64,6 +64,9 @@ export type Profile = {
   created_at: string;
   /** "founder" for the creator of RevieWorld (missing before migration 0017). */
   badge?: string | null;
+  /** Profile look (missing before migration 0018). */
+  theme_bg?: string | null;
+  theme_emoji?: string | null;
 };
 
 export type ProfileStats = {

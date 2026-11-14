@@ -67,9 +67,13 @@ export const profiles = pgTable(
     role: userRole("role").notNull().default("user"),
     /** Special badge shown on the profile ("founder"). Set only by migrations, never by users. */
     badge: text("badge"),
+    /** Profile look: a key from src/lib/profileTheme.ts and an optional pattern emoji. */
+    themeBg: text("theme_bg"),
+    themeEmoji: text("theme_emoji"),
     ...timestamps,
   },
   (t) => [
+    check("profiles_theme_length", sql`char_length(coalesce(${t.themeBg}, '')) <= 20 and char_length(coalesce(${t.themeEmoji}, '')) <= 8`),
     check("profiles_badge_known", sql`${t.badge} is null or ${t.badge} in ('founder')`),
     uniqueIndex("profiles_username_key").on(sql`lower(${t.username})`),
     check(

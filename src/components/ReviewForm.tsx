@@ -6,6 +6,8 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
 import { submitReview, suggestItems } from "@/lib/reviews/actions";
 import { PhotoPicker } from "./PhotoPicker";
+import { StickerPicker } from "./StickerPicker";
+import { splitSticker, type StickerKey } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
 import { count } from "@/lib/format";
 import { useDebounced } from "./useDebounced";
@@ -45,6 +47,8 @@ export function ReviewForm({
   back,
 }: Props) {
   const [state, formAction, pending] = useActionState(submitReview, {});
+  const initial = splitSticker(existing?.body);
+  const [sticker, setSticker] = useState<StickerKey | null>(initial.sticker);
   const [itemName, setItemName] = useState("");
   const [picked, setPicked] = useState<Suggestion | null>(null);
   const debounced = useDebounced(itemName.trim());
@@ -133,12 +137,14 @@ export function ReviewForm({
         <textarea
           name="body"
           rows={4}
-          maxLength={5000}
-          defaultValue={existing?.body ?? ""}
+          maxLength={4950}
+          defaultValue={initial.text}
           placeholder={t.bodyPlaceholder}
           className={`${field} py-2`}
         />
       </label>
+
+      <StickerPicker lang={lang} value={sticker} onChange={setSticker} t={{ add: t.stickerAdd, remove: t.stickerRemove }} />
 
       <PhotoPicker
         userId={userId}
