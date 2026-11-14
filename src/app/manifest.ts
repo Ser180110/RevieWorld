@@ -16,13 +16,13 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#18181b",
     categories: ["social", "lifestyle", "entertainment"],
     icons: [
-      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/brand/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/brand/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/brand/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Nuova recensione", short_name: "Recensisci", url: "/it/new", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
-      { name: "Cerca", url: "/it/search", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Nuova recensione", short_name: "Recensisci", url: "/it/new", icons: [{ src: "/brand/icon-192.png", sizes: "192x192" }] },
+      { name: "Cerca", url: "/it/search", icons: [{ src: "/brand/icon-192.png", sizes: "192x192" }] },
     ],
   };
 }

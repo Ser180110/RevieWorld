@@ -2,11 +2,11 @@
 // page when there is no connection. Pages and data always come from the
 // network (nothing is cached), so what you see is never out of date.
 const OFFLINE = "/offline.html";
-const CACHE = "revieworld-offline-v2";
+const CACHE = "revieworld-offline-v3";
 // v2: push notifications.
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE, "/icons/icon-192.png"])));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE, "/brand/icon-192.png"])));
   self.skipWaiting();
 });
 
@@ -38,7 +38,7 @@ self.addEventListener("push", (event) => {
     Promise.all([
       self.registration.showNotification(title, {
         body: data.body || "",
-        icon: "/icons/icon-192.png",
+        icon: "/brand/icon-192.png",
         badge: "/icons/badge-72.png",
         tag: data.tag,
         data: { url: data.url || "/it/notifications" },
