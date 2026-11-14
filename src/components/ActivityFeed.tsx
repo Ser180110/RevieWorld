@@ -47,7 +47,6 @@ export async function ActivityFeed({
           viewer={viewer}
           back={compact ? `/${lang}` : `/${lang}/activity`}
           t={dict.reviewCard}
-          spoilerLabel={dict.reviewForm.spoiler}
         />
       ))}
       {compact && (

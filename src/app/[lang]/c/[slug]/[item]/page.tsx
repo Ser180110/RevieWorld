@@ -10,7 +10,10 @@ import {
   getMyListsFor,
   getViewer,
   getItemStatus,
+  reviewSortOf,
+  type ReviewSort,
 } from "@/lib/data/queries";
+import { ReviewSortTabs } from "@/components/ReviewSortTabs";
 import { count, formatStars, fill } from "@/lib/format";
 import { AddToList } from "@/components/AddToList";
 import { ItemActions } from "@/components/ItemActions";
@@ -25,10 +28,12 @@ async function ItemContent({
   lang,
   slug,
   itemSlug,
+  sort,
 }: {
   lang: Locale;
   slug: string;
   itemSlug: string;
+  sort: ReviewSort;
 }) {
   const dict = await getDictionary(lang);
   const t = dict.item;
@@ -37,7 +42,7 @@ async function ItemContent({
   const item = await getItem(category.id, decodeURIComponent(itemSlug));
   if (!item) notFound();
 
-  const reviews = await getItemReviews(item.id);
+  const reviews = await getItemReviews(item.id, sort);
   const viewer = await getViewer(reviews);
   const userId = viewer.id;
   const [myLists, status] = userId
@@ -144,8 +149,9 @@ async function ItemContent({
         />
       )}
 
-      <section className="flex flex-col gap-2">
+      <section id="reviews" className="flex scroll-mt-20 flex-col gap-2">
         <h2 className="text-xl font-semibold">{t.reviewsTitle}</h2>
+        {reviews.length > 1 && <ReviewSortTabs base={here} current={sort} t={dict.reviewSort} />}
         {reviews.length === 0 ? (
           <p className="text-zinc-500">{t.reviewsEmpty}</p>
         ) : (
@@ -157,7 +163,6 @@ async function ItemContent({
               viewer={viewer}
               back={here}
               t={dict.reviewCard}
-              spoilerLabel={dict.reviewForm.spoiler}
             />
           ))
         )}
@@ -168,13 +173,14 @@ async function ItemContent({
 
 export default async function ItemPage({
   params,
+  searchParams,
 }: PageProps<"/[lang]/c/[slug]/[item]">) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <Suspense fallback={<p className="text-zinc-500">…</p>}>
-        {params.then(({ lang, slug, item }) => {
+        {Promise.all([params, searchParams]).then(([{ lang, slug, item }, sp]) => {
           if (!hasLocale(lang)) notFound();
-          return <ItemContent lang={lang} slug={slug} itemSlug={item} />;
+          return <ItemContent lang={lang} slug={slug} itemSlug={item} sort={reviewSortOf(sp.sort)} />;
         })}
       </Suspense>
     </div>

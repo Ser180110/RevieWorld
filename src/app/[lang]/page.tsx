@@ -39,7 +39,6 @@ async function RecentReviews({
           viewer={viewer}
           back={`/${lang}`}
           t={dict.reviewCard}
-          spoilerLabel={dict.reviewForm.spoiler}
         />
       ))}
     </div>

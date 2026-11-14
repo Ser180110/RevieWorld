@@ -20,7 +20,6 @@ export function ReviewCard({
   viewer,
   back,
   t,
-  spoilerLabel,
 }: {
   review: ReviewRow;
   lang: string;
@@ -30,7 +29,6 @@ export function ReviewCard({
   /** Where to go after deleting this review. */
   back: string;
   t: Dictionary["reviewCard"];
-  spoilerLabel: string;
 }) {
   const item = review.item;
   const username = review.author?.username;
@@ -69,19 +67,11 @@ export function ReviewCard({
           <time dateTime={review.created_at}>{formatDate(review.created_at, lang)}</time>
         </Link>
       </div>
-      {text &&
-        (review.contains_spoiler ? (
-          <details>
-            <summary className="cursor-pointer text-sm text-zinc-500">
-              {spoilerLabel}
-            </summary>
-            <p className="mt-1 whitespace-pre-line">{text}</p>
-          </details>
-        ) : (
-          <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
-            {text}
-          </p>
-        ))}
+      {text && (
+        <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
+          {text}
+        </p>
+      )}
       {sticker && (
         <div className="py-1">
           <Sticker a={sticker} lang={lang} />

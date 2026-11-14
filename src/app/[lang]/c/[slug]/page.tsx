@@ -7,7 +7,15 @@ import {
   getCategory,
   getCategoryItems,
   getCurrentUserId,
-  isFollowing, getProfileById } from "@/lib/data/queries";
+  getCategoryReviews,
+  getViewer,
+  isFollowing,
+  getProfileById,
+  reviewSortOf,
+  type ReviewSort,
+} from "@/lib/data/queries";
+import { ReviewCard } from "@/components/ReviewCard";
+import { ReviewSortTabs } from "@/components/ReviewSortTabs";
 import { setFollow } from "@/lib/reviews/actions";
 import { count, fill, formatStars } from "@/lib/format";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -17,17 +25,20 @@ import { CategoryRename } from "@/components/CategoryRename";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 
-async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
+async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: string; sort: ReviewSort }) {
   const dict = await getDictionary(lang);
   const t = dict.category;
   const category = await getCategory(decodeURIComponent(slug));
   if (!category) notFound();
 
-  const [items, userId, founder] = await Promise.all([
+  const [items, userId, founder, reviews] = await Promise.all([
     getCategoryItems(category.id),
     getCurrentUserId(),
     category.created_by ? getProfileById(category.created_by) : Promise.resolve(null),
+    getCategoryReviews(category.id, sort),
   ]);
+  const viewer = await getViewer(reviews);
+  const here = `/${lang}/c/${category.slug}`;
   const following = await isFollowing(category.id, userId);
   const style = styleOf(category);
 
@@ -136,6 +147,20 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
         )}
       </section>
 
+      <section id="reviews" className="flex scroll-mt-20 flex-col gap-3">
+        <h2 className="text-xl font-semibold">{dict.reviewSort.title}</h2>
+        {reviews.length > 0 && <ReviewSortTabs base={here} current={sort} t={dict.reviewSort} />}
+        {reviews.length === 0 ? (
+          <p className="text-zinc-500">{t.itemsEmpty}</p>
+        ) : (
+          <div>
+            {reviews.map((r) => (
+              <ReviewCard key={r.id} review={r} lang={lang} showItem viewer={viewer} back={here} t={dict.reviewCard} />
+            ))}
+          </div>
+        )}
+      </section>
+
       <section className="flex flex-col gap-4 rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
         <h2 className="text-xl font-semibold">{fill(t.reviewSomething, { name: category.name })}</h2>
         {userId ? (
@@ -157,13 +182,13 @@ async function CategoryContent({ lang, slug }: { lang: Locale; slug: string }) {
   );
 }
 
-export default async function CategoryPage({ params }: PageProps<"/[lang]/c/[slug]">) {
+export default async function CategoryPage({ params, searchParams }: PageProps<"/[lang]/c/[slug]">) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <Suspense fallback={<p className="text-zinc-500">…</p>}>
-        {params.then(({ lang, slug }) => {
+        {Promise.all([params, searchParams]).then(([{ lang, slug }, sp]) => {
           if (!hasLocale(lang)) notFound();
-          return <CategoryContent lang={lang} slug={slug} />;
+          return <CategoryContent lang={lang} slug={slug} sort={reviewSortOf(sp.sort)} />;
         })}
       </Suspense>
     </div>

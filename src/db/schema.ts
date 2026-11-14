@@ -394,7 +394,7 @@ export const reviewComments = pgTable(
 // Notifications: written by triggers (like, comment, new follower), read and
 // marked as read by their recipient. See drizzle/0013_notifications_rules.sql.
 // ---------------------------------------------------------------------------
-export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention"]);
+export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention", "watchlist"]);
 
 export const notifications = pgTable(
   "notifications",
@@ -412,7 +412,29 @@ export const notifications = pgTable(
     reviewId: uuid("review_id").references(() => reviews.id, { onDelete: "cascade" }),
     commentId: uuid("comment_id").references(() => reviewComments.id, { onDelete: "cascade" }),
     readAt: timestamp("read_at", { withTimezone: true }),
+    /** When it was sent to the recipient's phones (web push). */
+    pushedAt: timestamp("pushed_at", { withTimezone: true }),
     createdAt: timestamps.createdAt,
   },
   (t) => [index("notifications_user_idx").on(t.userId, t.createdAt)],
+);
+
+// Phones and browsers that asked for push notifications (Web Push).
+// See drizzle/0021_push_rules.sql.
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull().unique(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    index("push_subscriptions_user_idx").on(t.userId),
+    check("push_subscriptions_endpoint_https", sql`${t.endpoint} like 'https://%' and char_length(${t.endpoint}) <= 1000`),
+  ],
 );

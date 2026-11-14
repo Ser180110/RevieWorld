@@ -17,7 +17,7 @@ export default async function Image({ params }: { params: Promise<{ lang: string
     kicker: review.item?.category?.name,
     title: review.item?.name ?? "RevieWorld",
     rating: review.rating,
-    body: review.contains_spoiler ? null : splitSticker(review.body).text || null,
+    body: splitSticker(review.body).text || null,
     footer: review.author?.display_name || `@${review.author?.username ?? ""}`,
     photo: photo ? photoUrl(photo.storage_path) : null,
   });

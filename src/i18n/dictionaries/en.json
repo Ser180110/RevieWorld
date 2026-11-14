@@ -108,16 +108,16 @@
     "cancelStyle": "Cancel",
     "styleError": "Couldn't save, please try again.",
     "rename": "Rename",
-      "renameLabel": "New name",
-      "renameSave": "Save name",
-      "renameHint": "You can fix the name until someone else reviews in this category.",
-      "renameErrors": {
-        "name": "The name must be 2 to 60 characters.",
-        "forbidden": "Only the creator can rename this category.",
-        "locked": "It can't be renamed any more: other people have already reviewed in it.",
-        "duplicate": "A category with this name already exists.",
-        "generic": "Couldn't save: try again."
-      }
+    "renameLabel": "New name",
+    "renameSave": "Save name",
+    "renameHint": "You can fix the name until someone else reviews in this category.",
+    "renameErrors": {
+      "name": "The name must be 2 to 60 characters.",
+      "forbidden": "Only the creator can rename this category.",
+      "locked": "It can't be renamed any more: other people have already reviewed in it.",
+      "duplicate": "A category with this name already exists.",
+      "generic": "Couldn't save: try again."
+    }
   },
   "reviewForm": {
     "stickerAdd": "Sticker or GIF",
@@ -366,7 +366,15 @@
     "like": "{name} liked your review of {what}",
     "comment": "{name} commented on your review of {what}",
     "follow": "{name} started following you",
-    "mention": "{name} mentioned you in a comment on {what}"
+    "mention": "{name} mentioned you in a comment on {what}",
+    "watchlist": "{name} added {what} to “To try” thanks to your review",
+    "pushOn": "Turn on phone notifications",
+    "pushHint": "Likes, comments and new followers arrive like a message, even with the app closed.",
+    "pushActive": "Phone notifications on ✓",
+    "pushDisable": "Turn off",
+    "pushBlocked": "Notifications are blocked for this site: allow them in the browser settings (padlock next to the address → Notifications).",
+    "pushIos": "On iPhone: first add RevieWorld to the Home Screen (Share → Add to Home Screen), then open it from there and come back here.",
+    "pushError": "Couldn't turn them on: try again."
   },
   "feed": {
     "following": "Following",
@@ -404,5 +412,13 @@
     "seeAll": "See all →",
     "empty": "No results for “{q}”.",
     "create": "Create the “{q}” category or review something"
+  },
+  "reviewSort": {
+    "title": "Reviews",
+    "label": "Sort by",
+    "likes": "❤️ Most liked",
+    "stars": "⭐ Highest rated",
+    "stars_low": "👎 Lowest rated",
+    "recent": "🕒 Newest"
   }
 }

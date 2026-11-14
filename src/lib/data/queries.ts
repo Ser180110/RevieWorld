@@ -212,16 +212,54 @@ export async function getItem(
   return (data as ItemSummary) ?? null;
 }
 
-export async function getItemReviews(itemId: string): Promise<ReviewRow[]> {
+/** How a list of reviews is ordered: most liked first by default. */
+export const REVIEW_SORTS = ["likes", "stars", "stars_low", "recent"] as const;
+export type ReviewSort = (typeof REVIEW_SORTS)[number];
+
+export function reviewSortOf(value: unknown): ReviewSort {
+  return REVIEW_SORTS.includes(value as ReviewSort) ? (value as ReviewSort) : "likes";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function sortReviews<Q extends { order: (...args: any[]) => Q }>(query: Q, sort: ReviewSort): Q {
+  switch (sort) {
+    case "stars":
+      return query.order("rating", { ascending: false }).order("likes_count", { ascending: false }).order("created_at", { ascending: false });
+    case "stars_low":
+      return query.order("rating", { ascending: true }).order("likes_count", { ascending: false }).order("created_at", { ascending: false });
+    case "recent":
+      return query.order("created_at", { ascending: false });
+    default:
+      return query.order("likes_count", { ascending: false }).order("rating", { ascending: false }).order("created_at", { ascending: false });
+  }
+}
+
+export async function getItemReviews(itemId: string, sort: ReviewSort = "likes"): Promise<ReviewRow[]> {
   const supabase = await db();
   if (!supabase) return [];
-  const { data } = await supabase
+  const query = supabase
     .from("reviews")
     .select(REVIEW_FIELDS)
     .eq("item_id", itemId)
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(100);
+    .eq("status", "active");
+  const { data } = await sortReviews(query, sort).limit(100);
+  return (data ?? []) as unknown as ReviewRow[];
+}
+
+/** All the reviews in a category, with what they are about. */
+export async function getCategoryReviews(
+  categoryId: string,
+  sort: ReviewSort = "likes",
+  limit = 50,
+): Promise<ReviewRow[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const query = supabase
+    .from("reviews")
+    .select(`${REVIEW_FIELDS}, item:items!inner(name, slug, category_id, category:categories(name, slug, icon, color))`)
+    .eq("item.category_id", categoryId)
+    .eq("status", "active");
+  const { data } = await sortReviews(query, sort).limit(limit);
   return (data ?? []) as unknown as ReviewRow[];
 }
 
@@ -640,7 +678,7 @@ export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]>
 
 export type NotificationRow = {
   id: string;
-  type: "like" | "comment" | "follow" | "mention";
+  type: "like" | "comment" | "follow" | "mention" | "watchlist";
   created_at: string;
   read_at: string | null;
   review_id: string | null;

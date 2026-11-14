@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { sendPendingPushes } from "@/lib/push/send";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { joinSticker } from "@/lib/stickers";
@@ -54,6 +56,7 @@ export async function setLike(
     console.error("setLike", error);
     return fail;
   }
+  if (like) after(() => sendPendingPushes(s.supabase));
   // Answer with the real state, counted from the likes themselves.
   const [mine, total] = await Promise.all([
     s.supabase
@@ -110,6 +113,7 @@ export async function setUserFollow(formData: FormData): Promise<void> {
         { follower_id: s.userId, followed_id: userId },
         { ignoreDuplicates: true },
       );
+    after(() => sendPendingPushes(s.supabase));
   } else {
     await s.supabase
       .from("user_follows")
@@ -292,6 +296,7 @@ export async function setWatchlist(formData: FormData): Promise<void> {
 
   if (on) {
     await s.supabase.from("watchlist").upsert({ user_id: s.userId, item_id: itemId }, { ignoreDuplicates: true });
+    after(() => sendPendingPushes(s.supabase));
   } else {
     await s.supabase.from("watchlist").delete().eq("user_id", s.userId).eq("item_id", itemId);
   }
@@ -324,6 +329,7 @@ export async function addComment(_prev: CommentFormState, formData: FormData): P
     console.error("addComment", error);
     return { error: "generic" };
   }
+  after(() => sendPendingPushes(s.supabase));
   revalidatePath(`/${lang}/r/${reviewId}`);
   return { ok: Date.now() };
 }
@@ -366,4 +372,16 @@ export async function suggestMentions(q: string): Promise<MentionSuggestion[]> {
     .order("username")
     .limit(5);
   return (data ?? []) as MentionSuggestion[];
+}
+
+/** For the 🔔 badge, refreshed while the app is open. */
+export async function fetchUnreadCount(): Promise<number> {
+  const s = await session();
+  if (!s?.userId) return 0;
+  const { count } = await s.supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", s.userId)
+    .is("read_at", null);
+  return count ?? 0;
 }
