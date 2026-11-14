@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Geist } from "next/font/google";
+import { Geist, Noto_Color_Emoji } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { hasLocale, locales } from "@/i18n/config";
@@ -16,6 +16,9 @@ import "../globals.css";
 const navLink = "whitespace-nowrap rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+// The same colourful emoji on every phone and PC (like in chat apps),
+// instead of Windows' or Samsung's own. Only the pieces used are loaded.
+const emoji = Noto_Color_Emoji({ variable: "--font-emoji", weight: "400", subsets: ["emoji"], preload: false });
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -64,7 +67,7 @@ export default async function RootLayout({
   const dict = await getDictionary(lang);
 
   return (
-    <html lang={lang} className={`${geistSans.variable} h-full antialiased`}>
+    <html lang={lang} className={`${geistSans.variable} ${emoji.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-zinc-950/80">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">

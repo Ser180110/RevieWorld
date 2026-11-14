@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
 import { submitReview, suggestItems } from "@/lib/reviews/actions";
 import { PhotoPicker } from "./PhotoPicker";
 import { StickerPicker } from "./StickerPicker";
+import { QuickEmoji } from "./QuickEmoji";
 import { splitSticker, type Attachment } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
 import { count } from "@/lib/format";
@@ -49,6 +50,7 @@ export function ReviewForm({
   const [state, formAction, pending] = useActionState(submitReview, {});
   const initial = splitSticker(existing?.body);
   const [sticker, setSticker] = useState<Attachment | null>(initial.sticker);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const [itemName, setItemName] = useState("");
   const [picked, setPicked] = useState<Suggestion | null>(null);
   const debounced = useDebounced(itemName.trim());
@@ -135,6 +137,7 @@ export function ReviewForm({
       <label className="flex flex-col gap-1">
         <span className="text-sm font-medium">{t.bodyLabel}</span>
         <textarea
+          ref={bodyRef}
           name="body"
           rows={4}
           maxLength={4950}
@@ -143,6 +146,8 @@ export function ReviewForm({
           className={`${field} py-2`}
         />
       </label>
+
+      <QuickEmoji target={bodyRef} label="Emoji" />
 
       <StickerPicker lang={lang} value={sticker} onChange={setSticker} t={{ add: t.stickerAdd, remove: t.stickerRemove }} />
 
