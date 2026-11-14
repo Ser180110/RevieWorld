@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import type { AuthFormState } from "@/lib/auth/types";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { PasswordInput } from "./PasswordInput";
 
 type Props = {
   mode: "signIn" | "signUp";
@@ -53,10 +54,18 @@ export function AuthForm({ mode, lang, t, action }: Props) {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-sm font-medium">{t.password}</span>
-        <input
+        <span className="flex items-baseline justify-between gap-2 text-sm font-medium">
+          {t.password}
+          {!signUp && (
+            <Link href={`/${lang}/forgot-password`} className="text-xs font-normal text-zinc-600 underline dark:text-zinc-400">
+              {t.forgotLink}
+            </Link>
+          )}
+        </span>
+        <PasswordInput
           name="password"
-          type="password"
+          showLabel={t.showPassword}
+          hideLabel={t.hidePassword}
           required
           minLength={signUp ? 8 : undefined}
           autoComplete={signUp ? "new-password" : "current-password"}

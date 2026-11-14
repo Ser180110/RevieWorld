@@ -69,6 +69,36 @@
       "rate_limit": "Too many attempts, try again in a few minutes.",
       "confirm_failed": "The confirmation link is invalid or expired.",
       "generic": "Something went wrong, please try again."
+    },
+    "forgotLink": "Forgot password?",
+    "forgotTitle": "Forgot password",
+    "forgotHint": "Type your account's email: we'll send you a link to choose a new one.",
+    "forgotButton": "Send me the link",
+    "sending": "Sending…",
+    "forgotSent": "Done! If an account uses this email, a link to change the password is on its way (check Spam too). The link lasts 1 hour.",
+    "backToLogin": "← Back to sign in",
+    "linkExpired": "That link is no longer valid or was already used: ask for a new one below.",
+    "newPasswordTitle": "Choose a new password",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat the new password",
+    "savePassword": "Save new password",
+    "saving": "Saving…",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "passwordChanged": "Password changed! ✅",
+    "changePassword": "Change password",
+    "changePasswordHint": "Choose a new password to sign in.",
+    "resetErrors": {
+      "invalid_email": "Invalid email.",
+      "rate_limit": "Too many links requested: wait a minute and try again.",
+      "generic": "Something went wrong, please try again."
+    },
+    "newPasswordErrors": {
+      "weak_password": "Password too short: at least 8 characters.",
+      "mismatch": "The two passwords don't match.",
+      "same_password": "That's your current password: pick a different one.",
+      "expired": "The link has expired, ask for a new one:",
+      "generic": "Something went wrong, please try again."
     }
   },
   "common": {

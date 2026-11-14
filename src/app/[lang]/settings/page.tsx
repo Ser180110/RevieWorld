@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
@@ -22,6 +23,16 @@ async function SettingsContent({ lang }: { lang: Locale }) {
   return (
     <>
       <ProfileForm lang={lang} profile={profile} t={dict.settings} />
+      <section className="flex flex-col gap-3 rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
+        <h2 className="text-lg font-semibold">{dict.auth.changePassword}</h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">{dict.auth.changePasswordHint}</p>
+        <Link
+          href={`/${lang}/reset-password`}
+          className="self-start rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          🔑 {dict.auth.changePassword}
+        </Link>
+      </section>
       <DeleteAccount
         lang={lang}
         username={profile.username}

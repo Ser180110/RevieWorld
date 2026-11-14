@@ -10,3 +10,9 @@ export type AuthErrorCode =
   | "generic";
 
 export type AuthFormState = { error?: AuthErrorCode; done?: boolean };
+
+export type ResetErrorCode = "invalid_email" | "rate_limit" | "generic";
+export type ResetFormState = { error?: ResetErrorCode; done?: boolean };
+
+export type NewPasswordErrorCode = "weak_password" | "mismatch" | "same_password" | "expired" | "generic";
+export type NewPasswordFormState = { error?: NewPasswordErrorCode };

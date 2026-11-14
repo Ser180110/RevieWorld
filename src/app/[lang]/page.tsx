@@ -78,7 +78,7 @@ async function HomeFeed({
   dict: Dictionary;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [{ feed, deleted }, userId] = await Promise.all([searchParams, getCurrentUserId()]);
+  const [{ feed, deleted, password }, userId] = await Promise.all([searchParams, getCurrentUserId()]);
   if (!userId) {
     return (
       <section className="flex flex-col gap-3">
@@ -101,6 +101,11 @@ async function HomeFeed({
     }`;
   return (
     <section className="flex flex-col gap-4">
+      {password === "changed" && (
+        <p role="status" className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+          {dict.auth.passwordChanged}
+        </p>
+      )}
       <nav className="flex gap-1 self-start rounded-full bg-zinc-100 p-1 dark:bg-zinc-900" aria-label={dict.home.recentTitle}>
         <Link href={`/${lang}`} scroll={false} className={tabClass(tab === "following")} aria-current={tab === "following" ? "page" : undefined}>
           {dict.feed.following}
