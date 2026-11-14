@@ -84,7 +84,7 @@ export function ReviewCard({
         ))}
       {sticker && (
         <div className="py-1">
-          <Sticker k={sticker} lang={lang} />
+          <Sticker a={sticker} lang={lang} />
         </div>
       )}
       <ReviewPhotos photos={review.photos} openLabel={t.openReview} />

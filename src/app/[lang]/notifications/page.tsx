@@ -9,7 +9,7 @@ import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
 import { MarkNotificationsRead } from "@/components/MarkNotificationsRead";
 import { ReviewSkeletons } from "@/components/Skeletons";
-import { splitSticker, STICKERS } from "@/lib/stickers";
+import { previewText } from "@/lib/stickers";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/notifications">): Promise<Metadata> {
   const { lang } = await params;
@@ -73,7 +73,7 @@ async function NotificationList({ lang }: { lang: Locale }) {
                   <span className="text-sm">{text}</span>
                   {(n.type === "comment" || n.type === "mention") && n.comment?.body && (
                     <span className="line-clamp-2 text-sm text-zinc-500">
-                      “{splitSticker(n.comment.body).text || (splitSticker(n.comment.body).sticker ? STICKERS[splitSticker(n.comment.body).sticker!].emoji : "")}”
+                      “{previewText(n.comment.body)}”
                     </span>
                   )}
                   <time className="text-xs text-zinc-500" dateTime={n.created_at}>

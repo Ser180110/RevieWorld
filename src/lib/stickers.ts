@@ -32,23 +32,65 @@ export function isStickerKey(value: unknown): value is StickerKey {
   return typeof value === "string" && Object.hasOwn(STICKERS, value);
 }
 
-const TOKEN = /\s*\{\{sticker:([a-z]+)\}\}\s*/g;
+/**
+ * What a review or comment can carry: one of our badge stickers, or a GIPHY
+ * GIF / sticker (animated, transparent background) saved by its id.
+ */
+export type Attachment =
+  | { kind: "sticker"; key: StickerKey }
+  | { kind: "gif" | "gsticker"; id: string };
 
-/** Text without sticker tokens, and the (first valid) sticker. */
-export function splitSticker(body: string | null | undefined): { text: string; sticker: StickerKey | null } {
+const GIPHY_ID = /^[A-Za-z0-9]{5,40}$/;
+
+/** "fire", "gif:abc123" or "gsticker:abc123" → attachment (null if invalid). */
+export function parseAttachment(value: unknown): Attachment | null {
+  if (typeof value !== "string" || !value) return null;
+  const [kind, id] = value.split(":", 2);
+  if (id === undefined) return isStickerKey(kind) ? { kind: "sticker", key: kind } : null;
+  if (kind === "sticker") return isStickerKey(id) ? { kind: "sticker", key: id } : null;
+  if ((kind === "gif" || kind === "gsticker") && GIPHY_ID.test(id)) return { kind, id };
+  return null;
+}
+
+/** The value sent by the form for an attachment. */
+export function attachmentValue(a: Attachment | null): string {
+  if (!a) return "";
+  return a.kind === "sticker" ? a.key : `${a.kind}:${a.id}`;
+}
+
+/** Animated image of a GIPHY item (webp keeps stickers transparent). */
+export function giphyUrl(id: string, small = false): string {
+  return `https://media.giphy.com/media/${id}/${small ? "200w" : "giphy"}.webp`;
+}
+
+const TOKEN = /\s*\{\{(sticker|gif|gsticker):([A-Za-z0-9]+)\}\}\s*/g;
+
+/** Text without attachment tokens, and the (first valid) attachment. */
+export function splitSticker(body: string | null | undefined): { text: string; sticker: Attachment | null } {
   if (!body) return { text: "", sticker: null };
-  let sticker: StickerKey | null = null;
+  let sticker: Attachment | null = null;
   const text = body
-    .replace(TOKEN, (_, key: string) => {
-      if (!sticker && isStickerKey(key)) sticker = key;
+    .replace(TOKEN, (_, kind: string, id: string) => {
+      sticker ??= parseAttachment(`${kind}:${id}`);
       return "\n";
     })
     .trim();
   return { text, sticker };
 }
 
-/** Body to save: the text plus the sticker token (if any). */
-export function joinSticker(text: string, sticker: string | null | undefined): string {
+/** Short text for previews (notifications): the text, or an icon. */
+export function previewText(body: string | null | undefined): string {
+  const { text, sticker } = splitSticker(body);
+  if (text) return text;
+  if (!sticker) return "";
+  return sticker.kind === "sticker" ? STICKERS[sticker.key].emoji : sticker.kind === "gif" ? "GIF" : "✨";
+}
+
+/** Body to save: the text plus the attachment token (if any). */
+export function joinSticker(text: string, value: string | null | undefined): string {
   const clean = splitSticker(text).text;
-  return isStickerKey(sticker) ? `${clean}${clean ? "\n" : ""}{{sticker:${sticker}}}` : clean;
+  const a = parseAttachment(value);
+  if (!a) return clean;
+  const token = a.kind === "sticker" ? `{{sticker:${a.key}}}` : `{{${a.kind}:${a.id}}}`;
+  return `${clean}${clean ? "\n" : ""}${token}`;
 }

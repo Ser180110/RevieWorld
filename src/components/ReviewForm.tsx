@@ -7,7 +7,7 @@ import type { Suggestion } from "@/lib/data/types";
 import { submitReview, suggestItems } from "@/lib/reviews/actions";
 import { PhotoPicker } from "./PhotoPicker";
 import { StickerPicker } from "./StickerPicker";
-import { splitSticker, type StickerKey } from "@/lib/stickers";
+import { splitSticker, type Attachment } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
 import { count } from "@/lib/format";
 import { useDebounced } from "./useDebounced";
@@ -48,7 +48,7 @@ export function ReviewForm({
 }: Props) {
   const [state, formAction, pending] = useActionState(submitReview, {});
   const initial = splitSticker(existing?.body);
-  const [sticker, setSticker] = useState<StickerKey | null>(initial.sticker);
+  const [sticker, setSticker] = useState<Attachment | null>(initial.sticker);
   const [itemName, setItemName] = useState("");
   const [picked, setPicked] = useState<Suggestion | null>(null);
   const debounced = useDebounced(itemName.trim());

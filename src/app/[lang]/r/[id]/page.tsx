@@ -134,7 +134,7 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
                     </p>
                     {splitSticker(c.body).sticker && (
                       <div className="py-1">
-                        <Sticker k={splitSticker(c.body).sticker!} lang={lang} size="sm" />
+                        <Sticker a={splitSticker(c.body).sticker!} lang={lang} size="sm" />
                       </div>
                     )}
                   </div>

@@ -120,8 +120,8 @@
       }
   },
   "reviewForm": {
-    "stickerAdd": "Aggiungi uno sticker",
-    "stickerRemove": "Togli sticker",
+    "stickerAdd": "Sticker o GIF",
+    "stickerRemove": "Togli",
     "itemLabel": "Cosa recensisci?",
     "itemPlaceholder": "Es. il tombino di via Roma 12",
     "itemSuggestions": "Forse intendevi:",
@@ -331,8 +331,8 @@
     "count": "{n} cose da provare"
   },
   "comments": {
-    "stickerAdd": "Aggiungi uno sticker",
-    "stickerRemove": "Togli sticker",
+    "stickerAdd": "Sticker o GIF",
+    "stickerRemove": "Togli",
     "title": "Commenti",
     "empty": "Nessun commento. Scrivi il primo!",
     "placeholder": "Scrivi un commento… (usa @ per menzionare qualcuno)",
