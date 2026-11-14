@@ -76,7 +76,7 @@ export default async function RootLayout({
               className="flex shrink-0 items-center"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-96h.png" alt="RevieWorld" width={72} height={48} className="-my-2 h-12 w-auto rounded-lg" />
+              <img src="/logo-96h.png" alt="RevieWorld" width={72} height={48} className="-my-2 h-12 w-auto dark:rounded-xl dark:bg-white dark:px-1" />
             </Link>
             {/* Desktop: everything in one row. */}
             <div className="hidden items-center justify-end gap-1 lg:flex">
