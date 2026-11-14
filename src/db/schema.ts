@@ -9,6 +9,7 @@
  */
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   check,
   index,
@@ -101,6 +102,8 @@ export const categories = pgTable(
     }),
     status: contentStatus("status").notNull().default("active"),
     mergedIntoId: uuid("merged_into_id"),
+    /** Subcategory of ("Cinema Barberini" inside "Cinema"). */
+    parentId: uuid("parent_id").references((): AnyPgColumn => categories.id, { onDelete: "set null" }),
     itemsCount: integer("items_count").notNull().default(0),
     reviewsCount: integer("reviews_count").notNull().default(0),
     followersCount: integer("followers_count").notNull().default(0),
@@ -109,6 +112,8 @@ export const categories = pgTable(
   (t) => [
     uniqueIndex("categories_slug_key").on(t.slug),
     uniqueIndex("categories_normalized_name_key").on(t.normalizedName),
+    index("categories_parent_idx").on(t.parentId),
+    check("categories_not_own_parent", sql`${t.parentId} is null or ${t.parentId} <> ${t.id}`),
     check(
       "categories_name_length",
       sql`char_length(${t.name}) between 2 and 60`,

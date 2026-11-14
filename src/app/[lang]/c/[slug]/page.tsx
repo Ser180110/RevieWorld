@@ -8,6 +8,7 @@ import {
   getCategoryItems,
   getCurrentUserId,
   getCategoryReviews,
+  getCategoryFamily,
   getViewer,
   isFollowing,
   getProfileById,
@@ -16,6 +17,8 @@ import {
 } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewSortTabs } from "@/components/ReviewSortTabs";
+import { CategoryTile } from "@/components/CategoryTile";
+import { SubcategoryForm } from "@/components/SubcategoryForm";
 import { setFollow } from "@/lib/reviews/actions";
 import { count, fill, formatStars } from "@/lib/format";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -31,11 +34,12 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
   const category = await getCategory(decodeURIComponent(slug));
   if (!category) notFound();
 
-  const [items, userId, founder, reviews] = await Promise.all([
+  const [items, userId, founder, reviews, family] = await Promise.all([
     getCategoryItems(category.id),
     getCurrentUserId(),
     category.created_by ? getProfileById(category.created_by) : Promise.resolve(null),
     getCategoryReviews(category.id, sort),
+    getCategoryFamily(category.id),
   ]);
   const viewer = await getViewer(reviews);
   const here = `/${lang}/c/${category.slug}`;
@@ -45,6 +49,14 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
   return (
     <div className="flex flex-col gap-10">
       <header className={`-mx-4 flex flex-col gap-3 rounded-3xl bg-gradient-to-br px-6 py-8 sm:mx-0 ${style.classes.banner}`}>
+        {family.parent && (
+          <Link
+            href={`/${lang}/c/${family.parent.slug}`}
+            className="self-start rounded-full bg-white/60 px-3 py-1 text-sm font-medium hover:bg-white dark:bg-black/30 dark:hover:bg-black/50"
+          >
+            ← {t.insideOf} {styleOf(family.parent).emoji} {family.parent.name}
+          </Link>
+        )}
         <span className="text-6xl leading-none" aria-hidden>
           {style.emoji}
         </span>
@@ -105,6 +117,29 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
           </div>
         )}
       </header>
+
+      {(family.children.length > 0 || userId) && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xl font-semibold">
+            📂 {t.subTitle}
+            {family.children.length > 0 && <span className="text-zinc-400"> ({family.children.length})</span>}
+          </h2>
+          {family.children.length > 0 && (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {family.children.map((c) => (
+                <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
+              ))}
+            </div>
+          )}
+          <SubcategoryForm
+            lang={lang}
+            parentId={category.id}
+            signedIn={Boolean(userId)}
+            t={{ subAdd: t.subAdd, subPlaceholder: t.subPlaceholder, subCreate: t.subCreate, subCancel: t.subCancel }}
+            errors={dict.reviewForm.errors}
+          />
+        </section>
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">{t.itemsTitle}</h2>

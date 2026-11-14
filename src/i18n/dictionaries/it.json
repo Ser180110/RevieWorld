@@ -122,7 +122,13 @@
       "locked": "Non si può più rinominare: altre persone hanno già recensito in questa categoria.",
       "duplicate": "Esiste già una categoria con questo nome.",
       "generic": "Non è stato possibile salvare: riprova."
-    }
+    },
+    "insideOf": "Dentro",
+    "subTitle": "Sottocategorie",
+    "subAdd": "+ Crea una sottocategoria",
+    "subPlaceholder": "Es. Cinema Barberini",
+    "subCreate": "Crea",
+    "subCancel": "Annulla"
   },
   "reviewForm": {
     "stickerAdd": "Sticker o GIF",
