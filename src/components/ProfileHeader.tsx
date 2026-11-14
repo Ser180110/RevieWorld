@@ -3,7 +3,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Profile, ProfileStats } from "@/lib/data/types";
 import { fill } from "@/lib/format";
-import { Avatar } from "./Avatar";
+import { AvatarZoom } from "./AvatarZoom";
 import { FollowButton } from "./FollowButton";
 import { ThemePattern } from "./ThemePattern";
 import { patternEmoji, themeOf } from "@/lib/profileTheme";
@@ -56,7 +56,7 @@ export function ProfileHeader({
       <div className={`relative flex flex-col gap-4 overflow-hidden rounded-3xl p-5 shadow-sm sm:p-7 ${theme.bg}`}>
       <ThemePattern emoji={patternEmoji(profile.theme_emoji)} />
       <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-        <Avatar url={profile.avatar_url} name={profile.username} size={88} />
+        <AvatarZoom url={profile.avatar_url} name={profile.username} size={88} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl font-semibold tracking-tight">

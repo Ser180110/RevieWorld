@@ -6,7 +6,7 @@ import { sendPendingPushes } from "@/lib/push/send";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { joinSticker } from "@/lib/stickers";
-import { isThemeKey, patternEmoji } from "@/lib/profileTheme";
+import { canUseEmoji, isThemeKey, patternEmoji } from "@/lib/profileTheme";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
@@ -231,10 +231,15 @@ export async function updateProfile(
   if (taken) return { error: "username_taken" };
 
   const themeBg = String(formData.get("theme_bg") ?? "");
-  const themeEmoji = String(formData.get("theme_emoji") ?? "");
+  let themeEmoji = patternEmoji(String(formData.get("theme_emoji") ?? ""));
+  if (themeEmoji && !canUseEmoji(themeEmoji, null)) {
+    // 🍓 is only for the founders (the database checks this too).
+    const { data: me } = await s.supabase.from("profiles").select("badge").eq("id", s.userId).maybeSingle();
+    if (!canUseEmoji(themeEmoji, (me as { badge?: string | null } | null)?.badge)) themeEmoji = null;
+  }
   const look = {
     theme_bg: isThemeKey(themeBg) && themeBg !== "default" ? themeBg : null,
-    theme_emoji: patternEmoji(themeEmoji),
+    theme_emoji: themeEmoji,
   };
   let { error } = await s.supabase
     .from("profiles")
