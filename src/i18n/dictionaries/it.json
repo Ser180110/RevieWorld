@@ -17,7 +17,12 @@
     "lists": "Liste",
     "activity": "Attività",
     "menu": "Menu",
-    "notifications": "Notifiche"
+    "notifications": "Notifiche",
+    "signOutConfirm": "Vuoi davvero uscire dal tuo account?",
+    "theme": "Tema",
+    "themeLight": "Chiaro",
+    "themeDark": "Scuro",
+    "themeAuto": "Automatico"
   },
   "home": {
     "headline": "Recensisci qualsiasi cosa.",

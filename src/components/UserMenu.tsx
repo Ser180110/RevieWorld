@@ -6,6 +6,7 @@ import { getCurrentProfile } from "@/lib/data/queries";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { signOut } from "@/lib/auth/actions";
 import { Avatar } from "./Avatar";
+import { ConfirmButton } from "./ConfirmButton";
 
 const link =
   "rounded-full px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
@@ -63,9 +64,7 @@ export async function UserMenu({
           </Link>
         </>
       )}
-      <button type="submit" className={link}>
-        {t.signOut}
-      </button>
+      <ConfirmButton label={t.signOut} confirmText={t.signOutConfirm} className={`cursor-pointer ${link}`} />
     </form>
   );
 }
