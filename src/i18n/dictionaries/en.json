@@ -120,8 +120,8 @@
       }
   },
   "reviewForm": {
-    "stickerAdd": "Add a sticker",
-    "stickerRemove": "Remove sticker",
+    "stickerAdd": "Sticker or GIF",
+    "stickerRemove": "Remove",
     "itemLabel": "What are you reviewing?",
     "itemPlaceholder": "E.g. the manhole cover on Main Street",
     "itemSuggestions": "Did you mean:",
@@ -331,8 +331,8 @@
     "count": "{n} things to try"
   },
   "comments": {
-    "stickerAdd": "Add a sticker",
-    "stickerRemove": "Remove sticker",
+    "stickerAdd": "Sticker or GIF",
+    "stickerRemove": "Remove",
     "title": "Comments",
     "empty": "No comments yet. Be the first!",
     "placeholder": "Write a comment… (use @ to mention someone)",

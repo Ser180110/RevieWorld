@@ -5,7 +5,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { addComment, suggestMentions, type MentionSuggestion } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
 import { StickerPicker } from "./StickerPicker";
-import type { StickerKey } from "@/lib/stickers";
+import type { Attachment } from "@/lib/stickers";
 
 /** The "@abc" being typed just before the cursor, if any. */
 function mentionAt(text: string, cursor: number): { start: number; query: string } | null {
@@ -16,7 +16,7 @@ function mentionAt(text: string, cursor: number): { start: number; query: string
 export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: string; t: Dictionary["comments"] }) {
   const [state, formAction, pending] = useActionState(addComment, {});
   const [body, setBody] = useState("");
-  const [sticker, setSticker] = useState<StickerKey | null>(null);
+  const [sticker, setSticker] = useState<Attachment | null>(null);
   const [lastOk, setLastOk] = useState(state.ok);
   const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
   const [people, setPeople] = useState<MentionSuggestion[]>([]);

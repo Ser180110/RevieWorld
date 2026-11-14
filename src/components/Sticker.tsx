@@ -1,8 +1,28 @@
-import { STICKERS, type StickerKey } from "@/lib/stickers";
+import { STICKERS, giphyUrl, type Attachment } from "@/lib/stickers";
 
-/** A sticker: tilted, white-bordered badge with a big emoji. */
-export function Sticker({ k, lang, size = "md" }: { k: StickerKey; lang: string; size?: "sm" | "md" }) {
-  const s = STICKERS[k];
+/**
+ * An attachment: one of our tilted badge stickers, or a GIPHY GIF / sticker
+ * (animated, stickers with a transparent background).
+ */
+export function Sticker({ a, lang, size = "md" }: { a: Attachment; lang: string; size?: "sm" | "md" }) {
+  if (a.kind !== "sticker") {
+    const gif = a.kind === "gif";
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={giphyUrl(a.id, size === "sm")}
+        alt={gif ? "GIF" : "Sticker"}
+        loading="lazy"
+        decoding="async"
+        className={
+          gif
+            ? `w-auto max-w-full rounded-xl ${size === "sm" ? "max-h-40" : "max-h-64"}`
+            : `w-auto max-w-full drop-shadow-md ${size === "sm" ? "max-h-28" : "max-h-40"}`
+        }
+      />
+    );
+  }
+  const s = STICKERS[a.key];
   const label = lang === "en" ? s.en : s.it;
   return (
     <span
