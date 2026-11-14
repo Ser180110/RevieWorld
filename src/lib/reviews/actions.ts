@@ -10,6 +10,7 @@ import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import type { Suggestion } from "@/lib/data/types";
 import { isOwnPhotoPath, MAX_REVIEW_PHOTOS } from "@/lib/photos";
+import { joinSticker } from "@/lib/stickers";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -183,7 +184,7 @@ const reviewSchema = z.object({
   itemId: z.uuid().optional(),
   itemName: z.string().trim().min(2).max(120).optional(),
   rating: z.coerce.number().int().min(1).max(10),
-  body: z.string().trim().max(5000).optional(),
+  body: z.string().trim().max(4950).optional(),
   spoiler: z.boolean(),
 });
 
@@ -266,7 +267,7 @@ export async function submitReview(
   // 2. One review per user and item: update it if it exists.
   const fields = {
     rating: input.rating,
-    body: input.body ?? null,
+    body: joinSticker(input.body ?? "", String(formData.get("sticker") ?? "")) || null,
     contains_spoiler: input.spoiler,
   };
   const { data: mine } = await supabase

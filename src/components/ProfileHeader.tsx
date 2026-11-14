@@ -5,9 +5,8 @@ import type { Profile, ProfileStats } from "@/lib/data/types";
 import { fill } from "@/lib/format";
 import { Avatar } from "./Avatar";
 import { FollowButton } from "./FollowButton";
-
-const pill =
-  "rounded-full px-4 py-1.5 text-sm font-medium border border-zinc-300 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100";
+import { ThemePattern } from "./ThemePattern";
+import { patternEmoji, themeOf } from "@/lib/profileTheme";
 
 /** Avatar, name, bio, counters, follow / edit button and the Profile · Diary tabs. */
 export function ProfileHeader({
@@ -28,6 +27,8 @@ export function ProfileHeader({
   t: Dictionary["profile"];
 }) {
   const base = `/${lang}/u/${profile.username}`;
+  const theme = themeOf(profile.theme_bg);
+  const muted = theme.muted;
   const own = viewerId === profile.id;
   const joined = new Intl.DateTimeFormat(lang, {
     month: "long",
@@ -52,7 +53,9 @@ export function ProfileHeader({
 
   return (
     <header className="flex flex-col gap-6">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+      <div className={`relative flex flex-col gap-4 overflow-hidden rounded-3xl p-5 shadow-sm sm:p-7 ${theme.bg}`}>
+      <ThemePattern emoji={patternEmoji(profile.theme_emoji)} />
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
         <Avatar url={profile.avatar_url} name={profile.username} size={88} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-3">
@@ -60,7 +63,12 @@ export function ProfileHeader({
               {profile.display_name || profile.username}
             </h1>
             {own ? (
-              <Link href={`/${lang}/settings`} className={pill}>
+              <Link
+                href={`/${lang}/settings`}
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur ${
+                  theme.dark ? "border-white/40 bg-white/10 hover:bg-white/20" : "border-zinc-900/20 bg-white/50 hover:bg-white/80 dark:border-zinc-700"
+                }`}
+              >
                 {t.edit}
               </Link>
             ) : (
@@ -74,7 +82,7 @@ export function ProfileHeader({
               />
             )}
           </div>
-          <p className="flex flex-wrap items-center gap-2 text-zinc-500">
+          <p className={`flex flex-wrap items-center gap-2 ${muted}`}>
             @{profile.username}
             {profile.badge === "founder" && (
               <span
@@ -85,7 +93,7 @@ export function ProfileHeader({
               </span>
             )}
           </p>
-          <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-500">
+          <p className={`flex flex-wrap gap-x-4 gap-y-1 text-sm ${muted}`}>
             {profile.location && <span>📍 {profile.location}</span>}
             {profile.website && website && (
               <a
@@ -111,9 +119,9 @@ export function ProfileHeader({
             <Link
               key={label}
               href={href}
-              className="flex flex-col rounded-lg px-1 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              className="flex flex-col rounded-lg px-1 hover:bg-black/5 dark:hover:bg-white/10"
             >
-              <dt className="order-2 text-xs uppercase tracking-wide text-zinc-500">
+              <dt className={`order-2 text-xs uppercase tracking-wide ${muted}`}>
                 {label}
               </dt>
               <dd className="order-1 text-2xl font-semibold tabular-nums">
@@ -123,11 +131,8 @@ export function ProfileHeader({
           ))}
         </dl>
       </div>
-      {profile.bio && (
-        <p className="max-w-2xl whitespace-pre-line text-zinc-700 dark:text-zinc-300">
-          {profile.bio}
-        </p>
-      )}
+      {profile.bio && <p className="relative max-w-2xl whitespace-pre-line">{profile.bio}</p>}
+      </div>
       <nav className="flex gap-6 border-b border-zinc-200 dark:border-zinc-800">
         {tab("profile", base, t.reviewsTab)}
         {tab("diary", `${base}/diary`, t.diaryTab)}

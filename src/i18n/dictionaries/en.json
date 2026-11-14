@@ -119,6 +119,8 @@
       }
   },
   "reviewForm": {
+    "stickerAdd": "Add a sticker",
+    "stickerRemove": "Remove sticker",
     "itemLabel": "What are you reviewing?",
     "itemPlaceholder": "E.g. the manhole cover on Main Street",
     "itemSuggestions": "Did you mean:",
@@ -203,6 +205,12 @@
     "totalOne": "1 entry"
   },
   "settings": {
+    "themeTitle": "Profile background",
+    "themeHint": "Pick a colour or a gradient and, if you like, an emoji pattern: everyone sees it on your profile.",
+    "themeSolid": "Colours",
+    "themeGradient": "Gradients",
+    "themePattern": "Emoji pattern",
+    "themeNone": "None",
     "title": "Edit profile",
     "avatar": "Profile picture",
     "avatarChange": "Change picture",
@@ -319,6 +327,8 @@
     "count": "{n} things to try"
   },
   "comments": {
+    "stickerAdd": "Add a sticker",
+    "stickerRemove": "Remove sticker",
     "title": "Comments",
     "empty": "No comments yet. Be the first!",
     "placeholder": "Write a comment… (use @ to mention someone)",

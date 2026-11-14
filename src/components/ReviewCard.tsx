@@ -8,6 +8,8 @@ import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LikeButton } from "./LikeButton";
 import { ReviewPhotos } from "./ReviewPhotos";
 import { ShareButton } from "./ShareButton";
+import { Sticker } from "./Sticker";
+import { splitSticker } from "@/lib/stickers";
 import { Stars } from "./Stars";
 
 export function ReviewCard({
@@ -33,6 +35,7 @@ export function ReviewCard({
   const item = review.item;
   const username = review.author?.username;
   const own = viewer.id !== null && viewer.id === review.user_id;
+  const { text, sticker } = splitSticker(review.body);
   return (
     <article className="mb-3 flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition last:mb-0 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
       {showItem && item?.category && (
@@ -66,19 +69,24 @@ export function ReviewCard({
           <time dateTime={review.created_at}>{formatDate(review.created_at, lang)}</time>
         </Link>
       </div>
-      {review.body &&
+      {text &&
         (review.contains_spoiler ? (
           <details>
             <summary className="cursor-pointer text-sm text-zinc-500">
               {spoilerLabel}
             </summary>
-            <p className="mt-1 whitespace-pre-line">{review.body}</p>
+            <p className="mt-1 whitespace-pre-line">{text}</p>
           </details>
         ) : (
           <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
-            {review.body}
+            {text}
           </p>
         ))}
+      {sticker && (
+        <div className="py-1">
+          <Sticker k={sticker} lang={lang} />
+        </div>
+      )}
       <ReviewPhotos photos={review.photos} openLabel={t.openReview} />
       <div className="flex items-center gap-4">
         <Link

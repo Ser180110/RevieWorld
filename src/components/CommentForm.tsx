@@ -4,6 +4,8 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { addComment, suggestMentions, type MentionSuggestion } from "@/lib/social/actions";
 import { Avatar } from "./Avatar";
+import { StickerPicker } from "./StickerPicker";
+import type { StickerKey } from "@/lib/stickers";
 
 /** The "@abc" being typed just before the cursor, if any. */
 function mentionAt(text: string, cursor: number): { start: number; query: string } | null {
@@ -14,6 +16,7 @@ function mentionAt(text: string, cursor: number): { start: number; query: string
 export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: string; t: Dictionary["comments"] }) {
   const [state, formAction, pending] = useActionState(addComment, {});
   const [body, setBody] = useState("");
+  const [sticker, setSticker] = useState<StickerKey | null>(null);
   const [lastOk, setLastOk] = useState(state.ok);
   const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
   const [people, setPeople] = useState<MentionSuggestion[]>([]);
@@ -23,6 +26,7 @@ export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: str
   if (state.ok !== lastOk) {
     setLastOk(state.ok);
     setBody("");
+    setSticker(null);
     setMention(null);
   }
 
@@ -65,8 +69,8 @@ export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: str
         <textarea
           ref={area}
           name="body"
-          required
-          maxLength={1000}
+          required={!sticker}
+          maxLength={960}
           rows={3}
           value={body}
           placeholder={t.placeholder}
@@ -109,6 +113,7 @@ export function CommentForm({ lang, reviewId, t }: { lang: string; reviewId: str
           </ul>
         )}
       </div>
+      <StickerPicker lang={lang} value={sticker} onChange={setSticker} t={{ add: t.stickerAdd, remove: t.stickerRemove }} />
       {state.error && (
         <p role="alert" className="text-sm text-red-600">
           {t.errors[state.error]}

@@ -119,6 +119,8 @@
       }
   },
   "reviewForm": {
+    "stickerAdd": "Aggiungi uno sticker",
+    "stickerRemove": "Togli sticker",
     "itemLabel": "Cosa recensisci?",
     "itemPlaceholder": "Es. il tombino di via Roma 12",
     "itemSuggestions": "Forse intendevi:",
@@ -203,6 +205,12 @@
     "totalOne": "1 voce"
   },
   "settings": {
+    "themeTitle": "Sfondo del profilo",
+    "themeHint": "Scegli un colore o un gradiente e, se vuoi, un'emoji da spargere: tutti lo vedranno sul tuo profilo.",
+    "themeSolid": "Colori",
+    "themeGradient": "Gradienti",
+    "themePattern": "Emoji sullo sfondo",
+    "themeNone": "Nessuna",
     "title": "Modifica profilo",
     "avatar": "Foto profilo",
     "avatarChange": "Cambia foto",
@@ -319,6 +327,8 @@
     "count": "{n} cose da provare"
   },
   "comments": {
+    "stickerAdd": "Aggiungi uno sticker",
+    "stickerRemove": "Togli sticker",
     "title": "Commenti",
     "empty": "Nessun commento. Scrivi il primo!",
     "placeholder": "Scrivi un commento… (usa @ per menzionare qualcuno)",

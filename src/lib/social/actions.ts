@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { joinSticker } from "@/lib/stickers";
+import { isThemeKey, patternEmoji } from "@/lib/profileTheme";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
@@ -224,10 +226,20 @@ export async function updateProfile(
     .maybeSingle();
   if (taken) return { error: "username_taken" };
 
-  const { error } = await s.supabase
+  const themeBg = String(formData.get("theme_bg") ?? "");
+  const themeEmoji = String(formData.get("theme_emoji") ?? "");
+  const look = {
+    theme_bg: isThemeKey(themeBg) && themeBg !== "default" ? themeBg : null,
+    theme_emoji: patternEmoji(themeEmoji),
+  };
+  let { error } = await s.supabase
     .from("profiles")
-    .update(input)
+    .update({ ...input, ...look })
     .eq("id", s.userId);
+  // Database not migrated yet (no theme columns): save the rest.
+  if (error && (error.code === "PGRST204" || error.code === "42703")) {
+    ({ error } = await s.supabase.from("profiles").update(input).eq("id", s.userId));
+  }
   if (error) {
     if (error.code === "23505") return { error: "username_taken" };
     console.error("updateProfile", error);
@@ -295,8 +307,11 @@ export type CommentFormState = { error?: "body" | "auth" | "generic"; ok?: numbe
 export async function addComment(_prev: CommentFormState, formData: FormData): Promise<CommentFormState> {
   const lang = localeOf(formData);
   const reviewId = String(formData.get("reviewId") ?? "");
-  const body = z.string().trim().min(1).max(1000).safeParse(formData.get("body") ?? "");
-  if (!body.success) return { error: "body" };
+  const text = z.string().trim().max(960).safeParse(formData.get("body") ?? "");
+  if (!text.success) return { error: "body" };
+  // A comment can be just a sticker.
+  const body = { data: joinSticker(text.data, String(formData.get("sticker") ?? "")) };
+  if (!body.data) return { error: "body" };
   if (!z.guid().safeParse(reviewId).success) return { error: "generic" };
   const s = await session();
   if (!s) return { error: "generic" };
