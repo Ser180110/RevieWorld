@@ -165,6 +165,8 @@
     "openReview": "Open the review"
   },
   "profile": {
+    "founder": "RevieWorld founder",
+    "founderTitle": "Created RevieWorld",
     "reviewsTab": "Profile",
     "diaryTab": "Diary",
     "follow": "Follow",

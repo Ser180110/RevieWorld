@@ -74,7 +74,17 @@ export function ProfileHeader({
               />
             )}
           </div>
-          <p className="text-zinc-500">@{profile.username}</p>
+          <p className="flex flex-wrap items-center gap-2 text-zinc-500">
+            @{profile.username}
+            {profile.badge === "founder" && (
+              <span
+                title={t.founderTitle}
+                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-200 to-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-amber-300 dark:from-amber-900 dark:to-yellow-900 dark:text-amber-100 dark:ring-amber-700"
+              >
+                👑 {t.founder}
+              </span>
+            )}
+          </p>
           <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-500">
             {profile.location && <span>📍 {profile.location}</span>}
             {profile.website && website && (

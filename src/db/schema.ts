@@ -65,9 +65,12 @@ export const profiles = pgTable(
     website: text("website"),
     locale: localeEnum("locale").notNull().default("it"),
     role: userRole("role").notNull().default("user"),
+    /** Special badge shown on the profile ("founder"). Set only by migrations, never by users. */
+    badge: text("badge"),
     ...timestamps,
   },
   (t) => [
+    check("profiles_badge_known", sql`${t.badge} is null or ${t.badge} in ('founder')`),
     uniqueIndex("profiles_username_key").on(sql`lower(${t.username})`),
     check(
       "profiles_username_format",
