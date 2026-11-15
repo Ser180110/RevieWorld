@@ -19,7 +19,7 @@ import { count, formatStars, fill } from "@/lib/format";
 import { AddToList } from "@/components/AddToList";
 import { ItemActions } from "@/components/ItemActions";
 import { ShareButton } from "@/components/ShareButton";
-import { RatingHistogram } from "@/components/RatingHistogram";
+import { RatingHistogram, ratingFilterOf, starsText } from "@/components/RatingHistogram";
 import { ReportButton } from "@/components/ReportButton";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
@@ -32,11 +32,13 @@ async function ItemContent({
   slug,
   itemSlug,
   sort,
+  rating,
 }: {
   lang: Locale;
   slug: string;
   itemSlug: string;
   sort: ReviewSort;
+  rating: number | null;
 }) {
   const dict = await getDictionary(lang);
   const t = dict.item;
@@ -53,6 +55,8 @@ async function ItemContent({
     : [[], null];
   const here = `/${lang}/c/${category.slug}/${item.slug}`;
   const mine = userId ? reviews.find((r) => r.user_id === userId) : undefined;
+  const sortQuery = sort === "likes" ? "" : `?sort=${sort}`;
+  const shown = rating ? reviews.filter((r) => r.rating === rating) : reviews;
   const avg = item.avg_rating === null ? null : Number(item.avg_rating);
   const style = styleOf(category);
   const cover =
@@ -109,7 +113,16 @@ async function ItemContent({
           )}
         </div>
         <div className="max-w-sm">
-          <RatingHistogram counts={ratingCounts} title={dict.ratings.title} votesLabel={dict.ratings.votes} />
+          <RatingHistogram
+            counts={ratingCounts}
+            title={dict.ratings.title}
+            votesLabel={dict.ratings.votes}
+            hint={dict.ratings.hint}
+            active={rating}
+            hrefs={ratingCounts.map((_, i) =>
+              rating === i + 1 ? `${here}${sortQuery}#reviews` : `${here}?${[sortQuery.slice(1), `rating=${i + 1}`].filter(Boolean).join("&")}#reviews`,
+            )}
+          />
         </div>
         {status && <ItemActions lang={lang} itemId={item.id} back={here} status={status} t={dict.itemActions} />}
         <div className="flex flex-wrap items-center gap-1">
@@ -158,11 +171,25 @@ async function ItemContent({
 
       <section id="reviews" className="flex scroll-mt-20 flex-col gap-2">
         <h2 className="text-xl font-semibold">{t.reviewsTitle}</h2>
-        {reviews.length > 1 && <ReviewSortTabs base={here} current={sort} t={dict.reviewSort} />}
-        {reviews.length === 0 ? (
-          <p className="text-zinc-500">{t.reviewsEmpty}</p>
+        {reviews.length > 1 && (
+          <ReviewSortTabs base={here} current={sort} t={dict.reviewSort} query={rating ? `rating=${rating}` : ""} />
+        )}
+        {rating && (
+          <p className="flex flex-wrap items-center gap-3 text-sm">
+            <span className="font-medium">
+              {fill(dict.ratings.showing, { stars: starsText(rating) })} ({shown.length})
+            </span>
+            <Link href={`${here}${sortQuery}#reviews`} scroll={false} className="text-zinc-500 hover:underline">
+              {dict.ratings.showAll}
+            </Link>
+          </p>
+        )}
+        {shown.length === 0 ? (
+          <p className="text-zinc-500">
+            {rating ? fill(dict.ratings.noneItem, { stars: starsText(rating) }) : t.reviewsEmpty}
+          </p>
         ) : (
-          reviews.map((r) => (
+          shown.map((r) => (
             <ReviewCard
               key={r.id}
               review={r}
@@ -188,7 +215,15 @@ export default async function ItemPage({
       <Suspense fallback={<p className="text-zinc-500">…</p>}>
         {Promise.all([params, searchParams]).then(([{ lang, slug, item }, sp]) => {
           if (!hasLocale(lang)) notFound();
-          return <ItemContent lang={lang} slug={slug} itemSlug={item} sort={reviewSortOf(sp.sort)} />;
+          return (
+            <ItemContent
+              lang={lang}
+              slug={slug}
+              itemSlug={item}
+              sort={reviewSortOf(sp.sort)}
+              rating={ratingFilterOf(sp.rating)}
+            />
+          );
         })}
       </Suspense>
     </div>
