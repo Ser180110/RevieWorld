@@ -1139,3 +1139,13 @@ export async function getAdminUsers(): Promise<{ users: AdminUser[]; full: boole
     full: false,
   };
 }
+
+/** Where a review was placed on the map, or null (also before migration 0031). */
+export async function getReviewLocation(reviewId: string): Promise<{ lat: number; lng: number } | null> {
+  const supabase = await db();
+  if (!supabase) return null;
+  const { data, error } = await supabase.from("reviews").select("lat, lng").eq("id", reviewId).maybeSingle();
+  if (error || !data) return null;
+  const row = data as { lat: number | null; lng: number | null };
+  return row.lat !== null && row.lng !== null ? { lat: row.lat, lng: row.lng } : null;
+}

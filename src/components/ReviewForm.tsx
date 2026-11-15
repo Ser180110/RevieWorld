@@ -6,6 +6,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
 import { submitReview, suggestItems } from "@/lib/reviews/actions";
 import { PhotoPicker } from "./PhotoPicker";
+import { LocationPicker } from "./LocationPicker";
 import { StickerPicker } from "./StickerPicker";
 import { QuickEmoji } from "./QuickEmoji";
 import { splitSticker, type Attachment } from "@/lib/stickers";
@@ -34,6 +35,10 @@ type Props = {
   common: Dictionary["common"];
   /** Where to go after saving (default: the item page). */
   back?: string;
+  /** Texts of the optional "📍 position" field. */
+  locationT: Dictionary["location"];
+  /** The review's position, when editing one that has it. */
+  location?: { lat: number; lng: number } | null;
 };
 
 export function ReviewForm({
@@ -46,6 +51,8 @@ export function ReviewForm({
   t,
   common,
   back,
+  locationT,
+  location,
 }: Props) {
   const [state, formAction, pending] = useActionState(submitReview, {});
   const initial = splitSticker(existing?.body);
@@ -165,6 +172,7 @@ export function ReviewForm({
         }}
       />
 
+      <LocationPicker initial={location} lang={lang} t={locationT} />
 
       {state.error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">

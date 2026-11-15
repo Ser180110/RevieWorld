@@ -94,6 +94,9 @@ export default async function RootLayout({
               <Link href={`/${lang}/people`} className={navLink}>
                 {dict.nav.people}
               </Link>
+              <Link href={`/${lang}/map`} className={navLink}>
+                {dict.map.nav}
+              </Link>
               {/* usePathname() is request data on dynamic routes: keep it out of the static shell. */}
               <Suspense fallback={<span className="w-36" />}>
                 <LanguageSwitcher current={lang} label={dict.nav.language} />
@@ -137,6 +140,9 @@ export default async function RootLayout({
                   </Link>
                   <Link href={`/${lang}/people`} className={navLink}>
                     {dict.nav.people}
+                  </Link>
+                  <Link href={`/${lang}/map`} className={navLink}>
+                    🗺️ {dict.map.nav}
                   </Link>
                   <Suspense fallback={null}>
                     <UserMenu lang={lang} t={dict.nav} column />

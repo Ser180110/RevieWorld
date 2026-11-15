@@ -244,6 +244,7 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
             categorySlug={category.slug}
             t={dict.reviewForm}
             common={dict.common}
+            locationT={dict.location}
           />
         ) : (
           <Link href={`/${lang}/login`} className="underline">

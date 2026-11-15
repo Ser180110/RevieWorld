@@ -151,6 +151,7 @@ async function ItemContent({
             existing={mine}
             t={dict.reviewForm}
             common={dict.common}
+            locationT={dict.location}
           />
         ) : (
           <Link href={`/${lang}/login`} className="underline">

@@ -46,3 +46,29 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), var(--font-emoji), Arial, Helvetica, sans-serif;
 }
+
+/* Map pins (Leaflet): a round badge with the category emoji. */
+.rw-pin {
+  display: flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px 9999px 9999px 0;
+  transform: rotate(-45deg);
+  background: #fff;
+  border: 2px solid #18181b;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+  font-size: 18px;
+  line-height: 1;
+}
+.rw-pin > * {
+  transform: rotate(45deg);
+}
+.rw-pin-on {
+  background: #fbbf24;
+}
+.leaflet-container {
+  font: inherit;
+  z-index: 0;
+}

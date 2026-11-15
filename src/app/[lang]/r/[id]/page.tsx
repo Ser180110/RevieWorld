@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { ReportButton } from "@/components/ReportButton";
-import { getComments, getLikers, getReview, getViewer } from "@/lib/data/queries";
+import { getComments, getLikers, getReview, getReviewLocation, getViewer } from "@/lib/data/queries";
 import { deleteComment } from "@/lib/social/actions";
 import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
@@ -36,10 +36,11 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
   const t = dict.comments;
   const review = await getReview(id);
   if (!review || !review.item?.category) notFound();
-  const [comments, likers, viewer] = await Promise.all([
+  const [comments, likers, viewer, location] = await Promise.all([
     getComments(review.id),
     getLikers(review.id),
     getViewer([review]),
+    getReviewLocation(review.id),
   ]);
   const item = review.item;
   const category = item.category!;
@@ -68,6 +69,25 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
         t={dict.reviewCard}
         reportT={dict.report}
       />
+
+      {location && (
+        <div className="-mt-4 flex flex-wrap items-center gap-2 text-sm">
+          <Link
+            href={`/${lang}/map?lat=${location.lat}&lng=${location.lng}&review=${review.id}`}
+            className="rounded-full border border-zinc-300 px-3 py-1.5 font-medium hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100"
+          >
+            📍 {dict.map.seeOnMap}
+          </Link>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-zinc-500 hover:underline"
+          >
+            {dict.map.openInMaps} ↗
+          </a>
+        </div>
+      )}
 
       <section id="likes" className="flex scroll-mt-24 flex-col gap-3">
         <h2 className="text-xl font-semibold">
