@@ -236,7 +236,8 @@
     "favoritesTitle": "Preferiti",
     "favoritesEmptyOwn": "Scegli fino a 4 preferiti: apri una recensione e premi «Aggiungi ai preferiti».",
     "removeFavorite": "Togli dai preferiti",
-    "watchlistTab": "Da provare"
+    "watchlistTab": "Da provare",
+    "subcategoryOf": "dentro"
   },
   "diary": {
     "title": "Diario di {name}",
@@ -316,7 +317,31 @@
   },
   "editReview": {
     "title": "Modifica recensione",
-    "back": "← Torna indietro"
+    "back": "← Torna indietro",
+    "move": {
+      "title": "Sposta in un'altra categoria",
+      "current": "Adesso è in:",
+      "open": "Cambia categoria o sottocategoria",
+      "quick": "Vicine a questa",
+      "search": "Oppure cerca una categoria",
+      "searchPlaceholder": "Es. Fontana di Trevi",
+      "itemName": "Nome della recensione",
+      "itemHint": "Puoi lasciarlo così o cambiarlo.",
+      "willMove": "La recensione andrà in:",
+      "submit": "Sposta recensione",
+      "moving": "Sposto…",
+      "cancel": "Annulla",
+      "errors": {
+        "category": "Scegli una categoria.",
+        "item": "Il nome deve avere almeno 2 caratteri.",
+        "already": "Hai già una recensione con questo nome in quella categoria.",
+        "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+        "auth": "Devi accedere.",
+        "generic": "Qualcosa è andato storto, riprova."
+      },
+      "newSub": "Nuova sottocategoria in",
+      "newSubName": "Nome della nuova sottocategoria"
+    }
   },
   "lists": {
     "title": "Liste",

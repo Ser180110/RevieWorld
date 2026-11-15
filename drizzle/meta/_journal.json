@@ -176,6 +176,13 @@
       "when": 1794685854470,
       "tag": "0024_delete_account",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794743585358,
+      "tag": "0025_move_review",
+      "breakpoints": true
     }
   ]
 }

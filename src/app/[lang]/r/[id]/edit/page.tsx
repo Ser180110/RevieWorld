@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCurrentUserId, getReview } from "@/lib/data/queries";
+import { getCategoryFamily, getCurrentUserId, getReview } from "@/lib/data/queries";
+import { MoveReview } from "@/components/MoveReview";
 import { DeleteReviewButton } from "@/components/DeleteReviewButton";
 import { ReviewForm } from "@/components/ReviewForm";
 
@@ -37,6 +38,11 @@ async function EditReview({
   const itemHref = `/${lang}/c/${category.slug}/${item.slug}`;
   if (review.user_id !== userId) redirect(itemHref);
   const target = back ?? itemHref;
+  const family = await getCategoryFamily(review.category_id);
+  const quick = [
+    ...(family.parent ? [{ id: family.parent.id, name: family.parent.name, hint: "⬆️" }] : []),
+    ...family.children.map((c) => ({ id: c.id, name: c.name, hint: "📂" })),
+  ];
 
   return (
     <>
@@ -64,6 +70,15 @@ async function EditReview({
         back={target}
         t={dict.reviewForm}
         common={dict.common}
+      />
+      <MoveReview
+        lang={lang}
+        reviewId={review.id}
+        currentCategoryId={review.category_id}
+        currentCategoryName={category.name}
+        itemName={item.name}
+        quick={quick}
+        t={dict.editReview.move}
       />
       <DeleteReviewButton
         reviewId={review.id}

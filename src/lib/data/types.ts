@@ -10,6 +10,8 @@ export type CategorySummary = {
   normalized_name: string;
   icon: string | null;
   color: string | null;
+  /** Only for subcategories, where shown (e.g. the profile). */
+  parent_name?: string;
 };
 
 export type ItemSummary = {

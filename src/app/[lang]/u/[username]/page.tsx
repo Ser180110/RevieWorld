@@ -67,7 +67,7 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {founded.map((c) => (
-              <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
+              <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} insideLabel={dict.profile.subcategoryOf} />
             ))}
           </div>
         </section>
