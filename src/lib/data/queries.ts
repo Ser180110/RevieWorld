@@ -66,6 +66,76 @@ export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
   return (data ?? []) as unknown as ReviewRow[];
 }
 
+
+// ---------------------------------------------------------------------------
+// Category totals: a category also counts what is inside its subcategories
+// ---------------------------------------------------------------------------
+
+type CategoryTree = {
+  kids: Map<string, string[]>;
+  own: Map<string, { reviews: number; items: number }>;
+};
+
+/** Every active category with its parent, once per request (null before migration 0023). */
+const getCategoryTree = cache(async function getCategoryTree(): Promise<CategoryTree | null> {
+  const supabase = await db();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, parent_id, reviews_count, items_count")
+    .eq("status", "active")
+    .limit(5000);
+  if (error || !data) return null;
+  const kids = new Map<string, string[]>();
+  const own = new Map<string, { reviews: number; items: number }>();
+  for (const c of data as { id: string; parent_id: string | null; reviews_count: number; items_count: number }[]) {
+    own.set(c.id, { reviews: c.reviews_count, items: c.items_count });
+    if (c.parent_id) kids.set(c.parent_id, [...(kids.get(c.parent_id) ?? []), c.id]);
+  }
+  return { kids, own };
+});
+
+/** The category and all its subcategories, at any depth. */
+function subtree(tree: CategoryTree, id: string): string[] {
+  const out: string[] = [];
+  const stack = [id];
+  const seen = new Set<string>();
+  while (stack.length) {
+    const cur = stack.pop()!;
+    if (seen.has(cur)) continue;
+    seen.add(cur);
+    out.push(cur);
+    stack.push(...(tree.kids.get(cur) ?? []));
+  }
+  return out;
+}
+
+/** Ids whose reviews show on a category page: itself and its subcategories. */
+export async function getCategorySubtreeIds(categoryId: string): Promise<string[]> {
+  const tree = await getCategoryTree();
+  return tree ? subtree(tree, categoryId) : [categoryId];
+}
+
+/** Reviews and items counted together with the subcategories. */
+async function withTotals<T extends CategorySummary>(list: T[], resort = false): Promise<T[]> {
+  if (!list.length) return list;
+  const tree = await getCategoryTree();
+  if (!tree || !tree.kids.size) return list;
+  const out = list.map((c) => {
+    const ids = subtree(tree, c.id);
+    if (ids.length === 1) return c;
+    let reviews = 0;
+    let items = 0;
+    for (const id of ids) {
+      const n = id === c.id ? { reviews: c.reviews_count, items: c.items_count } : tree.own.get(id);
+      reviews += n?.reviews ?? 0;
+      items += n?.items ?? 0;
+    }
+    return { ...c, reviews_count: reviews, items_count: items };
+  });
+  return resort ? out.sort((a, b) => b.reviews_count - a.reviews_count) : out;
+}
+
 export async function getTopCategories(limit = 8): Promise<CategorySummary[]> {
   const supabase = await db();
   if (!supabase) return [];
@@ -77,8 +147,8 @@ export async function getTopCategories(limit = 8): Promise<CategorySummary[]> {
     .eq("status", "active")
     .order("reviews_count", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as CategorySummary[];
+    .limit(limit * 3);
+  return (await withTotals((data ?? []) as CategorySummary[], true)).slice(0, limit);
 }
 
 /**
@@ -106,9 +176,9 @@ export async function getCategory(
       )
       .eq("id", data.merged_into_id)
       .maybeSingle();
-    return (target as CategorySummary) ?? null;
+    return target ? (await withTotals([target as CategorySummary]))[0] : null;
   }
-  return data as CategorySummary;
+  return (await withTotals([data as CategorySummary]))[0];
 }
 
 export async function getCategoryItems(
@@ -165,7 +235,7 @@ export async function getFoundedCategories(userId: string, limit = 24): Promise<
     .order("reviews_count", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(limit);
-  const list = (data ?? []) as CategorySummary[];
+  const list = await withTotals((data ?? []) as CategorySummary[]);
   if (!list.length) return list;
   // Subcategories: say which category they are inside of (needs migration 0023).
   const { data: links, error } = await supabase
@@ -198,7 +268,7 @@ export async function getAllCategories(limit = 300): Promise<CategorySummary[]> 
     .order("reviews_count", { ascending: false })
     .order("name", { ascending: true })
     .limit(limit);
-  return (data ?? []) as CategorySummary[];
+  return withTotals((data ?? []) as CategorySummary[], true);
 }
 
 export async function isFollowing(
@@ -277,7 +347,7 @@ export async function getCategoryReviews(
   const query = supabase
     .from("reviews")
     .select(`${REVIEW_FIELDS}, item:items!inner(name, slug, category_id, category:categories(name, slug, icon, color))`)
-    .eq("item.category_id", categoryId)
+    .in("item.category_id", await getCategorySubtreeIds(categoryId))
     .eq("status", "active");
   const { data } = await sortReviews(query, sort).limit(limit);
   return (data ?? []) as unknown as ReviewRow[];
@@ -775,7 +845,7 @@ export async function searchAll(
   const itemRows = (items.data ?? []) as unknown as SearchItem[];
   const covers = await getItemCovers(itemRows.map((i) => i.id));
   return {
-    categories: (categories.data ?? []) as CategorySummary[],
+    categories: await withTotals((categories.data ?? []) as CategorySummary[]),
     items: itemRows.map((i) => ({ ...i, cover: covers[i.id] ?? null })),
     people: q.trim() ? people : [],
   };
@@ -815,5 +885,5 @@ export async function getCategoryFamily(categoryId: string): Promise<CategoryFam
       .maybeSingle();
     parent = (data as CategoryFamily["parent"]) ?? null;
   }
-  return { parent, children: (kids.data ?? []) as CategorySummary[] };
+  return { parent, children: await withTotals((kids.data ?? []) as CategorySummary[], true) };
 }
