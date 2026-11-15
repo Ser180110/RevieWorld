@@ -236,7 +236,8 @@
     "favoritesTitle": "Favourites",
     "favoritesEmptyOwn": "Pick up to 4 favourites: open an item page and press “Add to favourites”.",
     "removeFavorite": "Remove from favourites",
-    "watchlistTab": "To try"
+    "watchlistTab": "To try",
+    "subcategoryOf": "inside"
   },
   "diary": {
     "title": "{name}'s diary",
@@ -316,7 +317,31 @@
   },
   "editReview": {
     "title": "Edit review",
-    "back": "← Back"
+    "back": "← Back",
+    "move": {
+      "title": "Move to another category",
+      "current": "Currently in:",
+      "open": "Change category or subcategory",
+      "quick": "Close to this one",
+      "search": "Or search a category",
+      "searchPlaceholder": "E.g. Trevi Fountain",
+      "itemName": "Review name",
+      "itemHint": "Keep it or change it.",
+      "willMove": "The review will go to:",
+      "submit": "Move review",
+      "moving": "Moving…",
+      "cancel": "Cancel",
+      "errors": {
+        "category": "Pick a category.",
+        "item": "The name needs at least 2 characters.",
+        "already": "You already have a review with this name in that category.",
+        "unavailable": "Not available yet: the database needs an update.",
+        "auth": "You need to sign in.",
+        "generic": "Something went wrong, please try again."
+      },
+      "newSub": "New subcategory in",
+      "newSubName": "New subcategory name"
+    }
   },
   "lists": {
     "title": "Lists",

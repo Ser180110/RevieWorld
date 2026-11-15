@@ -409,3 +409,112 @@ export async function renameCategory(_prev: RenameState, formData: FormData): Pr
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/c/${slug}`);
 }
+
+// ---------------------------------------------------------------------------
+// Move one's own review to another category / subcategory (move_review function)
+// ---------------------------------------------------------------------------
+
+export type MoveState = { error?: "category" | "item" | "already" | "unavailable" | "auth" | "generic" };
+
+export async function moveReview(_prev: MoveState, formData: FormData): Promise<MoveState> {
+  const lang = localeOf(formData);
+  const reviewId = String(formData.get("reviewId") ?? "");
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const itemName = String(formData.get("itemName") ?? "").trim();
+  if (!z.guid().safeParse(reviewId).success) return { error: "generic" };
+  if (!z.guid().safeParse(categoryId).success) return { error: "category" };
+  if (itemName.length < 2 || itemName.length > 120) return { error: "item" };
+  const normalized = normalizeName(itemName);
+  if (normalized.length < 2) return { error: "item" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const userId = await currentUserId(supabase);
+  if (!userId) return { error: "auth" };
+
+  const { data: review } = await supabase.from("reviews").select("id, user_id").eq("id", reviewId).maybeSingle();
+  if (!review || review.user_id !== userId) return { error: "generic" };
+  // Either an existing category, or a new subcategory of the current one.
+  const newName = String(formData.get("newCategory") ?? "").trim();
+  let category: { id: string; slug: string } | null = null;
+  if (newName) {
+    const parsedName = categoryName.safeParse(newName);
+    const newNormalized = normalizeName(newName);
+    if (!parsedName.success || newNormalized.length < 2) return { error: "category" };
+    const { data: existing } = await supabase
+      .from("categories")
+      .select("id, slug")
+      .eq("normalized_name", newNormalized)
+      .eq("status", "active")
+      .maybeSingle();
+    category = existing;
+    if (!category) {
+      const row: Record<string, string | null> = {
+        name: parsedName.data,
+        slug: await uniqueSlug(supabase, "categories", parsedName.data),
+        normalized_name: newNormalized,
+        created_by: userId,
+        icon: guessEmoji(newNormalized),
+        color: guessColor(newNormalized),
+      };
+      let { data: created, error } = await supabase
+        .from("categories")
+        .insert({ ...row, parent_id: categoryId })
+        .select("id, slug")
+        .single();
+      // Database without subcategories yet: create it as a normal category.
+      if (error && (error.code === "PGRST204" || error.code === "42703")) {
+        ({ data: created, error } = await supabase.from("categories").insert(row).select("id, slug").single());
+      }
+      if (error || !created) {
+        console.error("moveReview: create subcategory", error);
+        return { error: "generic" };
+      }
+      category = created;
+    }
+  } else {
+    const { data } = await supabase
+      .from("categories")
+      .select("id, slug")
+      .eq("id", categoryId)
+      .eq("status", "active")
+      .maybeSingle();
+    category = data;
+  }
+  if (!category) return { error: "category" };
+
+  // Same item name in the new category: join it, otherwise create it.
+  let { data: item } = await supabase
+    .from("items")
+    .select("id, slug")
+    .eq("category_id", category.id)
+    .eq("normalized_name", normalized)
+    .maybeSingle();
+  if (!item) {
+    const slug = await uniqueSlug(supabase, "items", itemName, category.id);
+    const { data: created, error } = await supabase
+      .from("items")
+      .insert({ category_id: category.id, name: itemName, slug, normalized_name: normalized, created_by: userId })
+      .select("id, slug")
+      .single();
+    if (error || !created) {
+      console.error("moveReview: create item", error);
+      return { error: "generic" };
+    }
+    item = created;
+  }
+
+  const { data: result, error } = await supabase.rpc("move_review", { p_review: reviewId, p_item: item.id });
+  if (error) {
+    console.error("moveReview", error);
+    return { error: error.code === "PGRST202" ? "unavailable" : "generic" };
+  }
+  if (result === "already") return { error: "already" };
+  if (result !== "ok") return { error: "generic" };
+
+  await supabase
+    .from("category_follows")
+    .upsert({ user_id: userId, category_id: category.id }, { ignoreDuplicates: true });
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/c/${category.slug}/${item.slug}`);
+}

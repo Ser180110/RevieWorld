@@ -165,7 +165,27 @@ export async function getFoundedCategories(userId: string, limit = 24): Promise<
     .order("reviews_count", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data ?? []) as CategorySummary[];
+  const list = (data ?? []) as CategorySummary[];
+  if (!list.length) return list;
+  // Subcategories: say which category they are inside of (needs migration 0023).
+  const { data: links, error } = await supabase
+    .from("categories")
+    .select("id, parent_id")
+    .in("id", list.map((c) => c.id));
+  if (error || !links) return list;
+  const parentOf = new Map(
+    (links as { id: string; parent_id: string | null }[]).filter((l) => l.parent_id).map((l) => [l.id, l.parent_id!]),
+  );
+  if (!parentOf.size) return list;
+  const { data: parents } = await supabase
+    .from("categories")
+    .select("id, name")
+    .in("id", [...new Set(parentOf.values())]);
+  const nameOf = new Map(((parents ?? []) as { id: string; name: string }[]).map((p) => [p.id, p.name]));
+  return list.map((c) => {
+    const parent = parentOf.get(c.id);
+    return parent && nameOf.has(parent) ? { ...c, parent_name: nameOf.get(parent)! } : c;
+  });
 }
 
 export async function getAllCategories(limit = 300): Promise<CategorySummary[]> {
@@ -762,7 +782,7 @@ export async function searchAll(
 }
 
 export type CategoryFamily = {
-  parent: { name: string; slug: string; icon: string | null; color: string | null } | null;
+  parent: { id: string; name: string; slug: string; icon: string | null; color: string | null } | null;
   children: CategorySummary[];
 };
 
@@ -789,7 +809,7 @@ export async function getCategoryFamily(categoryId: string): Promise<CategoryFam
   if (parentId) {
     const { data } = await supabase
       .from("categories")
-      .select("name, slug, icon, color")
+      .select("id, name, slug, icon, color")
       .eq("id", parentId)
       .eq("status", "active")
       .maybeSingle();

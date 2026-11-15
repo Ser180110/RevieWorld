@@ -7,10 +7,13 @@ export function CategoryTile({
   category,
   lang,
   reviewsLabel,
+  insideLabel,
 }: {
   category: CategorySummary;
   lang: string;
   reviewsLabel: string;
+  /** "dentro": shown before the parent's name on subcategories. */
+  insideLabel?: string;
 }) {
   const { emoji, classes } = styleOf(category);
   return (
@@ -22,6 +25,11 @@ export function CategoryTile({
         {emoji}
       </span>
       <span className="flex flex-col">
+        {insideLabel && category.parent_name && (
+          <span className="line-clamp-1 text-xs opacity-70">
+            📂 {insideLabel} {category.parent_name}
+          </span>
+        )}
         <span className="line-clamp-2 font-semibold leading-tight">{category.name}</span>
         <span className="text-xs opacity-70">
           {category.reviews_count} {reviewsLabel}
