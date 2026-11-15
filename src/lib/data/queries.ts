@@ -476,20 +476,25 @@ export async function getUserReviews(
 /** The signed-in user and which of `reviews` they liked. */
 export async function getViewer(reviews: { id: string }[]): Promise<Viewer> {
   const userId = await getCurrentUserId();
-  if (!userId || reviews.length === 0) return { id: userId, liked: [] };
+  if (reviews.length === 0) return { id: userId, liked: [] };
   const supabase = await db();
   if (!supabase) return { id: userId, liked: [] };
-  const { data } = await supabase
-    .from("review_likes")
-    .select("review_id")
-    .eq("user_id", userId)
-    .in(
-      "review_id",
-      reviews.map((r) => r.id),
-    );
+  const ids = reviews.map((r) => r.id);
+  const [likes, places] = await Promise.all([
+    userId ? supabase.from("review_likes").select("review_id").eq("user_id", userId).in("review_id", ids) : null,
+    // Positions (migration 0031): an error just means no 📍 yet.
+    supabase.from("reviews").select("id, lat, lng").in("id", ids).not("lat", "is", null),
+  ]);
+  const placeMap: Record<string, { lat: number; lng: number }> = {};
+  if (!places.error) {
+    for (const r of (places.data ?? []) as { id: string; lat: number | null; lng: number | null }[]) {
+      if (r.lat !== null && r.lng !== null) placeMap[r.id] = { lat: r.lat, lng: r.lng };
+    }
+  }
   return {
     id: userId,
-    liked: (data ?? []).map((row) => row.review_id as string),
+    liked: (likes?.data ?? []).map((row) => row.review_id as string),
+    places: placeMap,
   };
 }
 

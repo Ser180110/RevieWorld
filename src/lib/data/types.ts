@@ -81,6 +81,8 @@ export type ProfileStats = {
 export type Viewer = {
   id: string | null;
   liked: string[];
+  /** Review id → position, for the reviews that have one (📍 on the card). */
+  places?: Record<string, { lat: number; lng: number }>;
 };
 
 export type ProfileCard = Pick<
