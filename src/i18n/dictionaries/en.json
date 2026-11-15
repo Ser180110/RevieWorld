@@ -124,7 +124,11 @@
     "noSuggestions": "No similar categories.",
     "createCategory": "Create the category “{name}”",
     "creating": "Creating…",
-    "duplicateFound": "A category with this name already exists: taking you there."
+    "duplicateFound": "A category with this name already exists: taking you there.",
+    "parentAsk": "«{name}» might belong inside another category. Where should it go?",
+    "parentNone": "On its own",
+    "parentInside": "Inside",
+    "createSubcategory": "Create «{name}» inside «{parent}»"
   },
   "category": {
     "foundedBy": "Founded by",
@@ -158,7 +162,42 @@
     "subAdd": "+ Create a subcategory",
     "subPlaceholder": "E.g. Barberini Cinema",
     "subCreate": "Create",
-    "subCancel": "Cancel"
+    "subCancel": "Cancel",
+    "parent": {
+      "open": "Move inside…",
+      "title": "Where does «{name}» belong?",
+      "top": "Make it a main category",
+      "search": "Search the parent category (e.g. Water)",
+      "willBeInside": "«{name}» will become a subcategory of «{parent}». All reviews stay.",
+      "willBeTop": "«{name}» will be a main category again.",
+      "save": "Move",
+      "saving": "Moving…",
+      "cancel": "Cancel",
+      "errors": {
+        "forbidden": "Only its creator and the founders can move it.",
+        "loop": "A category can't go inside itself or one of its subcategories.",
+        "unavailable": "Not available yet: the database needs an update.",
+        "generic": "Something went wrong, please try again."
+      }
+    },
+    "merge": {
+      "open": "Merge into…",
+      "title": "Is «{name}» a duplicate? Merge it into another category",
+      "hint": "Everything moves over: reviews, likes, comments, followers and subcategories. Things with the same name become one. The old link will lead to the new category.",
+      "search": "Search the right category",
+      "pick": "Pick a category",
+      "submit": "Merge into «{target}»",
+      "confirm": "Merge «{name}» into «{target}»? «{name}» will disappear and all its content will move to «{target}». This cannot be undone.",
+      "confirmOk": "Yes, merge",
+      "merging": "Merging…",
+      "cancel": "Cancel",
+      "errors": {
+        "forbidden": "Only the founders can merge categories.",
+        "same": "Pick a different category.",
+        "unavailable": "Not available yet: the database needs an update.",
+        "generic": "Something went wrong, please try again."
+      }
+    }
   },
   "reviewForm": {
     "stickerAdd": "Sticker or GIF",

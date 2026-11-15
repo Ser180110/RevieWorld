@@ -124,7 +124,11 @@
     "noSuggestions": "Nessuna categoria simile.",
     "createCategory": "Crea la categoria «{name}»",
     "creating": "Creo…",
-    "duplicateFound": "Esiste già una categoria con questo nome: ti ci porto."
+    "duplicateFound": "Esiste già una categoria con questo nome: ti ci porto.",
+    "parentAsk": "«{name}» potrebbe stare dentro un'altra categoria. Dove la metto?",
+    "parentNone": "Categoria a sé",
+    "parentInside": "Dentro",
+    "createSubcategory": "Crea «{name}» dentro «{parent}»"
   },
   "category": {
     "foundedBy": "Fondata da",
@@ -158,7 +162,42 @@
     "subAdd": "+ Crea una sottocategoria",
     "subPlaceholder": "Es. Cinema Barberini",
     "subCreate": "Crea",
-    "subCancel": "Annulla"
+    "subCancel": "Annulla",
+    "parent": {
+      "open": "Sposta dentro…",
+      "title": "Dove sta «{name}»?",
+      "top": "Rendila categoria principale",
+      "search": "Cerca la categoria madre (es. Acqua)",
+      "willBeInside": "«{name}» diventerà una sottocategoria di «{parent}». Le recensioni restano tutte.",
+      "willBeTop": "«{name}» tornerà una categoria principale.",
+      "save": "Sposta",
+      "saving": "Sposto…",
+      "cancel": "Annulla",
+      "errors": {
+        "forbidden": "Solo chi l'ha creata e i fondatori possono spostarla.",
+        "loop": "Non si può mettere una categoria dentro sé stessa o dentro una sua sottocategoria.",
+        "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+        "generic": "Qualcosa è andato storto, riprova."
+      }
+    },
+    "merge": {
+      "open": "Unisci a…",
+      "title": "«{name}» è un doppione? Uniscila a un'altra categoria",
+      "hint": "Tutto passa nell'altra: recensioni, like, commenti, iscritti e sottocategorie. Le cose con lo stesso nome diventano una sola. Il vecchio link porterà alla nuova categoria.",
+      "search": "Cerca la categoria giusta",
+      "pick": "Scegli una categoria",
+      "submit": "Unisci a «{target}»",
+      "confirm": "Sicuro di unire «{name}» dentro «{target}»? «{name}» sparirà e tutto il suo contenuto passerà in «{target}». Non si può annullare.",
+      "confirmOk": "Sì, unisci",
+      "merging": "Unisco…",
+      "cancel": "Annulla",
+      "errors": {
+        "forbidden": "Solo i fondatori possono unire le categorie.",
+        "same": "Scegli una categoria diversa.",
+        "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+        "generic": "Qualcosa è andato storto, riprova."
+      }
+    }
   },
   "reviewForm": {
     "stickerAdd": "Sticker o GIF",

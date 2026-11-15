@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Suggestion } from "@/lib/data/types";
-import { createCategory, suggestCategories } from "@/lib/reviews/actions";
+import {
+  createCategory,
+  suggestCategories,
+  suggestParentCategories,
+  type ParentSuggestion,
+} from "@/lib/reviews/actions";
+import { styleOf } from "@/lib/categoryStyle";
 import { guessEmoji } from "@/lib/categoryStyle";
 import { normalizeName } from "@/lib/normalize";
 import { EmojiPicker } from "./EmojiPicker";
@@ -29,15 +35,26 @@ export function CategoryPicker({
 }) {
   const [query, setQuery] = useState(initialQuery);
   const debounced = useDebounced(query.trim());
-  const [results, setResults] = useState<{ q: string; list: Suggestion[] }>({ q: "", list: [] });
+  const [results, setResults] = useState<{ q: string; list: Suggestion[] }>({
+    q: "",
+    list: [],
+  });
   const [state, formAction, pending] = useActionState(createCategory, {});
   const [chosenEmoji, setChosenEmoji] = useState<string | null>(null);
+  const [parents, setParents] = useState<{
+    q: string;
+    list: ParentSuggestion[];
+  }>({ q: "", list: [] });
+  const [parentId, setParentId] = useState("");
 
   useEffect(() => {
     if (debounced.length < 2) return;
     let active = true;
     suggestCategories(debounced).then((list) => {
       if (active) setResults({ q: debounced, list });
+    });
+    suggestParentCategories(debounced).then((list) => {
+      if (active) setParents({ q: debounced, list });
     });
     return () => {
       active = false;
@@ -46,6 +63,10 @@ export function CategoryPicker({
 
   const ready = debounced.length >= 2 && results.q === debounced;
   const suggestions = ready ? results.list : [];
+  const parentList = parents.q === debounced ? parents.list : [];
+  const parentChosen = parentList.some((p) => p.id === parentId)
+    ? parentId
+    : "";
 
   return (
     <div className="flex flex-col gap-6">
@@ -86,6 +107,41 @@ export function CategoryPicker({
           <form action={formAction} className="flex flex-col gap-3">
             <input type="hidden" name="lang" value={lang} />
             <input type="hidden" name="name" value={query.trim()} />
+            <input type="hidden" name="parentId" value={parentChosen} />
+            {parentList.length > 0 && (
+              <div className="flex flex-col gap-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-950/30">
+                <span className="text-sm font-medium">
+                  {t.parentAsk.replace("{name}", query.trim())}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setParentId("")}
+                    className={`cursor-pointer rounded-full border px-3 py-1.5 text-sm ${
+                      !parentChosen
+                        ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
+                        : "border-zinc-300 bg-white hover:bg-zinc-100 dark:border-zinc-700 dark:bg-transparent dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    {t.parentNone}
+                  </button>
+                  {parentList.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setParentId(p.id)}
+                      className={`cursor-pointer rounded-full border px-3 py-1.5 text-sm ${
+                        parentChosen === p.id
+                          ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
+                          : "border-zinc-300 bg-white hover:bg-zinc-100 dark:border-zinc-700 dark:bg-transparent dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      📂 {t.parentInside} {styleOf(p).emoji} {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <EmojiPicker
               value={chosenEmoji ?? guessEmoji(normalizeName(query))}
               onChange={setChosenEmoji}
@@ -97,7 +153,17 @@ export function CategoryPicker({
               disabled={pending}
               className="self-start rounded-full border border-zinc-900 px-5 py-2 text-sm font-medium hover:bg-zinc-900 hover:text-white disabled:opacity-50 dark:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
             >
-              {pending ? t.creating : t.createCategory.replace("{name}", query.trim())}
+              {pending
+                ? t.creating
+                : parentChosen
+                  ? t.createSubcategory
+                      .replace("{name}", query.trim())
+                      .replace(
+                        "{parent}",
+                        parentList.find((p) => p.id === parentChosen)?.name ??
+                          "",
+                      )
+                  : t.createCategory.replace("{name}", query.trim())}
             </button>
           </form>
           {state.error && (
