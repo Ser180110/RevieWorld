@@ -626,7 +626,7 @@
     "thisWeek": "new in the last 7 days",
     "signedUp": "Signed up on",
     "lastSeen": "last sign-in",
-    "notConfirmed": "email not confirmed",
+    "notConfirmed": "Email not confirmed yet: the confirmation link was never clicked",
     "reviews": "reviews",
     "needsUpdate": "To see e-mails, last sign-in and reviews the database needs an update (npm run db:migrate)."
   },

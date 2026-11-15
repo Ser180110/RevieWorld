@@ -54,10 +54,10 @@ async function Users({ lang }: { lang: Locale }) {
                 {u.display_name && <span className="font-normal text-zinc-500">@{u.username}</span>}
               </Link>
               {u.email && (
-                <span className="truncate text-sm text-zinc-600 dark:text-zinc-400">
-                  {u.email}
-                  {u.confirmed === false && <span className="ml-2 text-amber-600">⚠️ {t.notConfirmed}</span>}
-                </span>
+                <span className="truncate text-sm text-zinc-600 dark:text-zinc-400">{u.email}</span>
+              )}
+              {u.confirmed === false && (
+                <span className="text-xs font-medium text-amber-600">⚠️ {t.notConfirmed}</span>
               )}
               <span className="text-xs text-zinc-500">
                 {t.signedUp} {u.signed_up_at ? formatDate(u.signed_up_at, lang) : "—"}

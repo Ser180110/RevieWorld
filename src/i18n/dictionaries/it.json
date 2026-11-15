@@ -626,7 +626,7 @@
     "thisWeek": "nuovi negli ultimi 7 giorni",
     "signedUp": "Iscritto il",
     "lastSeen": "ultimo accesso",
-    "notConfirmed": "email non confermata",
+    "notConfirmed": "Email non ancora confermata: non ha cliccato il link di conferma",
     "reviews": "recensioni",
     "needsUpdate": "Per vedere email, ultimo accesso e recensioni va aggiornato il database (npm run db:migrate)."
   },
