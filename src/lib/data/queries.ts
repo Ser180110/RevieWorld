@@ -165,8 +165,14 @@ export async function getTopCategories(limit = 8): Promise<CategorySummary[]> {
     .eq("status", "active")
     .order("reviews_count", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit * 3);
-  return (await withTotals((data ?? []) as CategorySummary[], true)).slice(0, limit);
+    .limit(limit * 5);
+  // Only main categories: subcategories are shown inside their parent.
+  const tree = await getCategoryTree();
+  const children = tree
+    ? new Set([...tree.kids].filter(([parent]) => tree.own.has(parent)).flatMap(([, ids]) => ids))
+    : new Set<string>();
+  const main = ((data ?? []) as CategorySummary[]).filter((c) => !children.has(c.id));
+  return (await withTotals(main, true)).slice(0, limit);
 }
 
 /**
