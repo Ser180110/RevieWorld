@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getAllCategories } from "@/lib/data/queries";
+import { getMainCategories } from "@/lib/data/queries";
 import { CategoryTile } from "@/components/CategoryTile";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/categories">): Promise<Metadata> {
@@ -15,12 +15,15 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/categories
 
 async function Grid({ lang }: { lang: Locale }) {
   const dict = await getDictionary(lang);
-  const categories = await getAllCategories();
+  const categories = await getMainCategories();
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      {categories.map((c) => (
-        <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <p className="text-sm text-zinc-500">📂 {dict.explore.subcategoriesHint}</p>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {categories.map((c) => (
+          <CategoryTile key={c.id} category={c} lang={lang} reviewsLabel={dict.common.reviews} />
+        ))}
+      </div>
     </div>
   );
 }

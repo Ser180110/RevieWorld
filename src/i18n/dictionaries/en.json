@@ -481,7 +481,8 @@
     "title": "Explore categories",
     "subtitle": "Pick a category and review something, or create a new one.",
     "create": "+ Create a category",
-    "all": "All categories"
+    "all": "All categories",
+    "subcategoriesHint": "These are the main categories. Open one to see its subcategories."
   },
   "notifications": {
     "title": "Notifications",

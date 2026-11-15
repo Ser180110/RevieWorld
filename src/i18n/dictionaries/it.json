@@ -481,7 +481,8 @@
     "title": "Esplora le categorie",
     "subtitle": "Scegli una categoria e recensisci, oppure creane una nuova.",
     "create": "+ Crea una categoria",
-    "all": "Tutte le categorie"
+    "all": "Tutte le categorie",
+    "subcategoriesHint": "Qui vedi le categorie principali. Le sottocategorie le trovi aprendo una categoria."
   },
   "notifications": {
     "title": "Notifiche",

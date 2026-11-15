@@ -276,6 +276,15 @@ export async function getFoundedCategories(userId: string, limit = 24): Promise<
   });
 }
 
+/** Top-level categories only: subcategories are shown inside their parent. */
+export async function getMainCategories(limit = 300): Promise<CategorySummary[]> {
+  const [all, tree] = await Promise.all([getAllCategories(limit), getCategoryTree()]);
+  if (!tree) return all;
+  // A child whose parent is gone (merged or hidden) stays visible here.
+  const children = new Set([...tree.kids].filter(([parent]) => tree.own.has(parent)).flatMap(([, ids]) => ids));
+  return all.filter((c) => !children.has(c.id));
+}
+
 export async function getAllCategories(limit = 300): Promise<CategorySummary[]> {
   const supabase = await db();
   if (!supabase) return [];
