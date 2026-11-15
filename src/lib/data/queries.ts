@@ -54,6 +54,24 @@ export const getCurrentProfile = cache(async function getCurrentProfile(): Promi
   return data ?? { id: userId, username: "", avatar_url: null };
 });
 
+
+/** People the signed-in user blocked (their reviews and comments are hidden from them). */
+export const getBlockedIds = cache(async function getBlockedIds(): Promise<Set<string>> {
+  const supabase = await db();
+  if (!supabase) return new Set();
+  const userId = await getSessionUserId();
+  if (!userId) return new Set();
+  const { data, error } = await supabase.from("user_blocks").select("blocked_id").eq("blocker_id", userId).limit(1000);
+  if (error || !data) return new Set();
+  return new Set((data as { blocked_id: string }[]).map((b) => b.blocked_id));
+});
+
+async function withoutBlocked<T extends { user_id: string }>(rows: T[]): Promise<T[]> {
+  if (!rows.length) return rows;
+  const blocked = await getBlockedIds();
+  return blocked.size ? rows.filter((r) => !blocked.has(r.user_id)) : rows;
+}
+
 export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
   const supabase = await db();
   if (!supabase) return [];
@@ -63,7 +81,7 @@ export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data ?? []) as unknown as ReviewRow[];
+  return withoutBlocked((data ?? []) as unknown as ReviewRow[]);
 }
 
 
@@ -333,7 +351,7 @@ export async function getItemReviews(itemId: string, sort: ReviewSort = "likes")
     .eq("item_id", itemId)
     .eq("status", "active");
   const { data } = await sortReviews(query, sort).limit(100);
-  return (data ?? []) as unknown as ReviewRow[];
+  return withoutBlocked((data ?? []) as unknown as ReviewRow[]);
 }
 
 /** All the reviews in a category, with what they are about. */
@@ -350,7 +368,7 @@ export async function getCategoryReviews(
     .in("item.category_id", await getCategorySubtreeIds(categoryId))
     .eq("status", "active");
   const { data } = await sortReviews(query, sort).limit(limit);
-  return (data ?? []) as unknown as ReviewRow[];
+  return withoutBlocked((data ?? []) as unknown as ReviewRow[]);
 }
 
 // ---------------------------------------------------------------------------
@@ -559,40 +577,55 @@ export async function getReview(
 
 const LIST_FIELDS =
   "id, user_id, title, description, ranked, items_count, updated_at, owner:profiles!lists_user_id_profiles_id_fk(username, display_name)";
+/** With the like counter (migration 0027). */
+const LIST_FIELDS_LIKES = `${LIST_FIELDS}, likes_count`;
+
+type ListQuery = (fields: string) => PromiseLike<{ data: unknown; error: { code?: string } | null }>;
+
+/** Runs a lists query with likes_count, or without it before the migration. */
+async function withListLikes(run: ListQuery): Promise<unknown> {
+  const first = await run(LIST_FIELDS_LIKES);
+  if (first.error?.code === "42703") return (await run(LIST_FIELDS)).data;
+  return first.data;
+}
 
 export async function getUserLists(userId: string): Promise<ListSummary[]> {
   const supabase = await db();
   if (!supabase) return [];
-  const { data } = await supabase
-    .from("lists")
-    .select(LIST_FIELDS)
-    .eq("user_id", userId)
-    .order("updated_at", { ascending: false })
-    .limit(200);
-  return (data ?? []) as unknown as ListSummary[];
+  const data = await withListLikes((f) =>
+    supabase.from("lists").select(f).eq("user_id", userId).order("updated_at", { ascending: false }).limit(200),
+  );
+  return (data ?? []) as ListSummary[];
 }
 
 export async function getRecentLists(limit = 6): Promise<ListSummary[]> {
   const supabase = await db();
   if (!supabase) return [];
-  const { data } = await supabase
-    .from("lists")
-    .select(LIST_FIELDS)
-    .gt("items_count", 0)
-    .order("updated_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as unknown as ListSummary[];
+  const data = await withListLikes((f) =>
+    supabase.from("lists").select(f).gt("items_count", 0).order("updated_at", { ascending: false }).limit(limit),
+  );
+  return (data ?? []) as ListSummary[];
 }
 
 export async function getList(id: string): Promise<ListSummary | null> {
   const supabase = await db();
   if (!supabase || !/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const data = await withListLikes((f) => supabase.from("lists").select(f).eq("id", id).maybeSingle());
+  return (data as ListSummary) ?? null;
+}
+
+/** Whether the signed-in user likes this list (false before the migration). */
+export async function isListLiked(listId: string, userId: string | null): Promise<boolean> {
+  if (!userId) return false;
+  const supabase = await db();
+  if (!supabase) return false;
   const { data } = await supabase
-    .from("lists")
-    .select(LIST_FIELDS)
-    .eq("id", id)
+    .from("list_likes")
+    .select("list_id")
+    .eq("list_id", listId)
+    .eq("user_id", userId)
     .maybeSingle();
-  return (data as unknown as ListSummary) ?? null;
+  return Boolean(data);
 }
 
 export async function getListEntries(listId: string): Promise<ListEntry[]> {
@@ -742,7 +775,7 @@ export async function getComments(reviewId: string): Promise<Comment[]> {
     .eq("review_id", reviewId)
     .order("created_at", { ascending: true })
     .limit(500);
-  return (data ?? []) as unknown as Comment[];
+  return withoutBlocked((data ?? []) as unknown as Comment[]);
 }
 
 export type Liker = { username: string; display_name: string | null; avatar_url: string | null };
@@ -768,28 +801,43 @@ export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]>
 
 export type NotificationRow = {
   id: string;
-  type: "like" | "comment" | "follow" | "mention" | "watchlist";
+  type: "like" | "comment" | "follow" | "mention" | "watchlist" | "list_like";
   created_at: string;
   read_at: string | null;
   review_id: string | null;
+  list_id?: string | null;
+  list?: { title: string } | null;
   actor: { username: string; display_name: string | null; avatar_url: string | null } | null;
   review: { item: { name: string } | null } | null;
   comment: { body: string } | null;
 };
+
+const NOTIFICATION_FIELDS =
+  "id, type, created_at, read_at, review_id, actor:profiles!notifications_actor_id_profiles_id_fk(username, display_name, avatar_url), review:reviews(item:items(name)), comment:review_comments(body)";
 
 /** The signed-in user's notifications, newest first. */
 export async function getNotifications(limit = 60): Promise<NotificationRow[]> {
   const userId = await getCurrentUserId();
   if (!userId) return [];
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("notifications")
     .select(
-      "id, type, created_at, read_at, review_id, actor:profiles!notifications_actor_id_profiles_id_fk(username, display_name, avatar_url), review:reviews(item:items(name)), comment:review_comments(body)",
+      `${NOTIFICATION_FIELDS}, list_id, list:lists(title)`,
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit);
+  if (error) {
+    // Before migration 0027 there is no list_id.
+    const { data: old } = await supabase
+      .from("notifications")
+      .select(NOTIFICATION_FIELDS)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return (old ?? []) as unknown as NotificationRow[];
+  }
   return (data ?? []) as unknown as NotificationRow[];
 }
 
@@ -886,4 +934,150 @@ export async function getCategoryFamily(categoryId: string): Promise<CategoryFam
     parent = (data as CategoryFamily["parent"]) ?? null;
   }
   return { parent, children: await withTotals((kids.data ?? []) as CategorySummary[], true) };
+}
+
+// ---------------------------------------------------------------------------
+// Rating chart, badges, moderation
+// ---------------------------------------------------------------------------
+
+/** How many active reviews gave 1…10 (half stars), for an item or a person. */
+export async function getRatingCounts(by: { itemId: string } | { userId: string }): Promise<number[]> {
+  const counts = Array<number>(10).fill(0);
+  const supabase = await db();
+  if (!supabase) return counts;
+  let query = supabase.from("reviews").select("rating").eq("status", "active");
+  query = "itemId" in by ? query.eq("item_id", by.itemId) : query.eq("user_id", by.userId);
+  const { data } = await query.limit(5000);
+  for (const r of (data ?? []) as { rating: number }[]) {
+    if (r.rating >= 1 && r.rating <= 10) counts[r.rating - 1] += 1;
+  }
+  return counts;
+}
+
+export type BadgeKey = "first" | "reviewer" | "pioneer" | "explorer" | "trailblazer";
+export type BadgeState = { key: BadgeKey; emoji: string; done: boolean; have: number; need: number };
+
+/** The 5 badges and how far the user is (computed from what they did). */
+export async function getBadges(userId: string, reviewsCount: number, foundedCount: number): Promise<BadgeState[]> {
+  const supabase = await db();
+  let categories = 0;
+  let firsts = 0;
+  if (supabase && reviewsCount > 0) {
+    const { data: mine } = await supabase
+      .from("reviews")
+      .select("item_id, created_at, item:items(category_id)")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(1000);
+    const rows = (mine ?? []) as unknown as { item_id: string; item: { category_id: string } | null }[];
+    categories = new Set(rows.map((r) => r.item?.category_id).filter(Boolean)).size;
+    // Apripista: the first review ever written on one of these things is theirs.
+    const ids = [...new Set(rows.map((r) => r.item_id))];
+    for (let i = 0; i < ids.length && firsts === 0 && i < 600; i += 100) {
+      const { data: all } = await supabase
+        .from("reviews")
+        .select("item_id, user_id, created_at")
+        .in("item_id", ids.slice(i, i + 100))
+        .order("created_at", { ascending: true })
+        .limit(5000);
+      const firstBy = new Map<string, string>();
+      for (const r of (all ?? []) as { item_id: string; user_id: string }[]) {
+        if (!firstBy.has(r.item_id)) firstBy.set(r.item_id, r.user_id);
+      }
+      firsts = [...firstBy.values()].filter((u) => u === userId).length;
+    }
+  }
+  const badge = (key: BadgeKey, emoji: string, have: number, need: number): BadgeState => ({
+    key,
+    emoji,
+    have: Math.min(have, need),
+    need,
+    done: have >= need,
+  });
+  return [
+    badge("first", "✍️", reviewsCount, 1),
+    badge("reviewer", "📝", reviewsCount, 50),
+    badge("pioneer", "🚩", foundedCount, 1),
+    badge("explorer", "🧭", categories, 10),
+    badge("trailblazer", "🥇", firsts, 1),
+  ];
+}
+
+/** Founders and moderators (they see and resolve reports). */
+export async function isModerator(userId: string | null): Promise<boolean> {
+  if (!userId) return false;
+  const supabase = await db();
+  if (!supabase) return false;
+  const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  const role = (data as { role?: string } | null)?.role;
+  return role === "admin" || role === "moderator";
+}
+
+export type ReportRow = {
+  id: string;
+  target_type: "review" | "comment" | "category" | "item" | "user" | "list";
+  target_id: string;
+  reason: string;
+  created_at: string;
+  reporter: { username: string } | null;
+};
+
+/** Open reports, newest first (RLS: only moderators get rows). */
+export async function getOpenReports(limit = 100): Promise<ReportRow[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("reports")
+    .select("id, target_type, target_id, reason, created_at, reporter:profiles!reports_reporter_id_profiles_id_fk(username)")
+    .eq("status", "open")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as unknown as ReportRow[];
+}
+
+/** What a report points at, to show it and link to it. */
+export async function describeReportTargets(
+  rows: ReportRow[],
+): Promise<Record<string, { label: string; href: string; excerpt?: string }>> {
+  const supabase = await db();
+  const out: Record<string, { label: string; href: string; excerpt?: string }> = {};
+  if (!supabase || !rows.length) return out;
+  const ids = (type: ReportRow["target_type"]) => [...new Set(rows.filter((r) => r.target_type === type).map((r) => r.target_id))];
+  const [reviews, comments, categories, items, users, lists] = await Promise.all([
+    ids("review").length
+      ? supabase.from("reviews").select("id, body, author:profiles!reviews_user_id_profiles_id_fk(username), item:items(name)").in("id", ids("review"))
+      : null,
+    ids("comment").length
+      ? supabase.from("review_comments").select("id, body, review_id, author:profiles!review_comments_user_id_profiles_id_fk(username)").in("id", ids("comment"))
+      : null,
+    ids("category").length ? supabase.from("categories").select("id, name, slug").in("id", ids("category")) : null,
+    ids("item").length ? supabase.from("items").select("id, name, slug, category:categories(slug)").in("id", ids("item")) : null,
+    ids("user").length ? supabase.from("profiles").select("id, username").in("id", ids("user")) : null,
+    ids("list").length ? supabase.from("lists").select("id, title").in("id", ids("list")) : null,
+  ]);
+  type Row = Record<string, unknown> & { id: string };
+  const rowsOf = (r: { data: unknown } | null) => ((r?.data ?? []) as Row[]);
+  for (const r of rowsOf(reviews)) {
+    const a = r.author as { username: string } | null;
+    const it = r.item as { name: string } | null;
+    out[r.id] = { label: `@${a?.username ?? "?"} · ${it?.name ?? ""}`, href: `/r/${r.id}`, excerpt: String(r.body ?? "") };
+  }
+  for (const r of rowsOf(comments)) {
+    const a = r.author as { username: string } | null;
+    out[r.id] = { label: `@${a?.username ?? "?"}`, href: `/r/${r.review_id}#comments`, excerpt: String(r.body ?? "") };
+  }
+  for (const r of rowsOf(categories)) out[r.id] = { label: String(r.name), href: `/c/${r.slug}` };
+  for (const r of rowsOf(items)) {
+    const c = r.category as { slug: string } | null;
+    out[r.id] = { label: String(r.name), href: `/c/${c?.slug ?? ""}/${r.slug}` };
+  }
+  for (const r of rowsOf(users)) out[r.id] = { label: `@${r.username}`, href: `/u/${r.username}` };
+  for (const r of rowsOf(lists)) out[r.id] = { label: String(r.title), href: `/l/${r.id}` };
+  return out;
+}
+
+/** Whether the signed-in user blocked this person. */
+export async function hasBlocked(targetId: string): Promise<boolean> {
+  return (await getBlockedIds()).has(targetId);
 }

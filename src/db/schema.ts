@@ -36,6 +36,8 @@ export const reportTarget = pgEnum("report_target", [
   "item",
   "review",
   "user",
+  "comment",
+  "list",
 ]);
 export const reportStatus = pgEnum("report_status", [
   "open",
@@ -310,6 +312,7 @@ export const lists = pgTable(
     description: text("description"),
     ranked: boolean("ranked").notNull().default(false),
     itemsCount: integer("items_count").notNull().default(0),
+    likesCount: integer("likes_count").notNull().default(0),
     ...timestamps,
   },
   (t) => [
@@ -399,7 +402,7 @@ export const reviewComments = pgTable(
 // Notifications: written by triggers (like, comment, new follower), read and
 // marked as read by their recipient. See drizzle/0013_notifications_rules.sql.
 // ---------------------------------------------------------------------------
-export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention", "watchlist"]);
+export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention", "watchlist", "list_like"]);
 
 export const notifications = pgTable(
   "notifications",
@@ -416,6 +419,7 @@ export const notifications = pgTable(
     type: notificationType("type").notNull(),
     reviewId: uuid("review_id").references(() => reviews.id, { onDelete: "cascade" }),
     commentId: uuid("comment_id").references(() => reviewComments.id, { onDelete: "cascade" }),
+    listId: uuid("list_id").references(() => lists.id, { onDelete: "cascade" }),
     readAt: timestamp("read_at", { withTimezone: true }),
     /** When it was sent to the recipient's phones (web push). */
     pushedAt: timestamp("pushed_at", { withTimezone: true }),
@@ -441,5 +445,40 @@ export const pushSubscriptions = pgTable(
   (t) => [
     index("push_subscriptions_user_idx").on(t.userId),
     check("push_subscriptions_endpoint_https", sql`${t.endpoint} like 'https://%' and char_length(${t.endpoint}) <= 1000`),
+  ],
+);
+
+// Likes on lists. See drizzle/0028_reports_blocks_rules.sql.
+export const listLikes = pgTable(
+  "list_likes",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => lists.id, { onDelete: "cascade" }),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.listId] }), index("list_likes_list_idx").on(t.listId)],
+);
+
+// "Blocca utente": the blocked person can no longer follow, comment, like or
+// mention the blocker, and the blocker no longer sees them.
+export const userBlocks = pgTable(
+  "user_blocks",
+  {
+    blockerId: uuid("blocker_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    blockedId: uuid("blocked_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    primaryKey({ columns: [t.blockerId, t.blockedId] }),
+    index("user_blocks_blocked_idx").on(t.blockedId),
+    check("user_blocks_not_self", sql`${t.blockerId} <> ${t.blockedId}`),
   ],
 );

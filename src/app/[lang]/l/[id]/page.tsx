@@ -4,7 +4,9 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCurrentUserId, getList, getListEntries } from "@/lib/data/queries";
+import { getCurrentUserId, getList, getListEntries, isListLiked } from "@/lib/data/queries";
+import { ListLikeButton } from "@/components/ListLikeButton";
+import { ReportButton } from "@/components/ReportButton";
 import { deleteList, moveInList, removeFromList } from "@/lib/lists/actions";
 import { fill, formatDate, formatStars } from "@/lib/format";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -32,6 +34,7 @@ async function ListContent({ lang, id }: { lang: Locale; id: string }) {
   ]);
   const own = viewerId === list.user_id;
   const owner = list.owner;
+  const liked = await isListLiked(list.id, viewerId);
 
   const hidden = (itemId: string) => (
     <>
@@ -59,6 +62,20 @@ async function ListContent({ lang, id }: { lang: Locale; id: string }) {
             : fill(t.items, { n: String(list.items_count) })}{" "}
           · {fill(t.updated, { date: formatDate(list.updated_at, lang) })}
         </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {list.likes_count !== undefined && (
+            <ListLikeButton
+              listId={list.id}
+              initialLiked={liked}
+              initialCount={list.likes_count}
+              signedIn={Boolean(viewerId)}
+              own={own}
+              lang={lang}
+              labels={{ like: dict.reviewCard.like, unlike: dict.reviewCard.unlike, likes: dict.reviewCard.likes }}
+            />
+          )}
+          {!own && viewerId && <ReportButton lang={lang} targetType="list" targetId={list.id} t={dict.report} />}
+        </div>
         {list.description && (
           <p className="max-w-2xl whitespace-pre-line text-zinc-700 dark:text-zinc-300">
             {list.description}

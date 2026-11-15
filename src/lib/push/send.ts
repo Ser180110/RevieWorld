@@ -14,7 +14,7 @@ type Claimed = {
   endpoint: string;
   p256dh: string;
   auth: string;
-  type: "like" | "comment" | "follow" | "mention" | "watchlist";
+  type: "like" | "comment" | "follow" | "mention" | "watchlist" | "list_like";
   review_id: string | null;
   actor: string;
   item: string | null;
@@ -38,6 +38,8 @@ function message(n: Claimed): { title: string; body: string; url: string } {
       return { title: `📣 ${who} ti ha menzionato`, body: previewText(n.comment) || "In un commento", url: `${review}#comments` };
     case "watchlist":
       return { title: "📌 Da provare", body: `${who} vuole provare${what || " una cosa"} grazie alla tua recensione`, url: review };
+    case "list_like":
+      return { title: "❤️ Like alla tua lista", body: `A ${who} piace una tua lista`, url: "/it/notifications" };
     default:
       return { title: "👤 Nuovo follower", body: `${who} ha iniziato a seguirti`, url: `/it/u/${n.actor}` };
   }

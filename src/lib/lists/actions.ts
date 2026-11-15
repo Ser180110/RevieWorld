@@ -262,3 +262,20 @@ export async function searchItems(q: string): Promise<ItemSearchResult[]> {
     .limit(8);
   return (data ?? []) as unknown as ItemSearchResult[];
 }
+
+/** ❤️ on a list. Returns the new state for the button. */
+export async function setListLike(listId: string, like: boolean): Promise<{ liked: boolean; count: number } | null> {
+  if (!supabaseEnv() || !z.guid().safeParse(listId).success) return null;
+  const supabase = await createClient();
+  const userId = await getSessionUserId();
+  if (!userId) return null;
+  const { error } = like
+    ? await supabase.from("list_likes").upsert({ user_id: userId, list_id: listId }, { ignoreDuplicates: true })
+    : await supabase.from("list_likes").delete().eq("user_id", userId).eq("list_id", listId);
+  if (error) {
+    console.error("setListLike", error);
+    return null;
+  }
+  const { data } = await supabase.from("lists").select("likes_count").eq("id", listId).maybeSingle();
+  return { liked: like, count: (data as { likes_count: number } | null)?.likes_count ?? 0 };
+}
