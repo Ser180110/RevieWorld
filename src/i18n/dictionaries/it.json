@@ -619,6 +619,17 @@
     "noneUser": "{name} non ha ancora dato {stars} a nessuna recensione.",
     "noneItem": "Nessuno ha ancora dato {stars} a questa cosa."
   },
+  "adminUsers": {
+    "title": "Utenti iscritti",
+    "button": "Utenti iscritti",
+    "total": "account in totale",
+    "thisWeek": "nuovi negli ultimi 7 giorni",
+    "signedUp": "Iscritto il",
+    "lastSeen": "ultimo accesso",
+    "notConfirmed": "email non confermata",
+    "reviews": "recensioni",
+    "needsUpdate": "Per vedere email, ultimo accesso e recensioni va aggiornato il database (npm run db:migrate)."
+  },
   "moderation": {
     "block": "Blocca",
     "unblock": "Sblocca",

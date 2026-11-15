@@ -619,6 +619,17 @@
     "noneUser": "{name} hasn't rated anything {stars} yet.",
     "noneItem": "Nobody has rated this {stars} yet."
   },
+  "adminUsers": {
+    "title": "Registered users",
+    "button": "Registered users",
+    "total": "accounts in total",
+    "thisWeek": "new in the last 7 days",
+    "signedUp": "Signed up on",
+    "lastSeen": "last sign-in",
+    "notConfirmed": "email not confirmed",
+    "reviews": "reviews",
+    "needsUpdate": "To see e-mails, last sign-in and reviews the database needs an update (npm run db:migrate)."
+  },
   "moderation": {
     "block": "Block",
     "unblock": "Unblock",

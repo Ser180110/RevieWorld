@@ -16,6 +16,7 @@ import {
   getRatingCounts,
   hasBlocked,
   isModerator,
+  isAppFounder,
 } from "@/lib/data/queries";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { BlockButton } from "@/components/BlockButton";
@@ -49,10 +50,11 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
   ]);
   const viewer = await getViewer(reviews);
   const own = viewer.id === profile.id;
-  const [following, badges, moderator] = await Promise.all([
+  const [following, badges, moderator, appFounder] = await Promise.all([
     isFollowingUser(viewer.id, profile.id),
     getBadges(profile.id, stats.reviews, founded.length),
     own ? isModerator(viewer.id) : Promise.resolve(false),
+    own ? isAppFounder(viewer.id) : Promise.resolve(false),
   ]);
   const openReports = moderator ? (await getOpenReports()).length : 0;
   const base = `/${lang}/u/${profile.username}`;
@@ -96,6 +98,15 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
         >
           <span>🚩 {m.reportsBox}</span>
           <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-sm text-white">{openReports}</span>
+        </Link>
+      )}
+      {appFounder && (
+        <Link
+          href={`/${lang}/admin/users`}
+          className="flex items-center justify-between rounded-2xl border border-zinc-200 p-4 font-medium hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <span>👥 {dict.adminUsers.button}</span>
+          <span aria-hidden>→</span>
         </Link>
       )}
       {blocked && (

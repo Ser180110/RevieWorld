@@ -211,6 +211,13 @@
       "when": 1794748952032,
       "tag": "0029_delete_category",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1794751940206,
+      "tag": "0030_admin_users",
+      "breakpoints": true
     }
   ]
 }
