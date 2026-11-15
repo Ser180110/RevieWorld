@@ -498,7 +498,8 @@
     "pushDisable": "Disattiva",
     "pushBlocked": "Hai bloccato le notifiche per questo sito: riattivale dalle impostazioni del browser (lucchetto accanto all'indirizzo → Notifiche).",
     "pushIos": "Su iPhone: prima aggiungi RevieWorld alla schermata Home (Condividi → Aggiungi alla schermata Home), poi aprila da lì e torna qui.",
-    "pushError": "Non è stato possibile attivarle: riprova."
+    "pushError": "Non è stato possibile attivarle: riprova.",
+    "listLike": "A {name} piace la tua lista {what}"
   },
   "feed": {
     "following": "Seguiti",
@@ -544,5 +545,84 @@
     "stars": "⭐ Più stelle",
     "stars_low": "👎 Meno stelle",
     "recent": "🕒 Più recenti"
+  },
+  "report": {
+    "button": "Segnala",
+    "title": "Perché vuoi segnalarlo?",
+    "reasons": {
+      "spam": "Spam o pubblicità",
+      "offensive": "Offensivo o violento",
+      "false": "Falso o fuorviante",
+      "inappropriate": "Contenuto inappropriato",
+      "other": "Altro"
+    },
+    "notePlaceholder": "Vuoi aggiungere qualcosa? (facoltativo)",
+    "send": "Invia segnalazione",
+    "sending": "Invio…",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "thanks": "Grazie! I fondatori controlleranno al più presto.",
+    "errors": {
+      "auth": "Accedi per segnalare.",
+      "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
+  },
+  "badges": {
+    "title": "Badge",
+    "first": {
+      "name": "Prima recensione",
+      "hint": "Hai scritto la tua prima recensione"
+    },
+    "reviewer": {
+      "name": "Recensore",
+      "hint": "50 recensioni scritte"
+    },
+    "pioneer": {
+      "name": "Pioniere",
+      "hint": "Hai fondato una categoria"
+    },
+    "explorer": {
+      "name": "Esploratore",
+      "hint": "Recensioni in 10 categorie diverse"
+    },
+    "trailblazer": {
+      "name": "Apripista",
+      "hint": "Primo a recensire una cosa"
+    }
+  },
+  "ratings": {
+    "title": "Voti",
+    "votes": "{n} voti"
+  },
+  "moderation": {
+    "block": "Blocca",
+    "unblock": "Sblocca",
+    "blockConfirm": "Bloccare questa persona? Non potrà più seguirti, commentare o mettere like alle tue recensioni, e tu non vedrai più le sue recensioni e i suoi commenti. Puoi sbloccarla quando vuoi.",
+    "blockedBanner": "Hai bloccato questa persona: non vedi le sue recensioni.",
+    "reportsBox": "Segnalazioni da controllare",
+    "reportsTitle": "Segnalazioni",
+    "reportsEmpty": "Nessuna segnalazione da controllare. 🎉",
+    "reportedBy": "segnalato da",
+    "hide": "Rimuovi",
+    "dismiss": "Va bene così",
+    "hideConfirm": "Rimuovere questo contenuto? Le recensioni, le categorie e le cose vengono nascoste, i commenti e le liste cancellati.",
+    "open": "Apri",
+    "reasons": {
+      "spam": "Spam",
+      "offensive": "Offensivo",
+      "false": "Falso",
+      "inappropriate": "Inappropriato",
+      "other": "Altro"
+    },
+    "types": {
+      "review": "Recensione",
+      "comment": "Commento",
+      "category": "Categoria",
+      "item": "Cosa",
+      "user": "Utente",
+      "list": "Lista"
+    },
+    "userNote": "Per gli utenti: controlla il profilo; puoi rimuovere le singole recensioni o bloccarlo."
   }
 }

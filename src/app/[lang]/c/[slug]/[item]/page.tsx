@@ -10,6 +10,7 @@ import {
   getMyListsFor,
   getViewer,
   getItemStatus,
+  getRatingCounts,
   reviewSortOf,
   type ReviewSort,
 } from "@/lib/data/queries";
@@ -18,6 +19,8 @@ import { count, formatStars, fill } from "@/lib/format";
 import { AddToList } from "@/components/AddToList";
 import { ItemActions } from "@/components/ItemActions";
 import { ShareButton } from "@/components/ShareButton";
+import { RatingHistogram } from "@/components/RatingHistogram";
+import { ReportButton } from "@/components/ReportButton";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 import { ReviewCard } from "@/components/ReviewCard";
@@ -42,7 +45,7 @@ async function ItemContent({
   const item = await getItem(category.id, decodeURIComponent(itemSlug));
   if (!item) notFound();
 
-  const reviews = await getItemReviews(item.id, sort);
+  const [reviews, ratingCounts] = await Promise.all([getItemReviews(item.id, sort), getRatingCounts({ itemId: item.id })]);
   const viewer = await getViewer(reviews);
   const userId = viewer.id;
   const [myLists, status] = userId
@@ -105,8 +108,11 @@ async function ItemContent({
             <span className="text-zinc-500">{dict.common.noRating}</span>
           )}
         </div>
+        <div className="max-w-sm">
+          <RatingHistogram counts={ratingCounts} title={dict.ratings.title} votesLabel={dict.ratings.votes} />
+        </div>
         {status && <ItemActions lang={lang} itemId={item.id} back={here} status={status} t={dict.itemActions} />}
-        <div>
+        <div className="flex flex-wrap items-center gap-1">
           <ShareButton
             variant="pill"
             path={here}
@@ -115,6 +121,7 @@ async function ItemContent({
             label={dict.share.button}
             copiedLabel={dict.share.copied}
           />
+          {userId && <ReportButton lang={lang} targetType="item" targetId={item.id} t={dict.report} />}
         </div>
       </header>
       </div>
@@ -163,6 +170,7 @@ async function ItemContent({
               viewer={viewer}
               back={here}
               t={dict.reviewCard}
+              reportT={dict.report}
             />
           ))
         )}

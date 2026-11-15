@@ -47,6 +47,7 @@ export async function ActivityFeed({
           viewer={viewer}
           back={compact ? `/${lang}` : `/${lang}/activity`}
           t={dict.reviewCard}
+              reportT={dict.report}
         />
       ))}
       {compact && (

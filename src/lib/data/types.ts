@@ -95,6 +95,8 @@ export type ListSummary = {
   description: string | null;
   ranked: boolean;
   items_count: number;
+  /** Missing before migration 0027. */
+  likes_count?: number;
   updated_at: string;
   owner: { username: string; display_name: string | null } | null;
 };

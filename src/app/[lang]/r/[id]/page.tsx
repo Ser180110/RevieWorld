@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { ReportButton } from "@/components/ReportButton";
 import { getComments, getLikers, getReview, getViewer } from "@/lib/data/queries";
 import { deleteComment } from "@/lib/social/actions";
 import { fill, formatDate } from "@/lib/format";
@@ -65,6 +66,7 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
         viewer={viewer}
         back={itemHref}
         t={dict.reviewCard}
+        reportT={dict.report}
       />
 
       <section id="likes" className="flex scroll-mt-24 flex-col gap-3">
@@ -126,6 +128,9 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
                             className="cursor-pointer text-zinc-500 hover:text-red-600 hover:underline"
                           />
                         </form>
+                      )}
+                      {viewer.id && viewer.id !== c.user_id && (
+                        <ReportButton lang={lang} targetType="comment" targetId={c.id} t={dict.report} compact />
                       )}
                     </div>
                     <p className="whitespace-pre-line break-words">

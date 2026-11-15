@@ -27,6 +27,7 @@ import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
 import { CategoryRename } from "@/components/CategoryRename";
 import { CategoryParentEditor } from "@/components/CategoryParentEditor";
 import { CategoryMerge } from "@/components/CategoryMerge";
+import { ReportButton } from "@/components/ReportButton";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 
@@ -112,6 +113,11 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
             </button>
           </form>
         </div>
+        {userId && !isCreator && (
+          <div>
+            <ReportButton lang={lang} targetType="category" targetId={category.id} t={dict.report} />
+          </div>
+        )}
         {canMove && (
           <div className="flex flex-wrap items-start gap-2">
             {isCreator && (
@@ -212,7 +218,8 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
         ) : (
           <div>
             {reviews.map((r) => (
-              <ReviewCard key={r.id} review={r} lang={lang} showItem viewer={viewer} back={here} t={dict.reviewCard} />
+              <ReviewCard key={r.id} review={r} lang={lang} showItem viewer={viewer} back={here} t={dict.reviewCard}
+              reportT={dict.report} />
             ))}
           </div>
         )}

@@ -39,6 +39,7 @@ async function RecentReviews({
           viewer={viewer}
           back={`/${lang}`}
           t={dict.reviewCard}
+              reportT={dict.report}
         />
       ))}
     </div>

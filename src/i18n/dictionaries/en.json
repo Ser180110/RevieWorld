@@ -498,7 +498,8 @@
     "pushDisable": "Turn off",
     "pushBlocked": "Notifications are blocked for this site: allow them in the browser settings (padlock next to the address → Notifications).",
     "pushIos": "On iPhone: first add RevieWorld to the Home Screen (Share → Add to Home Screen), then open it from there and come back here.",
-    "pushError": "Couldn't turn them on: try again."
+    "pushError": "Couldn't turn them on: try again.",
+    "listLike": "{name} likes your list {what}"
   },
   "feed": {
     "following": "Following",
@@ -544,5 +545,84 @@
     "stars": "⭐ Highest rated",
     "stars_low": "👎 Lowest rated",
     "recent": "🕒 Newest"
+  },
+  "report": {
+    "button": "Report",
+    "title": "Why are you reporting this?",
+    "reasons": {
+      "spam": "Spam or advertising",
+      "offensive": "Offensive or violent",
+      "false": "False or misleading",
+      "inappropriate": "Inappropriate content",
+      "other": "Other"
+    },
+    "notePlaceholder": "Anything to add? (optional)",
+    "send": "Send report",
+    "sending": "Sending…",
+    "cancel": "Cancel",
+    "close": "Close",
+    "thanks": "Thanks! The founders will check it soon.",
+    "errors": {
+      "auth": "Sign in to report.",
+      "unavailable": "Not available yet: the database needs an update.",
+      "generic": "Something went wrong, please try again."
+    }
+  },
+  "badges": {
+    "title": "Badges",
+    "first": {
+      "name": "First review",
+      "hint": "You wrote your first review"
+    },
+    "reviewer": {
+      "name": "Reviewer",
+      "hint": "50 reviews written"
+    },
+    "pioneer": {
+      "name": "Pioneer",
+      "hint": "You founded a category"
+    },
+    "explorer": {
+      "name": "Explorer",
+      "hint": "Reviews in 10 different categories"
+    },
+    "trailblazer": {
+      "name": "Trailblazer",
+      "hint": "First to review something"
+    }
+  },
+  "ratings": {
+    "title": "Ratings",
+    "votes": "{n} ratings"
+  },
+  "moderation": {
+    "block": "Block",
+    "unblock": "Unblock",
+    "blockConfirm": "Block this person? They won't be able to follow you, comment on or like your reviews, and you won't see their reviews and comments. You can unblock them any time.",
+    "blockedBanner": "You blocked this person: you don't see their reviews.",
+    "reportsBox": "Reports to check",
+    "reportsTitle": "Reports",
+    "reportsEmpty": "Nothing to check. 🎉",
+    "reportedBy": "reported by",
+    "hide": "Remove",
+    "dismiss": "It's fine",
+    "hideConfirm": "Remove this content? Reviews, categories and things are hidden; comments and lists are deleted.",
+    "open": "Open",
+    "reasons": {
+      "spam": "Spam",
+      "offensive": "Offensive",
+      "false": "False",
+      "inappropriate": "Inappropriate",
+      "other": "Other"
+    },
+    "types": {
+      "review": "Review",
+      "comment": "Comment",
+      "category": "Category",
+      "item": "Thing",
+      "user": "User",
+      "list": "List"
+    },
+    "userNote": "For users: check the profile; you can remove single reviews or block them."
   }
 }

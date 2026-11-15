@@ -8,6 +8,7 @@ import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LikeButton } from "./LikeButton";
 import { ReviewPhotos } from "./ReviewPhotos";
 import { ShareButton } from "./ShareButton";
+import { ReportButton } from "./ReportButton";
 import { Sticker } from "./Sticker";
 import { splitSticker } from "@/lib/stickers";
 import { Stars } from "./Stars";
@@ -20,6 +21,7 @@ export function ReviewCard({
   viewer,
   back,
   t,
+  reportT,
 }: {
   review: ReviewRow;
   lang: string;
@@ -29,6 +31,8 @@ export function ReviewCard({
   /** Where to go after deleting this review. */
   back: string;
   t: Dictionary["reviewCard"];
+  /** "Segnala" texts; without them there is no report button. */
+  reportT?: Dictionary["report"];
 }) {
   const item = review.item;
   const username = review.author?.username;
@@ -124,6 +128,11 @@ export function ReviewCard({
             label={t.delete}
             confirmText={t.confirmDelete}
           />
+        )}
+        {!own && viewer.id && reportT && (
+          <span className="ml-auto">
+            <ReportButton lang={lang} targetType="review" targetId={review.id} t={reportT} compact />
+          </span>
         )}
       </div>
     </article>
