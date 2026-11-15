@@ -604,3 +604,24 @@ export async function mergeCategory(_prev: MergeState, formData: FormData): Prom
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/c/${target?.slug ?? ""}`);
 }
+
+export type DeleteCategoryState = { error?: "forbidden" | "unavailable" | "generic" };
+
+/** Founders only: delete a category with its items and reviews; subcategories move up. */
+export async function deleteCategory(_prev: DeleteCategoryState, formData: FormData): Promise<DeleteCategoryState> {
+  const lang = localeOf(formData);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  if (!z.guid().safeParse(categoryId).success) return { error: "generic" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const { data, error } = await supabase.rpc("delete_category", { cat: categoryId });
+  if (error) {
+    console.error("deleteCategory", error);
+    return { error: error.code === "PGRST202" ? "unavailable" : "generic" };
+  }
+  if (data === "forbidden" || data === "auth") return { error: "forbidden" };
+  if (data !== "ok" && data !== "not_found") return { error: "generic" };
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/categories?deleted=1`);
+}
