@@ -37,6 +37,7 @@ export function ReviewCard({
   const item = review.item;
   const username = review.author?.username;
   const own = viewer.id !== null && viewer.id === review.user_id;
+  const place = viewer.places?.[review.id];
   const { text, sticker } = splitSticker(review.body);
   return (
     <article className="mb-3 flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition last:mb-0 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
@@ -101,6 +102,16 @@ export function ReviewCard({
           lang={lang}
           labels={{ like: t.like, unlike: t.unlike, likes: t.likes }}
         />
+        {place && (
+          <Link
+            href={`/${lang}/map?lat=${place.lat}&lng=${place.lng}&review=${review.id}`}
+            title={t.onMap}
+            className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+          >
+            <span aria-hidden>📍</span>
+            <span className="sr-only">{t.onMap}</span>
+          </Link>
+        )}
         <ShareButton
           path={`/${lang}/r/${review.id}`}
           title={item?.name ?? "RevieWorld"}
