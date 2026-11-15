@@ -6,45 +6,13 @@ import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import {
   getListPreviews,
   getRecentLists,
-  getRecentReviews,
   getTopCategories,
-  getViewer,
 } from "@/lib/data/queries";
 import { ListCard } from "@/components/ListCard";
 import { CategoryTile } from "@/components/CategoryTile";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { getCurrentUserId } from "@/lib/data/queries";
-import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewSkeletons } from "@/components/Skeletons";
-
-async function RecentReviews({
-  lang,
-  dict,
-}: {
-  lang: Locale;
-  dict: Dictionary;
-}) {
-  const reviews = await getRecentReviews();
-  if (!reviews.length)
-    return <p className="text-zinc-500">{dict.home.recentEmpty}</p>;
-  const viewer = await getViewer(reviews);
-  return (
-    <div>
-      {reviews.map((r) => (
-        <ReviewCard
-          key={r.id}
-          review={r}
-          lang={lang}
-          showItem
-          viewer={viewer}
-          back={`/${lang}`}
-          t={dict.reviewCard}
-              reportT={dict.report}
-        />
-      ))}
-    </div>
-  );
-}
 
 async function RecentLists({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const lists = await getRecentLists();
@@ -69,6 +37,9 @@ async function RecentLists({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   );
 }
 
+/** Reviews shown on the home page before "Vedi altre". */
+const HOME_FEED = 10;
+
 /** "Seguiti / Tutti" tabs for signed-in users; latest reviews for everyone else. */
 async function HomeFeed({
   lang,
@@ -89,7 +60,7 @@ async function HomeFeed({
           </p>
         )}
         <h2 className="text-xl font-semibold">{dict.home.recentTitle}</h2>
-        <RecentReviews lang={lang} dict={dict} />
+        <ActivityFeed lang={lang} dict={dict} userId={null} feed="all" limit={HOME_FEED} home />
       </section>
     );
   }
@@ -116,10 +87,10 @@ async function HomeFeed({
         </Link>
       </nav>
       {tab === "all" ? (
-        <RecentReviews lang={lang} dict={dict} />
+        <ActivityFeed lang={lang} dict={dict} userId={userId} feed="all" limit={HOME_FEED} home />
       ) : (
         <>
-          <ActivityFeed lang={lang} dict={dict} userId={userId} limit={20} />
+          <ActivityFeed lang={lang} dict={dict} userId={userId} limit={HOME_FEED} home />
           <Link href={`/${lang}/people`} className="self-start text-sm font-medium hover:underline">
             {dict.feed.findPeople}
           </Link>

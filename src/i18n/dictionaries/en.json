@@ -441,6 +441,11 @@
     }
   },
   "activity": {
+    "subtitleBoth": "The latest reviews: from people you follow, or from everyone.",
+    "more": "See more reviews →",
+    "newer": "Newer",
+    "older": "Older",
+    "page": "Page {n}",
     "title": "Activity",
     "subtitle": "The latest reviews from people you follow.",
     "homeTitle": "From people you follow",
