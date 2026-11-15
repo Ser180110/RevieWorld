@@ -1097,3 +1097,45 @@ export async function describeReportTargets(
 export async function hasBlocked(targetId: string): Promise<boolean> {
   return (await getBlockedIds()).has(targetId);
 }
+
+/** Only Sergio: the profile with the 'founder' badge. */
+export async function isAppFounder(userId: string | null): Promise<boolean> {
+  if (!userId) return false;
+  const supabase = await db();
+  if (!supabase) return false;
+  const { data } = await supabase.from("profiles").select("badge").eq("id", userId).maybeSingle();
+  return (data as { badge?: string | null } | null)?.badge === "founder";
+}
+
+export type AdminUser = {
+  id: string;
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  email: string | null;
+  signed_up_at: string | null;
+  confirmed: boolean | null;
+  last_sign_in_at: string | null;
+  reviews: number | null;
+};
+
+/** Everyone with an account, newest first (founder only; e-mails need migration 0030). */
+export async function getAdminUsers(): Promise<{ users: AdminUser[]; full: boolean }> {
+  const supabase = await db();
+  if (!supabase) return { users: [], full: false };
+  const { data, error } = await supabase.rpc("admin_users");
+  if (!error) return { users: (data ?? []) as AdminUser[], full: true };
+  if (error.code !== "PGRST202") console.error("getAdminUsers", error);
+  // Before the migration: public profile data only.
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, username, display_name, avatar_url, created_at")
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  return {
+    users: ((profiles ?? []) as { id: string; username: string; display_name: string | null; avatar_url: string | null; created_at: string }[]).map(
+      (p) => ({ ...p, email: null, signed_up_at: p.created_at, confirmed: null, last_sign_in_at: null, reviews: null }),
+    ),
+    full: false,
+  };
+}
