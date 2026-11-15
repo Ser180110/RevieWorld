@@ -441,6 +441,11 @@
     }
   },
   "activity": {
+    "subtitleBoth": "Le ultime recensioni: delle persone che segui o di tutti.",
+    "more": "Vedi altre recensioni →",
+    "newer": "Più recenti",
+    "older": "Più vecchie",
+    "page": "Pagina {n}",
     "title": "Attività",
     "subtitle": "Le ultime recensioni delle persone che segui.",
     "homeTitle": "Dalle persone che segui",

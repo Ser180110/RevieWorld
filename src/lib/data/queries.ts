@@ -72,7 +72,7 @@ async function withoutBlocked<T extends { user_id: string }>(rows: T[]): Promise
   return blocked.size ? rows.filter((r) => !blocked.has(r.user_id)) : rows;
 }
 
-export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
+export async function getRecentReviews(limit = 12, offset = 0): Promise<ReviewRow[]> {
   const supabase = await db();
   if (!supabase) return [];
   const { data } = await supabase
@@ -80,7 +80,7 @@ export async function getRecentReviews(limit = 12): Promise<ReviewRow[]> {
     .select(REVIEW_WITH_ITEM)
     .eq("status", "active")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
   return withoutBlocked((data ?? []) as unknown as ReviewRow[]);
 }
 
@@ -705,6 +705,7 @@ export async function getMyListsFor(
 export async function getActivity(
   userId: string,
   limit = 50,
+  offset = 0,
 ): Promise<{ reviews: ReviewRow[]; following: number }> {
   const supabase = await db();
   if (!supabase) return { reviews: [], following: 0 };
@@ -721,7 +722,7 @@ export async function getActivity(
     .in("user_id", ids)
     .eq("status", "active")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
   return { reviews: (data ?? []) as unknown as ReviewRow[], following: ids.length };
 }
 
