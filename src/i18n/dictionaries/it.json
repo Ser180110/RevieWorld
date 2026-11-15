@@ -594,7 +594,13 @@
   },
   "ratings": {
     "title": "Voti",
-    "votes": "{n} voti"
+    "votes": "{n} voti",
+    "hint": "Tocca una barra per vedere le recensioni con quel voto.",
+    "showing": "Recensioni con {stars}",
+    "showAll": "✕ Mostra tutte",
+    "noneMine": "Non hai ancora valutato nessuna recensione con {stars}.",
+    "noneUser": "{name} non ha ancora dato {stars} a nessuna recensione.",
+    "noneItem": "Nessuno ha ancora dato {stars} a questa cosa."
   },
   "moderation": {
     "block": "Blocca",

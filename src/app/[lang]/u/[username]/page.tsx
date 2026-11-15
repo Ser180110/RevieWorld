@@ -102,7 +102,13 @@ async function ProfileContent({ lang, username }: { lang: Locale; username: stri
         <p className="rounded-xl bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">🚫 {m.blockedBanner}</p>
       )}
       <BadgeGrid badges={badges} t={dict.badges} />
-      <RatingHistogram counts={ratingCounts} title={dict.ratings.title} votesLabel={dict.ratings.votes} />
+      <RatingHistogram
+        counts={ratingCounts}
+        title={dict.ratings.title}
+        votesLabel={dict.ratings.votes}
+        hint={dict.ratings.hint}
+        hrefs={ratingCounts.map((_, i) => `/${lang}/u/${profile.username}/diary?rating=${i + 1}`)}
+      />
       {founded.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">

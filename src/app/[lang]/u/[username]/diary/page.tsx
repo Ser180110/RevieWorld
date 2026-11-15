@@ -16,6 +16,7 @@ import { fill } from "@/lib/format";
 import { DeleteReviewButton } from "@/components/DeleteReviewButton";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { Stars } from "@/components/Stars";
+import { RatingHistogram, ratingFilterOf, starsText } from "@/components/RatingHistogram";
 
 export async function generateMetadata({
   params,
@@ -40,16 +41,18 @@ function byMonth(reviews: ReviewRow[]): [string, ReviewRow[]][] {
 async function DiaryContent({
   lang,
   username,
+  rating,
 }: {
   lang: Locale;
   username: string;
+  rating: number | null;
 }) {
   const dict = await getDictionary(lang);
   const t = dict.diary;
   const profile = await getProfile(username);
   if (!profile) notFound();
 
-  const [stats, reviews] = await Promise.all([
+  const [stats, allReviews] = await Promise.all([
     getProfileStats(profile.id),
     getUserReviews(profile.id),
   ]);
@@ -61,7 +64,12 @@ async function DiaryContent({
     year: "numeric",
     timeZone: "UTC",
   });
-  const back = `/${lang}/u/${profile.username}/diary`;
+  const base = `/${lang}/u/${profile.username}/diary`;
+  const back = rating ? `${base}?rating=${rating}` : base;
+  const counts = Array<number>(10).fill(0);
+  for (const r of allReviews) if (r.rating >= 1 && r.rating <= 10) counts[r.rating - 1] += 1;
+  const reviews = rating ? allReviews.filter((r) => r.rating === rating) : allReviews;
+  const name = profile.display_name || `@${profile.username}`;
 
   return (
     <div className="flex flex-col gap-8">
@@ -75,15 +83,43 @@ async function DiaryContent({
         t={dict.profile}
       />
 
+      <RatingHistogram
+        counts={counts}
+        title={dict.ratings.title}
+        votesLabel={dict.ratings.votes}
+        hint={dict.ratings.hint}
+        active={rating}
+        hrefs={counts.map((_, i) => (rating === i + 1 ? base : `${base}?rating=${i + 1}`))}
+      />
+
+      {rating && (
+        <p className="flex flex-wrap items-center gap-3 text-sm">
+          <span className="font-medium">
+            {fill(dict.ratings.showing, { stars: starsText(rating) })} ({reviews.length})
+          </span>
+          <Link href={base} scroll={false} className="text-zinc-500 hover:underline">
+            {dict.ratings.showAll}
+          </Link>
+        </p>
+      )}
+
       {reviews.length === 0 ? (
-        <p className="text-zinc-500">{t.empty}</p>
+        <p className="text-zinc-500">
+          {rating
+            ? own
+              ? fill(dict.ratings.noneMine, { stars: starsText(rating) })
+              : fill(dict.ratings.noneUser, { name, stars: starsText(rating) })
+            : t.empty}
+        </p>
       ) : (
         <div className="flex flex-col gap-8">
+          {!rating && (
           <p className="text-sm text-zinc-500">
             {reviews.length === 1
               ? t.totalOne
               : fill(t.total, { n: String(reviews.length) })}
           </p>
+          )}
           {byMonth(reviews).map(([month, entries]) => (
             <section key={month} className="flex flex-col">
               <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500">
@@ -169,14 +205,19 @@ async function DiaryContent({
 
 export default async function DiaryPage({
   params,
+  searchParams,
 }: PageProps<"/[lang]/u/[username]/diary">) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       <Suspense fallback={<p className="text-zinc-500">…</p>}>
-        {params.then(({ lang, username }) => {
+        {Promise.all([params, searchParams]).then(([{ lang, username }, sp]) => {
           if (!hasLocale(lang)) notFound();
           return (
-            <DiaryContent lang={lang} username={decodeURIComponent(username)} />
+            <DiaryContent
+              lang={lang}
+              username={decodeURIComponent(username)}
+              rating={ratingFilterOf(sp.rating)}
+            />
           );
         })}
       </Suspense>

@@ -7,18 +7,21 @@ export function ReviewSortTabs({
   base,
   current,
   t,
+  query = "",
 }: {
   /** The page path, without the query. */
   base: string;
   current: ReviewSort;
   t: Dictionary["reviewSort"];
+  /** Other query to keep, e.g. "rating=10". */
+  query?: string;
 }) {
   return (
     <nav aria-label={t.label} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 text-sm sm:mx-0 sm:px-0">
       {REVIEW_SORTS.map((s) => (
         <Link
           key={s}
-          href={s === "likes" ? `${base}#reviews` : `${base}?sort=${s}#reviews`}
+          href={`${base}${[s === "likes" ? "" : `sort=${s}`, query].filter(Boolean).join("&").replace(/^(?=.)/, "?")}#reviews`}
           scroll={false}
           replace
           aria-current={s === current ? "true" : undefined}

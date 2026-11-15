@@ -594,7 +594,13 @@
   },
   "ratings": {
     "title": "Ratings",
-    "votes": "{n} ratings"
+    "votes": "{n} ratings",
+    "hint": "Tap a bar to see the reviews with that rating.",
+    "showing": "Reviews with {stars}",
+    "showAll": "✕ Show all",
+    "noneMine": "You haven't rated anything {stars} yet.",
+    "noneUser": "{name} hasn't rated anything {stars} yet.",
+    "noneItem": "Nobody has rated this {stars} yet."
   },
   "moderation": {
     "block": "Block",
