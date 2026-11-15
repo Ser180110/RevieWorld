@@ -204,6 +204,13 @@
       "when": 1794746507005,
       "tag": "0028_reports_blocks_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1794748952032,
+      "tag": "0029_delete_category",
+      "breakpoints": true
     }
   ]
 }

@@ -27,6 +27,7 @@ import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
 import { CategoryRename } from "@/components/CategoryRename";
 import { CategoryParentEditor } from "@/components/CategoryParentEditor";
 import { CategoryMerge } from "@/components/CategoryMerge";
+import { CategoryDelete } from "@/components/CategoryDelete";
 import { ReportButton } from "@/components/ReportButton";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
@@ -142,6 +143,14 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
               t={t.parent}
             />
             {isFounder && <CategoryMerge lang={lang} categoryId={category.id} name={category.name} t={t.merge} />}
+            {isFounder && (
+              <CategoryDelete
+                lang={lang}
+                categoryId={category.id}
+                name={category.name}
+                t={t.delete}
+              />
+            )}
           </div>
         )}
       </header>

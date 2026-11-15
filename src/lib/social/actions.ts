@@ -140,6 +140,12 @@ export async function deleteReview(formData: FormData): Promise<void> {
   if (!s.userId) redirect(`/${lang}/login`);
   if (!z.guid().safeParse(reviewId).success) return;
 
+  const { data: before } = await s.supabase
+    .from("reviews")
+    .select("item:items(category_id)")
+    .eq("id", reviewId)
+    .maybeSingle();
+  const categoryId = (before as { item: { category_id: string } | null } | null)?.item?.category_id;
   const { error } = await s.supabase
     .from("reviews")
     .delete()
@@ -147,6 +153,11 @@ export async function deleteReview(formData: FormData): Promise<void> {
     .eq("user_id", s.userId);
   if (error) console.error("deleteReview", error);
   revalidatePath(`/${lang}`, "layout");
+  // The last review of a category takes the category with it: don't go back to a page that is gone.
+  if (categoryId && back.startsWith(`/${lang}/c/`)) {
+    const { data: still } = await s.supabase.from("categories").select("id").eq("id", categoryId).maybeSingle();
+    if (!still) redirect(`/${lang}/categories`);
+  }
   redirect(back);
 }
 

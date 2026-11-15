@@ -180,6 +180,18 @@
         "generic": "Something went wrong, please try again."
       }
     },
+    "delete": {
+      "open": "Delete category",
+      "confirm": "Delete «{name}»? The things in it and all their reviews will be gone too, for everyone. Subcategories stay and move up one level. This cannot be undone.",
+      "confirmOk": "Yes, delete",
+      "deleting": "Deleting…",
+      "done": "Category deleted.",
+      "errors": {
+        "forbidden": "Only the founders can delete categories.",
+        "unavailable": "Not available yet: the database needs an update.",
+        "generic": "Something went wrong, please try again."
+      }
+    },
     "merge": {
       "open": "Merge into…",
       "title": "Is «{name}» a duplicate? Merge it into another category",

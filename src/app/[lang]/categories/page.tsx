@@ -28,8 +28,9 @@ async function Grid({ lang }: { lang: Locale }) {
   );
 }
 
-export default async function CategoriesPage({ params }: PageProps<"/[lang]/categories">) {
+export default async function CategoriesPage({ params, searchParams }: PageProps<"/[lang]/categories">) {
   const { lang } = await params;
+  const { deleted } = await searchParams;
   if (!hasLocale(lang)) notFound();
   const dict = await getDictionary(lang);
   return (
@@ -46,6 +47,11 @@ export default async function CategoriesPage({ params }: PageProps<"/[lang]/cate
           {dict.explore.create}
         </Link>
       </div>
+      {deleted === "1" && (
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+          🗑️ {dict.category.delete.done}
+        </p>
+      )}
       <Suspense fallback={<p className="text-zinc-500">{dict.common.loading}</p>}>
         <Grid lang={lang} />
       </Suspense>

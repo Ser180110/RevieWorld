@@ -180,6 +180,18 @@
         "generic": "Qualcosa è andato storto, riprova."
       }
     },
+    "delete": {
+      "open": "Elimina categoria",
+      "confirm": "Eliminare «{name}»? Spariranno anche le cose dentro e tutte le loro recensioni, per tutti. Le sottocategorie restano e salgono di un livello. Non si può annullare.",
+      "confirmOk": "Sì, elimina",
+      "deleting": "Elimino…",
+      "done": "Categoria eliminata.",
+      "errors": {
+        "forbidden": "Solo i fondatori possono eliminare le categorie.",
+        "unavailable": "Funzione non ancora attiva: va aggiornato il database.",
+        "generic": "Qualcosa è andato storto, riprova."
+      }
+    },
     "merge": {
       "open": "Unisci a…",
       "title": "«{name}» è un doppione? Uniscila a un'altra categoria",
