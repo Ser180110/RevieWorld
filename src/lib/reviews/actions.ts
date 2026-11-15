@@ -518,3 +518,89 @@ export async function moveReview(_prev: MoveState, formData: FormData): Promise<
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/c/${category.slug}/${item.slug}`);
 }
+
+// ---------------------------------------------------------------------------
+// Category tree: suggest a parent while creating, move a category inside another
+// ---------------------------------------------------------------------------
+
+export type ParentSuggestion = { id: string; name: string; icon: string | null; color: string | null };
+
+/**
+ * Categories a new one could live in: "acqua claudia" → Acqua,
+ * "fontana di trevi" → Fontane / Fontanelle (same word stem).
+ */
+export async function suggestParentCategories(q: string): Promise<ParentSuggestion[]> {
+  const normalized = normalizeName(q);
+  const words = normalized.split(" ").filter((w) => w.length >= 3);
+  if (!words.length) return [];
+  const supabase = await client();
+  if (!supabase) return [];
+  // Each word as written, and its stem (Fontana → fontan…) to catch plurals.
+  const patterns = new Set<string>();
+  for (const w of words.slice(0, 4)) {
+    patterns.add(`normalized_name.eq.${w}`);
+    if (w.length >= 5) patterns.add(`normalized_name.like.${w.slice(0, -1)}*`);
+  }
+  const { data } = await supabase
+    .from("categories")
+    .select("id, name, normalized_name, icon, color, reviews_count")
+    .eq("status", "active")
+    .or([...patterns].join(","))
+    .order("reviews_count", { ascending: false })
+    .limit(8);
+  return ((data ?? []) as (ParentSuggestion & { normalized_name: string })[])
+    .filter((c) => c.normalized_name !== normalized && c.normalized_name.split(" ").length <= words.length)
+    .slice(0, 3)
+    .map(({ id, name, icon, color }) => ({ id, name, icon, color }));
+}
+
+export type ParentState = { error?: "forbidden" | "loop" | "unavailable" | "generic" };
+
+/** Put a category inside another (or back on top): creator, founders and moderators. */
+export async function setCategoryParent(_prev: ParentState, formData: FormData): Promise<ParentState> {
+  const lang = localeOf(formData);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const parentRaw = String(formData.get("parentId") ?? "");
+  const slug = String(formData.get("slug") ?? "");
+  if (!z.guid().safeParse(categoryId).success) return { error: "generic" };
+  const parentId = parentRaw ? parentRaw : null;
+  if (parentId && !z.guid().safeParse(parentId).success) return { error: "generic" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const { data, error } = await supabase.rpc("set_category_parent", { cat: categoryId, new_parent: parentId });
+  if (error) {
+    console.error("setCategoryParent", error);
+    return { error: error.code === "PGRST202" ? "unavailable" : "generic" };
+  }
+  if (data === "forbidden" || data === "auth") return { error: "forbidden" };
+  if (data === "loop") return { error: "loop" };
+  if (data !== "ok") return { error: "generic" };
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/c/${slug}`);
+}
+
+export type MergeState = { error?: "forbidden" | "same" | "unavailable" | "generic" };
+
+/** Founders only: merge this (duplicate) category into another one. */
+export async function mergeCategory(_prev: MergeState, formData: FormData): Promise<MergeState> {
+  const lang = localeOf(formData);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const targetId = String(formData.get("targetId") ?? "");
+  if (!z.guid().safeParse(categoryId).success || !z.guid().safeParse(targetId).success) return { error: "generic" };
+  if (categoryId === targetId) return { error: "same" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const { data, error } = await supabase.rpc("merge_category", { src: categoryId, dst: targetId });
+  if (error) {
+    console.error("mergeCategory", error);
+    return { error: error.code === "PGRST202" ? "unavailable" : "generic" };
+  }
+  if (data === "forbidden" || data === "auth") return { error: "forbidden" };
+  if (data === "same") return { error: "same" };
+  if (data !== "ok") return { error: "generic" };
+  const { data: target } = await supabase.from("categories").select("slug").eq("id", targetId).maybeSingle();
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}/c/${target?.slug ?? ""}`);
+}

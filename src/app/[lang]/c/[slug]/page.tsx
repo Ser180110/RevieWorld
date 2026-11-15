@@ -25,6 +25,8 @@ import { ReviewForm } from "@/components/ReviewForm";
 import { Avatar } from "@/components/Avatar";
 import { CategoryStyleEditor } from "@/components/CategoryStyleEditor";
 import { CategoryRename } from "@/components/CategoryRename";
+import { CategoryParentEditor } from "@/components/CategoryParentEditor";
+import { CategoryMerge } from "@/components/CategoryMerge";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 
@@ -43,8 +45,15 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
   ]);
   const viewer = await getViewer(reviews);
   const here = `/${lang}/c/${category.slug}`;
-  const following = await isFollowing(category.id, userId);
+  const [following, me] = await Promise.all([
+    isFollowing(category.id, userId),
+    userId ? getProfileById(userId) : Promise.resolve(null),
+  ]);
   const style = styleOf(category);
+  const isCreator = Boolean(userId) && userId === category.created_by;
+  // The creator and the founders (Fondatore / Ideatrice) can tidy the category tree.
+  const isFounder = me?.badge === "founder" || me?.badge === "ideator";
+  const canMove = isCreator || isFounder;
 
   return (
     <div className="flex flex-col gap-10">
@@ -103,17 +112,30 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
             </button>
           </form>
         </div>
-        {userId && userId === category.created_by && (
+        {canMove && (
           <div className="flex flex-wrap items-start gap-2">
-            <CategoryStyleEditor
+            {isCreator && (
+              <>
+                <CategoryStyleEditor
+                  lang={lang}
+                  categoryId={category.id}
+                  slug={category.slug}
+                  emoji={style.emoji}
+                  color={style.color}
+                  t={t}
+                />
+                <CategoryRename lang={lang} categoryId={category.id} slug={category.slug} name={category.name} t={t} />
+              </>
+            )}
+            <CategoryParentEditor
               lang={lang}
               categoryId={category.id}
               slug={category.slug}
-              emoji={style.emoji}
-              color={style.color}
-              t={t}
+              name={category.name}
+              parentName={family.parent?.name ?? null}
+              t={t.parent}
             />
-            <CategoryRename lang={lang} categoryId={category.id} slug={category.slug} name={category.name} t={t} />
+            {isFounder && <CategoryMerge lang={lang} categoryId={category.id} name={category.name} t={t.merge} />}
           </div>
         )}
       </header>
