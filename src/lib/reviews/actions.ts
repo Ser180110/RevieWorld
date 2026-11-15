@@ -200,6 +200,20 @@ const reviewSchema = z.object({
   body: z.string().trim().max(4950).optional(),
 });
 
+/**
+ * The position sent by the review form: {lat, lng}, {lat: null, lng: null}
+ * to remove it, or undefined when the form has no position field.
+ */
+function parseLocation(formData: FormData): { lat: number | null; lng: number | null } | undefined {
+  if (!formData.has("lat")) return undefined;
+  const lat = Number(formData.get("lat"));
+  const lng = Number(formData.get("lng"));
+  if (String(formData.get("lat")) === "" || !Number.isFinite(lat) || !Number.isFinite(lng)) return { lat: null, lng: null };
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return { lat: null, lng: null };
+  // ~1 m precision is plenty.
+  return { lat: Math.round(lat * 1e5) / 1e5, lng: Math.round(lng * 1e5) / 1e5 };
+}
+
 export async function submitReview(
   _prev: FormState,
   formData: FormData,
@@ -289,13 +303,21 @@ export async function submitReview(
     .eq("item_id", item.id)
     .maybeSingle();
 
-  const { data: saved, error } = mine
-    ? await supabase.from("reviews").update(fields).eq("id", mine.id).select("id").single()
-    : await supabase
-        .from("reviews")
-        .insert({ ...fields, user_id: userId, item_id: item.id })
-        .select("id")
-        .single();
+  // Optional position: "lat"/"lng" from the map picker ("" = none).
+  const location = parseLocation(formData);
+  const save = (extra: Record<string, unknown>) =>
+    mine
+      ? supabase.from("reviews").update({ ...fields, ...extra }).eq("id", mine.id).select("id").single()
+      : supabase
+          .from("reviews")
+          .insert({ ...fields, ...extra, user_id: userId, item_id: item.id })
+          .select("id")
+          .single();
+  let { data: saved, error } = await save(location ?? {});
+  if (location && error && (error.code === "PGRST204" || error.code === "42703" || error.code === "42501")) {
+    // Database not updated yet: save without the position.
+    ({ data: saved, error } = await save({}));
+  }
   if (error || !saved) {
     console.error("submitReview: save review", error);
     return { error: "generic" };

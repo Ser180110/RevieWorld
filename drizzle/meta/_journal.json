@@ -218,6 +218,20 @@
       "when": 1794751940206,
       "tag": "0030_admin_users",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1794759297776,
+      "tag": "0031_review_location",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1794759298520,
+      "tag": "0032_review_location_rules",
+      "breakpoints": true
     }
   ]
 }

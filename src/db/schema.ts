@@ -11,6 +11,7 @@ import { sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
   boolean,
+  doublePrecision,
   check,
   index,
   integer,
@@ -190,6 +191,9 @@ export const reviews = pgTable(
     rating: smallint("rating").notNull(),
     body: text("body"),
     containsSpoiler: boolean("contains_spoiler").notNull().default(false),
+    /** Optional: where the reviewed thing is (shown on the map). */
+    lat: doublePrecision("lat"),
+    lng: doublePrecision("lng"),
     status: contentStatus("status").notNull().default("active"),
     likesCount: integer("likes_count").notNull().default(0),
     commentsCount: integer("comments_count").notNull().default(0),
@@ -200,7 +204,12 @@ export const reviews = pgTable(
     index("reviews_item_created_idx").on(t.itemId, t.createdAt),
     index("reviews_user_created_idx").on(t.userId, t.createdAt),
     index("reviews_created_idx").on(t.createdAt),
+    index("reviews_location_idx").on(t.lat, t.lng),
     check("reviews_rating_range", sql`${t.rating} between 1 and 10`),
+    check(
+      "reviews_location_valid",
+      sql`(${t.lat} is null and ${t.lng} is null) or (${t.lat} between -90 and 90 and ${t.lng} between -180 and 180)`,
+    ),
     check(
       "reviews_body_length",
       sql`${t.body} is null or char_length(${t.body}) <= 5000`,

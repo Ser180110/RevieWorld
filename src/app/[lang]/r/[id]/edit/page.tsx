@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCategoryFamily, getCurrentUserId, getReview } from "@/lib/data/queries";
+import { getCategoryFamily, getCurrentUserId, getReview, getReviewLocation } from "@/lib/data/queries";
 import { MoveReview } from "@/components/MoveReview";
 import { DeleteReviewButton } from "@/components/DeleteReviewButton";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -27,9 +27,10 @@ async function EditReview({
   back: string | null;
 }) {
   const dict = await getDictionary(lang);
-  const [review, userId] = await Promise.all([
+  const [review, userId, location] = await Promise.all([
     getReview(id),
     getCurrentUserId(),
+    getReviewLocation(id),
   ]);
   if (!review) notFound();
   const item = review.item;
@@ -70,6 +71,8 @@ async function EditReview({
         back={target}
         t={dict.reviewForm}
         common={dict.common}
+        locationT={dict.location}
+        location={location}
       />
       <MoveReview
         lang={lang}
