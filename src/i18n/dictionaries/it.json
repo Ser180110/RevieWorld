@@ -265,7 +265,13 @@
     "confirmDelete": "Vuoi davvero eliminare questa recensione? Non si può annullare.",
     "edit": "Modifica",
     "comments": "Commenti",
-    "openReview": "Apri la recensione"
+    "openReview": "Apri la recensione",
+    "translate": "Traduci",
+    "showOriginal": "Mostra originale",
+    "translating": "Traduco…",
+    "translated": "Tradotta automaticamente",
+    "translateFailed": "Traduzione non riuscita, riprova.",
+    "translateGoogle": "Apri in Google Traduttore"
   },
   "profile": {
     "foundedTitle": "Categorie fondate",
