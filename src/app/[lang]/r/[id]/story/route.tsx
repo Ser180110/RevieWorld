@@ -5,6 +5,7 @@ import { getReview } from "@/lib/data/queries";
 import { styleOf } from "@/lib/categoryStyle";
 import { photoUrl } from "@/lib/photos";
 import { splitSticker } from "@/lib/stickers";
+import { toPlain } from "@/lib/richtext";
 import { storyCard } from "@/lib/og/story";
 
 /** The review as a 1080×1920 PNG, to post in Instagram / WhatsApp stories. */
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteContext<"/[lang
     category: category.name,
     item: review.item.name,
     rating: review.rating,
-    body: splitSticker(review.body).text || null,
+    body: toPlain(splitSticker(review.body).text, "🙈") || null,
     author: review.author?.display_name || `@${review.author?.username ?? ""}`,
     photo: photo ? photoUrl(photo.storage_path) : null,
     cta: dict.story.cta,

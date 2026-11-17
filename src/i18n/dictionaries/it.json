@@ -243,7 +243,17 @@
     "photosError": "Una foto non è stata caricata: prova con un'altra immagine (JPG, PNG o WebP).",
     "photosRemove": "Togli foto",
     "dayLabel": "Quando l'hai provato?",
-    "dayHint": "La data dell'esperienza, non per forza oggi. Finisce nel tuo diario."
+    "dayHint": "La data dell'esperienza, non per forza oggi. Finisce nel tuo diario.",
+    "format": {
+      "bold": "Grassetto",
+      "italic": "Corsivo",
+      "underline": "Sottolineato",
+      "spoiler": "Spoiler",
+      "link": "Link",
+      "linkText": "testo del link",
+      "hint": "Seleziona delle parole e tocca un pulsante. Lo spoiler nasconde le parole finché qualcuno non le tocca (perfetto per la battuta finale 😏).",
+      "preview": "Anteprima"
+    }
   },
   "item": {
     "average": "Media",
@@ -271,7 +281,8 @@
     "translating": "Traduco…",
     "translated": "Tradotta automaticamente",
     "translateFailed": "Traduzione non riuscita, riprova.",
-    "translateGoogle": "Apri in Google Traduttore"
+    "translateGoogle": "Apri in Google Traduttore",
+    "spoilerShow": "Tocca per vedere lo spoiler"
   },
   "profile": {
     "foundedTitle": "Categorie fondate",

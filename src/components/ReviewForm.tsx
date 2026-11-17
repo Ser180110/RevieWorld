@@ -9,6 +9,8 @@ import { PhotoPicker } from "./PhotoPicker";
 import { LocationPicker } from "./LocationPicker";
 import { StickerPicker } from "./StickerPicker";
 import { QuickEmoji } from "./QuickEmoji";
+import { FormatToolbar } from "./FormatToolbar";
+import { RichText } from "./RichText";
 import { splitSticker, type Attachment } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
 import { DayInput } from "./DayInput";
@@ -65,6 +67,8 @@ export function ReviewForm({
   const initial = splitSticker(existing?.body);
   const [sticker, setSticker] = useState<Attachment | null>(initial.sticker);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+  // What the text looks like with its formatting (shown once there is some).
+  const [draft, setDraft] = useState(initial.text);
   const [itemName, setItemName] = useState("");
   const [picked, setPicked] = useState<Suggestion | null>(null);
   const debounced = useDebounced(itemName.trim());
@@ -150,9 +154,12 @@ export function ReviewForm({
 
       <DayInput label={t.dayLabel} hint={t.dayHint} today={today} value={day} />
 
-      <label className="flex flex-col gap-1">
-        <span className="text-sm font-medium">{t.bodyLabel}</span>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="review-body" className="text-sm font-medium">{t.bodyLabel}</label>
+        <FormatToolbar target={bodyRef} t={t.format} />
         <textarea
+          id="review-body"
+          onInput={(e) => setDraft(e.currentTarget.value)}
           ref={bodyRef}
           name="body"
           rows={4}
@@ -161,7 +168,15 @@ export function ReviewForm({
           placeholder={t.bodyPlaceholder}
           className={`${field} py-2`}
         />
-      </label>
+        {/\*|__|>!|\]\(/.test(draft) && (
+          <div className="rounded-lg bg-zinc-50 px-3 py-2 text-sm dark:bg-zinc-900">
+            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-zinc-500">{t.format.preview}</span>
+            <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
+              <RichText text={draft} lang={lang} spoilerLabel={t.format.spoiler} />
+            </p>
+          </div>
+        )}
+      </div>
 
       <QuickEmoji target={bodyRef} label="Emoji" />
 
