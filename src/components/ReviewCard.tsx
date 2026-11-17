@@ -84,7 +84,7 @@ export function ReviewCard({
         </div>
       )}
       <ReviewPhotos photos={review.photos} openLabel={t.openReview} />
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link
           href={`/${lang}/r/${review.id}#comments`}
           title={t.comments}
@@ -124,7 +124,7 @@ export function ReviewCard({
           label={t.share}
           copiedLabel={t.copied}
         />
-        <StoryShareButton lang={lang} reviewId={review.id} label={t.story} busyLabel={t.story} errorLabel={t.story} compact />
+        <StoryShareButton lang={lang} reviewId={review.id} label={t.story} shortLabel={t.storyShort} busyLabel={t.story} errorLabel={t.story} compact />
         {own && (
           <Link
             href={`/${lang}/r/${review.id}/edit?back=${encodeURIComponent(back)}`}
