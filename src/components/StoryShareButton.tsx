@@ -13,6 +13,7 @@ export function StoryShareButton({
   busyLabel,
   errorLabel,
   compact = false,
+  shortLabel,
 }: {
   lang: string;
   reviewId: string;
@@ -20,6 +21,8 @@ export function StoryShareButton({
   busyLabel: string;
   errorLabel: string;
   compact?: boolean;
+  /** Text of the small button on the review cards. */
+  shortLabel?: string;
 }) {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -59,10 +62,10 @@ export function StoryShareButton({
         onClick={share}
         disabled={busy}
         title={label}
-        aria-label={label}
-        className="inline-flex cursor-pointer items-center text-sm text-zinc-500 hover:text-zinc-900 disabled:opacity-50 dark:hover:text-zinc-100"
+        className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-gradient-to-r from-fuchsia-500 via-rose-500 to-amber-400 px-2.5 py-0.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-60"
       >
         <span aria-hidden>{busy ? "⏳" : failed ? "⚠️" : "📸"}</span>
+        {shortLabel ?? label}
       </button>
     );
   }

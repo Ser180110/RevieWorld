@@ -249,6 +249,7 @@
     "inCategory": "in"
   },
   "reviewCard": {
+    "storyShort": "IG story",
     "story": "Share to stories",
     "onMap": "See on the map",
     "share": "Share",
@@ -670,7 +671,7 @@
   },
   "story": {
     "cta": "Review anything",
-    "button": "Share to stories",
+    "button": "Post to IG / WhatsApp story",
     "busy": "Making the picture…",
     "error": "Couldn't make the picture, try again."
   },
