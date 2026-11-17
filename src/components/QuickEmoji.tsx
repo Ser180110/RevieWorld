@@ -2,7 +2,7 @@
 
 import { useState, type RefObject } from "react";
 
-const GROUPS: { icon: string; list: string }[] = [
+export const EMOJI_GROUPS: { icon: string; list: string }[] = [
   { icon: "😀", list: "😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😋 😛 😜 🤪 😎 🤩 🥳 😏 😌 🤔 🤨 😐 😑 😶 🙄 😬 😴 🤤 😮 😯 😲 😳 🥺 😢 😭 😤 😠 😡 🤬 🤯 😱 😨 🥶 🥵 🤢 🤮 🤧 😷 🤠 🤡 💩 👻 💀 😈 🙈 🙉 🙊" },
   { icon: "👍", list: "👍 👎 👌 🤌 ✌️ 🤞 🤟 🤘 👏 🙌 🙏 💪 👀 🫶 👋 🤙 👉 👈 ☝️ 🫡 🤝 ✍️ 💅 🤷 🤦 🙋 💃 🕺" },
   { icon: "❤️", list: "❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❤️‍🔥 💕 💞 💖 💘 💯 🔥 ✨ ⭐ 🌟 💫 ⚡ 💥 🎉 🎊 🏆 🥇 👑 💎 💸 💰 🚫 ✅ ❌ ‼️ ❓" },
@@ -46,7 +46,7 @@ export function QuickEmoji({ target, label }: { target: RefObject<HTMLTextAreaEl
       {open && (
         <div className="flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex gap-1 border-b border-zinc-200 pb-1 dark:border-zinc-800">
-            {GROUPS.map((g, i) => (
+            {EMOJI_GROUPS.map((g, i) => (
               <button
                 key={g.icon}
                 type="button"
@@ -59,7 +59,7 @@ export function QuickEmoji({ target, label }: { target: RefObject<HTMLTextAreaEl
             ))}
           </div>
           <div className="grid max-h-52 grid-cols-8 gap-0.5 overflow-y-auto sm:grid-cols-10">
-            {GROUPS[group].list.split(" ").map((e) => (
+            {EMOJI_GROUPS[group].list.split(" ").map((e) => (
               <button
                 key={e}
                 type="button"

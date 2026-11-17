@@ -824,7 +824,9 @@ export async function getLikers(reviewId: string, limit = 200): Promise<Liker[]>
 
 export type NotificationRow = {
   id: string;
-  type: "like" | "comment" | "follow" | "mention" | "watchlist" | "list_like";
+  type: "like" | "comment" | "follow" | "mention" | "watchlist" | "list_like" | "comment_reaction";
+  /** The emoji of a reaction to a comment. */
+  emoji?: string | null;
   created_at: string;
   read_at: string | null;
   review_id: string | null;
@@ -846,11 +848,21 @@ export async function getNotifications(limit = 60): Promise<NotificationRow[]> {
   const { data, error } = await supabase
     .from("notifications")
     .select(
-      `${NOTIFICATION_FIELDS}, list_id, list:lists(title)`,
+      `${NOTIFICATION_FIELDS}, list_id, list:lists(title), emoji`,
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit);
+  if (error?.code === "42703") {
+    // Before migration 0037 there is no emoji.
+    const { data: noEmoji, error: e2 } = await supabase
+      .from("notifications")
+      .select(`${NOTIFICATION_FIELDS}, list_id, list:lists(title)`)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (!e2) return (noEmoji ?? []) as unknown as NotificationRow[];
+  }
   if (error) {
     // Before migration 0027 there is no list_id.
     const { data: old } = await supabase

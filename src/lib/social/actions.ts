@@ -454,5 +454,7 @@ export async function reactToComment(commentId: string, emoji: string | null): P
     .from("comment_reactions")
     .upsert({ comment_id: commentId, user_id: s.userId, emoji }, { onConflict: "comment_id,user_id" });
   if (error) console.error("reactToComment", error);
+  // The comment's author gets a push ("@anna ha reagito 😂 al tuo commento").
+  else after(() => sendPendingPushes(s.supabase));
   return { ok: !error };
 }

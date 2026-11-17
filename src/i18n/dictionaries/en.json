@@ -563,7 +563,8 @@
     "pushBlocked": "Notifications are blocked for this site: allow them in the browser settings (padlock next to the address → Notifications).",
     "pushIos": "On iPhone: first add RevieWorld to the Home Screen (Share → Add to Home Screen), then open it from there and come back here.",
     "pushError": "Couldn't turn them on: try again.",
-    "listLike": "{name} likes your list {what}"
+    "listLike": "{name} likes your list {what}",
+    "reaction": "{name} reacted {emoji} to your comment"
   },
   "feed": {
     "following": "Following",
@@ -783,6 +784,7 @@
   "reactions": {
     "react": "React",
     "remove": "Remove reaction",
-    "signIn": "Sign in to react"
+    "signIn": "Sign in to react",
+    "more": "All emoji"
   }
 }

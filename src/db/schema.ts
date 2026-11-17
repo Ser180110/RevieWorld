@@ -412,7 +412,15 @@ export const reviewComments = pgTable(
 // Notifications: written by triggers (like, comment, new follower), read and
 // marked as read by their recipient. See drizzle/0013_notifications_rules.sql.
 // ---------------------------------------------------------------------------
-export const notificationType = pgEnum("notification_type", ["like", "comment", "follow", "mention", "watchlist", "list_like"]);
+export const notificationType = pgEnum("notification_type", [
+  "like",
+  "comment",
+  "follow",
+  "mention",
+  "watchlist",
+  "list_like",
+  "comment_reaction",
+]);
 
 export const notifications = pgTable(
   "notifications",
@@ -430,6 +438,8 @@ export const notifications = pgTable(
     reviewId: uuid("review_id").references(() => reviews.id, { onDelete: "cascade" }),
     commentId: uuid("comment_id").references(() => reviewComments.id, { onDelete: "cascade" }),
     listId: uuid("list_id").references(() => lists.id, { onDelete: "cascade" }),
+    /** The emoji of a reaction to a comment. */
+    emoji: text("emoji"),
     readAt: timestamp("read_at", { withTimezone: true }),
     /** When it was sent to the recipient's phones (web push). */
     pushedAt: timestamp("pushed_at", { withTimezone: true }),
@@ -539,6 +549,10 @@ export const commentReactions = pgTable(
   (t) => [
     primaryKey({ columns: [t.commentId, t.userId] }),
     index("comment_reactions_comment_idx").on(t.commentId),
-    check("comment_reactions_emoji_known", sql`${t.emoji} in ('👍', '❤️', '😂', '😮', '😢', '🔥')`),
+    // Any emoji (checked by the app); here only: short and no letters, digits or spaces.
+    check(
+      "comment_reactions_emoji_valid",
+      sql`char_length(${t.emoji}) between 1 and 16 and ${t.emoji} !~ '[A-Za-z0-9[:space:]<>&"]'`,
+    ),
   ],
 );
