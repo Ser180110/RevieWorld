@@ -282,7 +282,8 @@
     "translated": "Automatically translated",
     "translateFailed": "Translation failed, try again.",
     "translateGoogle": "Open in Google Translate",
-    "spoilerShow": "Tap to reveal the spoiler"
+    "spoilerShow": "Spoiler",
+    "spoilerHint": "Spoiler: tap to reveal"
   },
   "profile": {
     "foundedTitle": "Founded categories",

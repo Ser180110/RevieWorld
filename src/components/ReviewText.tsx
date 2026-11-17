@@ -77,6 +77,7 @@ export function ReviewText({
     failed: string;
     google: string;
     spoiler: string;
+    spoilerHint: string;
   };
 }) {
   const [translated, setTranslated] = useState<string | null>(null);
@@ -121,7 +122,7 @@ export function ReviewText({
         className="whitespace-pre-line text-zinc-800 dark:text-zinc-200"
         lang={showing ? to : (from ?? undefined)}
       >
-        <RichText text={showing && translated ? translated : text} lang={lang} spoilerLabel={t.spoiler} />
+        <RichText text={showing && translated ? translated : text} lang={lang} spoilerLabel={t.spoiler} spoilerHint={t.spoilerHint} />
       </p>
       {canTranslate && (
         <span className="flex flex-wrap items-center gap-x-2 text-xs text-zinc-500">
