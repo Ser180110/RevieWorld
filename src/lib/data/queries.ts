@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { cache } from "react";
 import { createClient, getSessionUserId } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/supabase/env";
+import { isReaction, type ReactionSummary } from "@/lib/reactions";
 import { normalizeName } from "@/lib/normalize";
 import type {
   CategorySummary,
@@ -1284,4 +1285,28 @@ export async function getReviewDay(reviewId: string): Promise<string | null> {
   if (!supabase) return null;
   const { data } = await supabase.from("diary_entries").select("experienced_on").eq("review_id", reviewId).maybeSingle();
   return (data as { experienced_on: string } | null)?.experienced_on ?? null;
+}
+
+/** Reactions on these comments, with the viewer's own (empty before migration 0035). */
+export async function getCommentReactions(
+  commentIds: string[],
+  viewerId: string | null,
+): Promise<Record<string, ReactionSummary>> {
+  const out: Record<string, ReactionSummary> = {};
+  if (commentIds.length === 0) return out;
+  const supabase = await db();
+  if (!supabase) return out;
+  const { data, error } = await supabase
+    .from("comment_reactions")
+    .select("comment_id, user_id, emoji")
+    .in("comment_id", commentIds)
+    .limit(5000);
+  if (error) return out;
+  for (const r of (data ?? []) as { comment_id: string; user_id: string; emoji: string }[]) {
+    if (!isReaction(r.emoji)) continue;
+    const s = (out[r.comment_id] ??= { counts: {}, mine: null });
+    s.counts[r.emoji] = (s.counts[r.emoji] ?? 0) + 1;
+    if (r.user_id === viewerId) s.mine = r.emoji;
+  }
+  return out;
 }

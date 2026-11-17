@@ -1,0 +1,104 @@
+"use client";
+
+import Link from "next/link";
+import { useState, useTransition } from "react";
+import { COMMENT_REACTIONS, type CommentReaction, type ReactionSummary } from "@/lib/reactions";
+import { reactToComment } from "@/lib/social/actions";
+
+/**
+ * WhatsApp/Instagram-style reactions under a comment: the chips with the
+ * counts, and a ☺ button that opens 👍 ❤️ 😂 😮 😢 🔥. Tapping your own
+ * reaction again removes it.
+ */
+export function CommentReactions({
+  commentId,
+  initial,
+  signedIn,
+  lang,
+  t,
+}: {
+  commentId: string;
+  initial: ReactionSummary;
+  signedIn: boolean;
+  lang: string;
+  t: { react: string; remove: string; signIn: string };
+}) {
+  const [state, setState] = useState<ReactionSummary>(initial);
+  const [open, setOpen] = useState(false);
+  const [, startTransition] = useTransition();
+
+  function pick(emoji: CommentReaction) {
+    const before = state;
+    const mine = state.mine === emoji ? null : emoji;
+    const counts = { ...state.counts };
+    if (state.mine) counts[state.mine] = Math.max(0, (counts[state.mine] ?? 1) - 1);
+    if (mine) counts[mine] = (counts[mine] ?? 0) + 1;
+    setState({ counts, mine });
+    setOpen(false);
+    startTransition(async () => {
+      const res = await reactToComment(commentId, mine);
+      if (!res.ok) setState(before);
+    });
+  }
+
+  const shown = COMMENT_REACTIONS.filter((e) => (state.counts[e] ?? 0) > 0);
+  return (
+    <div className="relative flex flex-wrap items-center gap-1.5">
+      {shown.map((e) => (
+        <button
+          key={e}
+          type="button"
+          disabled={!signedIn}
+          onClick={() => pick(e)}
+          title={state.mine === e ? t.remove : t.react}
+          className={`flex h-7 items-center gap-1 rounded-full border px-2 text-sm tabular-nums transition ${
+            state.mine === e
+              ? "border-sky-400 bg-sky-50 text-sky-800 dark:border-sky-600 dark:bg-sky-950/50 dark:text-sky-200"
+              : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+          }`}
+        >
+          <span>{e}</span>
+          <span className="text-xs">{state.counts[e]}</span>
+        </button>
+      ))}
+      {signedIn ? (
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-label={t.react}
+          title={t.react}
+          className="flex h-7 items-center rounded-full border border-dashed border-zinc-300 px-2 text-sm text-zinc-500 hover:border-zinc-500 hover:text-zinc-800 dark:border-zinc-700 dark:hover:text-zinc-200"
+        >
+          ☺<span className="text-xs">+</span>
+        </button>
+      ) : null}
+      {!signedIn && shown.length > 0 && (
+        <Link href={`/${lang}/login`} className="text-xs text-zinc-500 hover:underline">
+          {t.signIn}
+        </Link>
+      )}
+      {open && (
+        <div
+          role="menu"
+          className="absolute bottom-9 left-0 z-20 flex gap-1 rounded-full border border-zinc-200 bg-white px-2 py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          {COMMENT_REACTIONS.map((e) => (
+            <button
+              key={e}
+              type="button"
+              role="menuitem"
+              onClick={() => pick(e)}
+              aria-label={e}
+              className={`rounded-full p-1 text-2xl leading-none transition hover:scale-125 ${
+                state.mine === e ? "bg-sky-100 dark:bg-sky-900" : ""
+              }`}
+            >
+              {e}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
