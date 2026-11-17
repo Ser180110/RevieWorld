@@ -90,6 +90,7 @@ export function ReviewCard({
             failed: t.translateFailed,
             google: t.translateGoogle,
             spoiler: t.spoilerShow,
+            spoilerHint: t.spoilerHint,
           }}
         />
       )}

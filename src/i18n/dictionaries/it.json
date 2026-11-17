@@ -282,7 +282,8 @@
     "translated": "Tradotta automaticamente",
     "translateFailed": "Traduzione non riuscita, riprova.",
     "translateGoogle": "Apri in Google Traduttore",
-    "spoilerShow": "Tocca per vedere lo spoiler"
+    "spoilerShow": "Spoiler",
+    "spoilerHint": "Spoiler: tocca per vederlo"
   },
   "profile": {
     "foundedTitle": "Categorie fondate",

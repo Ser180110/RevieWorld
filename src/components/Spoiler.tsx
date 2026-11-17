@@ -2,8 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 
-/** Hidden text (">!…!<"): a dark bar until someone taps it. */
-export function Spoiler({ children, label }: { children: ReactNode; label: string }) {
+/** Hidden text (">!…!<"): a "🙈 Spoiler" tag and blurred words until someone taps it. */
+export function Spoiler({ children, label, hint }: { children: ReactNode; label: string; hint?: string }) {
   const [open, setOpen] = useState(false);
   if (open) {
     return <span className="rounded bg-zinc-200/70 px-0.5 dark:bg-zinc-700/70">{children}</span>;
@@ -12,8 +12,8 @@ export function Spoiler({ children, label }: { children: ReactNode; label: strin
     <span
       role="button"
       tabIndex={0}
-      title={label}
-      aria-label={label}
+      title={hint ?? label}
+      aria-label={hint ?? label}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -25,9 +25,12 @@ export function Spoiler({ children, label }: { children: ReactNode; label: strin
           setOpen(true);
         }
       }}
-      className="cursor-pointer select-none rounded bg-zinc-800 px-0.5 text-transparent transition hover:bg-zinc-700 dark:bg-zinc-300 dark:hover:bg-zinc-400"
+      className="group inline cursor-pointer select-none rounded-md bg-violet-100 px-1 py-0.5 ring-1 ring-violet-300 transition hover:bg-violet-200 dark:bg-violet-950 dark:ring-violet-700 dark:hover:bg-violet-900"
     >
-      <span aria-hidden className="pointer-events-none">{children}</span>
+      <span className="mr-1 inline-flex items-center gap-0.5 rounded bg-violet-600 px-1 text-[11px] font-semibold uppercase tracking-wide text-white align-[1px]">
+        🙈 {label}
+      </span>
+      <span aria-hidden className="pointer-events-none blur-[5px]">{children}</span>
     </span>
   );
 }

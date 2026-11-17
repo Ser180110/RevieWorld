@@ -3,7 +3,17 @@ import { parse, type RichNode } from "@/lib/richtext";
 import { Spoiler } from "./Spoiler";
 
 /** A review's text with its formatting: bold, italic, underline, spoilers, links and @mentions. */
-export function RichText({ text, lang, spoilerLabel }: { text: string; lang: string; spoilerLabel: string }) {
+export function RichText({
+  text,
+  lang,
+  spoilerLabel,
+  spoilerHint,
+}: {
+  text: string;
+  lang: string;
+  spoilerLabel: string;
+  spoilerHint?: string;
+}) {
   const render = (nodes: RichNode[]): React.ReactNode[] =>
     nodes.map((n, i) => {
       switch (n.type) {
@@ -21,7 +31,7 @@ export function RichText({ text, lang, spoilerLabel }: { text: string; lang: str
           );
         case "spoiler":
           return (
-            <Spoiler key={i} label={spoilerLabel}>
+            <Spoiler key={i} label={spoilerLabel} hint={spoilerHint}>
               {render(n.children)}
             </Spoiler>
           );
