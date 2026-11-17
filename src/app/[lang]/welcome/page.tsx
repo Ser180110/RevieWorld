@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCurrentUserId, getMainCategories, getProfileById, getSuggestedPeople } from "@/lib/data/queries";
+import { getCurrentUserId, getMainCategories, getSuggestedPeople } from "@/lib/data/queries";
 import { finishWelcome } from "@/lib/social/actions";
 import { styleOf } from "@/lib/categoryStyle";
 import { count } from "@/lib/format";
@@ -22,26 +22,11 @@ async function Welcome({ lang }: { lang: Locale }) {
   const t = dict.welcome;
   const userId = await getCurrentUserId();
   if (!userId) redirect(`/${lang}/login`);
-  const [categories, people, me] = await Promise.all([
-    getMainCategories(24),
-    getSuggestedPeople(userId, 8),
-    getProfileById(userId),
-  ]);
+  const [categories, people] = await Promise.all([getMainCategories(24), getSuggestedPeople(userId, 8)]);
 
   return (
     <form action={finishWelcome} className="flex flex-col gap-10">
       <input type="hidden" name="lang" value={lang} />
-
-      {me && (
-        <p className="flex flex-wrap items-center gap-x-2 rounded-2xl bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">
-          <span>
-            {t.yourName} <strong>@{me.username}</strong>
-          </span>
-          <Link href={`/${lang}/settings`} className="font-medium underline">
-            {t.changeName}
-          </Link>
-        </p>
-      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">1. {t.categoriesTitle}</h2>
