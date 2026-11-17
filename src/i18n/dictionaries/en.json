@@ -232,7 +232,8 @@
       "item": "Type the name of what you are reviewing (2-120 characters).",
       "category": "Invalid category name (2-60 characters).",
       "auth": "You need to sign in to review.",
-      "generic": "Something went wrong, please try again."
+      "generic": "Something went wrong, please try again.",
+      "date": "Pick a valid date (not in the future)."
     },
     "photosLabel": "Photos (optional)",
     "photosAdd": "Gallery",
@@ -240,7 +241,9 @@
     "photosUploading": "Uploading…",
     "photosHint": "Up to 4 photos. Take them now or pick them from your gallery: we resize them for you. The first becomes the cover.",
     "photosError": "A photo wasn't uploaded: try another image (JPG, PNG or WebP).",
-    "photosRemove": "Remove photo"
+    "photosRemove": "Remove photo",
+    "dayLabel": "When did you try it?",
+    "dayHint": "The day of the experience, not necessarily today. It goes in your diary."
   },
   "item": {
     "average": "Average",
@@ -297,14 +300,35 @@
   },
   "diary": {
     "title": "{name}'s diary",
-    "empty": "The diary is empty: no reviews yet.",
+    "empty": "The diary is empty: nothing logged yet.",
     "day": "Day",
     "item": "What",
     "category": "Category",
     "rating": "Rating",
     "likes": "Likes",
-    "total": "{n} entries",
-    "totalOne": "1 entry"
+    "total": "{n} in total",
+    "totalOne": "1 in total",
+    "monthEmpty": "Nothing logged this month.",
+    "goLatest": "Go to the latest: {month}",
+    "prev": "Previous month",
+    "next": "Next month",
+    "today": "Today",
+    "tried": "Tried",
+    "again": "Again",
+    "monthCount": "{n} experiences this month",
+    "monthCountOne": "1 experience this month",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "byRating": "Reviews with this rating",
+    "removeAgain": "Remove this re-log",
+    "confirmRemove": "Remove this entry from the diary?"
   },
   "settings": {
     "themeTitle": "Profile background",
@@ -717,5 +741,26 @@
       "list": "List"
     },
     "userNote": "For users: check the profile; you can remove single reviews or block them."
+  },
+  "quickLog": {
+    "titleFirst": "⚡ Quick log",
+    "hintFirst": "Just the stars and the day, no writing. You can add text later.",
+    "titleAgain": "🔁 Tried again",
+    "hintAgain": "Went back? Log the stars and the day again: it goes in your diary without changing your review.",
+    "day": "Day",
+    "submitFirst": "Log it",
+    "submitAgain": "Log again",
+    "saving": "Saving…",
+    "yourDiary": "📅 Your diary here",
+    "tried": "Tried on {day}",
+    "again": "Tried again on {day}",
+    "times": "You've been {n} times",
+    "remove": "Remove",
+    "errors": {
+      "auth": "You need to sign in.",
+      "rating": "Pick the stars.",
+      "date": "Pick a valid date (not in the future).",
+      "generic": "Something went wrong, try again."
+    }
   }
 }

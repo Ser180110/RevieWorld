@@ -15,6 +15,7 @@ import type {
   ProfileCard,
   ProfileStats,
   ReviewRow,
+  DiaryEntry,
   Viewer,
 } from "./types";
 
@@ -1179,3 +1180,108 @@ export async function getSuggestedPeople(exclude: string | null, limit = 8): Pro
   return top.flatMap(([id, n]) => (byId.has(id) ? [{ ...byId.get(id)!, reviews: n }] : []));
 }
 
+
+// ---------------------------------------------------------------------------
+// Diary ("Provato il…", "Riprovato il…")
+// ---------------------------------------------------------------------------
+
+const DIARY_FIELDS =
+  "id, item_id, review_id, rating, experienced_on, created_at, item:items(name, slug, category:categories(name, slug, icon, color)), review:reviews(body, likes_count)";
+
+/** Today in Italy, as "2026-11-17". */
+export function todayInRome(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date());
+}
+
+/** The day a review was written, in Italy ("2026-11-17"). */
+export function romeDay(timestamp: string): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date(timestamp));
+}
+
+/** No diary table yet (before migration 0033): build it from the reviews. */
+function isMissingTable(error: { code?: string } | null): boolean {
+  return error?.code === "42P01" || error?.code === "PGRST205" || error?.code === "PGRST200";
+}
+
+async function diaryFromReviews(userId: string): Promise<DiaryEntry[]> {
+  const reviews = await getUserReviews(userId);
+  return reviews.map((r) => ({
+    id: r.id,
+    item_id: "",
+    review_id: r.id,
+    rating: r.rating,
+    experienced_on: romeDay(r.created_at),
+    created_at: r.created_at,
+    item: r.item ?? null,
+    review: { body: r.body, likes_count: r.likes_count },
+  }));
+}
+
+function lastDayOf(month: string): string {
+  const [y, m] = month.split("-").map(Number);
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return `${month}-${String(last).padStart(2, "0")}`;
+}
+
+/**
+ * A month of someone's diary ("2026-11"), newest day first, plus the month of
+ * their most recent entry (to jump there when this month is empty).
+ */
+export async function getDiaryMonth(
+  userId: string,
+  month: string,
+): Promise<{ entries: DiaryEntry[]; latest: string | null; total: number }> {
+  const supabase = await db();
+  if (!supabase) return { entries: [], latest: null, total: 0 };
+  const [{ data, error }, { data: last, count }] = await Promise.all([
+    supabase
+      .from("diary_entries")
+      .select(DIARY_FIELDS)
+      .eq("user_id", userId)
+      .gte("experienced_on", `${month}-01`)
+      .lte("experienced_on", lastDayOf(month))
+      .order("experienced_on", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(500),
+    supabase
+      .from("diary_entries")
+      .select("experienced_on", { count: "exact" })
+      .eq("user_id", userId)
+      .order("experienced_on", { ascending: false })
+      .limit(1),
+  ]);
+  if (error) {
+    if (!isMissingTable(error)) console.error("getDiaryMonth", error);
+    const all = await diaryFromReviews(userId);
+    return {
+      entries: all.filter((e) => e.experienced_on.startsWith(month)),
+      latest: all[0]?.experienced_on.slice(0, 7) ?? null,
+      total: all.length,
+    };
+  }
+  const latest = (last as { experienced_on: string }[] | null)?.[0]?.experienced_on.slice(0, 7) ?? null;
+  return { entries: (data ?? []) as unknown as DiaryEntry[], latest, total: count ?? 0 };
+}
+
+/** Every time `userId` logged this item, oldest first (null before migration 0033). */
+export async function getItemDiary(userId: string, itemId: string): Promise<DiaryEntry[] | null> {
+  const supabase = await db();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("diary_entries")
+    .select("id, item_id, review_id, rating, experienced_on, created_at")
+    .eq("user_id", userId)
+    .eq("item_id", itemId)
+    .order("experienced_on", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (error) return null;
+  return ((data ?? []) as Omit<DiaryEntry, "item">[]).map((e) => ({ ...e, item: null }));
+}
+
+/** The day of the experience saved with a review (for the edit form). */
+export async function getReviewDay(reviewId: string): Promise<string | null> {
+  const supabase = await db();
+  if (!supabase) return null;
+  const { data } = await supabase.from("diary_entries").select("experienced_on").eq("review_id", reviewId).maybeSingle();
+  return (data as { experienced_on: string } | null)?.experienced_on ?? null;
+}

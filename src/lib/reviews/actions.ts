@@ -15,7 +15,7 @@ import { joinSticker } from "@/lib/stickers";
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 export type FormState = {
-  error?: "auth" | "category" | "item" | "rating" | "generic";
+  error?: "auth" | "category" | "item" | "rating" | "date" | "generic";
 };
 
 function localeOf(formData: FormData): Locale {
@@ -214,6 +214,51 @@ function parseLocation(formData: FormData): { lat: number | null; lng: number | 
   return { lat: Math.round(lat * 1e5) / 1e5, lng: Math.round(lng * 1e5) / 1e5 };
 }
 
+/** Today in Italy ("2026-11-17"). */
+function todayInRome(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date());
+}
+
+/**
+ * The "Quando l'hai provato?" day: "2026-11-17", undefined when the form has
+ * no such field, or "bad" (a malformed day or one in the future).
+ */
+function parseDay(formData: FormData): string | undefined | "bad" {
+  if (!formData.has("experiencedOn")) return undefined;
+  const v = String(formData.get("experiencedOn") ?? "").trim();
+  if (v === "") return undefined;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || Number.isNaN(Date.parse(`${v}T00:00:00Z`))) return "bad";
+  if (v < "1900-01-01" || v > todayInRome()) return "bad";
+  return v;
+}
+
+/** Writes the diary entry that goes with a review (ignored before migration 0033). */
+async function saveReviewDay(
+  supabase: SupabaseClient,
+  review: { id: string; userId: string; itemId: string; rating: number },
+  day: string | undefined,
+) {
+  const changes: Record<string, unknown> = { rating: review.rating };
+  if (day) changes.experienced_on = day;
+  const { data, error } = await supabase
+    .from("diary_entries")
+    .update(changes)
+    .eq("review_id", review.id)
+    .select("id");
+  if (error) {
+    console.error("saveReviewDay update", error);
+    return;
+  }
+  if (data && data.length > 0) return;
+  const { error: insertError } = await supabase.from("diary_entries").insert({
+    ...changes,
+    user_id: review.userId,
+    item_id: review.itemId,
+    review_id: review.id,
+  });
+  if (insertError) console.error("saveReviewDay insert", insertError);
+}
+
 export async function submitReview(
   _prev: FormState,
   formData: FormData,
@@ -236,6 +281,8 @@ export async function submitReview(
   }
   const input = parsed.data;
   if (!input.itemId && !input.itemName) return { error: "item" };
+  const day = parseDay(formData);
+  if (day === "bad") return { error: "date" };
 
   const supabase = await client();
   if (!supabase) return { error: "generic" };
@@ -322,6 +369,9 @@ export async function submitReview(
     console.error("submitReview: save review", error);
     return { error: "generic" };
   }
+
+  // The diary: "Provato il…" on the chosen day (today by default).
+  await saveReviewDay(supabase, { id: saved.id, userId, itemId: item.id, rating: input.rating }, day);
 
   // 3. Photos: drop the removed ones, attach the new uploads (max 4 per review).
   const removeIds = formData
@@ -646,4 +696,98 @@ export async function deleteCategory(_prev: DeleteCategoryState, formData: FormD
   if (data !== "ok" && data !== "not_found") return { error: "generic" };
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}/categories?deleted=1`);
+}
+
+// ---------------------------------------------------------------------------
+// Diary: quick log ("Provato" with only the stars) and "Riprovato"
+// ---------------------------------------------------------------------------
+
+export type QuickLogState = { error?: "auth" | "rating" | "date" | "generic"; done?: boolean };
+
+/**
+ * Logs one experience of an item: the first time it creates a review with
+ * just the stars; after that it adds a "Riprovato" entry to the diary.
+ */
+export async function quickLog(_prev: QuickLogState, formData: FormData): Promise<QuickLogState> {
+  const lang = localeOf(formData);
+  const itemId = String(formData.get("itemId") ?? "");
+  const rating = Number(formData.get("rating"));
+  if (!z.guid().safeParse(itemId).success) return { error: "generic" };
+  if (!Number.isInteger(rating) || rating < 1 || rating > 10) return { error: "rating" };
+  const day = parseDay(formData) ?? todayInRome();
+  if (day === "bad") return { error: "date" };
+
+  const supabase = await client();
+  if (!supabase) return { error: "generic" };
+  const userId = await currentUserId(supabase);
+  if (!userId) return { error: "auth" };
+
+  const { data: item } = await supabase
+    .from("items")
+    .select("id, slug, category_id, category:categories(slug)")
+    .eq("id", itemId)
+    .maybeSingle();
+  if (!item) return { error: "generic" };
+
+  const { data: mine } = await supabase
+    .from("reviews")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("item_id", itemId)
+    .maybeSingle();
+
+  if (!mine) {
+    // First time: a review with only the stars, dated on that day.
+    const { data: created, error } = await supabase
+      .from("reviews")
+      .insert({ user_id: userId, item_id: itemId, rating, body: null })
+      .select("id")
+      .single();
+    if (error || !created) {
+      console.error("quickLog: review", error);
+      return { error: "generic" };
+    }
+    await saveReviewDay(supabase, { id: created.id, userId, itemId, rating }, day);
+    await supabase
+      .from("category_follows")
+      .upsert({ user_id: userId, category_id: item.category_id }, { ignoreDuplicates: true });
+  } else {
+    const { error } = await supabase
+      .from("diary_entries")
+      .insert({ user_id: userId, item_id: itemId, rating, experienced_on: day });
+    if (error) {
+      console.error("quickLog: entry", error);
+      return { error: "generic" };
+    }
+  }
+
+  revalidatePath(`/${lang}`, "layout");
+  const category = item.category as unknown as { slug: string } | null;
+  const back = String(formData.get("back") ?? "");
+  redirect(
+    back.startsWith(`/${lang}/`) && !back.startsWith("//")
+      ? back
+      : `/${lang}/c/${category?.slug ?? ""}/${item.slug}`,
+  );
+}
+
+/** Removes a "Riprovato" entry (the first one goes away with its review). */
+export async function deleteDiaryEntry(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const id = String(formData.get("entryId") ?? "");
+  const back = String(formData.get("back") ?? "");
+  if (!z.guid().safeParse(id).success) return;
+  const supabase = await client();
+  if (!supabase) return;
+  const userId = await currentUserId(supabase);
+  if (!userId) return;
+  const { error } = await supabase
+    .from("diary_entries")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .is("review_id", null);
+  if (error) console.error("deleteDiaryEntry", error);
+  revalidatePath(`/${lang}`, "layout");
+  if (back.startsWith(`/${lang}/`) && !back.startsWith("//")) redirect(back);
 }

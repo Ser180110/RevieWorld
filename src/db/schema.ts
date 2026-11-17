@@ -13,6 +13,7 @@ import {
   boolean,
   doublePrecision,
   check,
+  date,
   index,
   integer,
   numeric,
@@ -489,5 +490,35 @@ export const userBlocks = pgTable(
     primaryKey({ columns: [t.blockerId, t.blockedId] }),
     index("user_blocks_blocked_idx").on(t.blockedId),
     check("user_blocks_not_self", sql`${t.blockerId} <> ${t.blockedId}`),
+  ],
+);
+
+// "Diario": each time someone tried something ("Provato il…", "Riprovato il…").
+// The first entry goes with the review; later ones are quick re-logs with
+// just the stars and the day of the experience.
+export const diaryEntries = pgTable(
+  "diary_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    /** Set on the entry that came with the review (deleted with it). */
+    reviewId: uuid("review_id").references(() => reviews.id, { onDelete: "cascade" }),
+    /** 1-10, displayed as 0.5-5 stars. */
+    rating: smallint("rating").notNull(),
+    /** The day of the experience (not the day it was written). */
+    experiencedOn: date("experienced_on").notNull().default(sql`current_date`),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    index("diary_entries_user_day_idx").on(t.userId, t.experiencedOn),
+    index("diary_entries_user_item_idx").on(t.userId, t.itemId),
+    uniqueIndex("diary_entries_review_key").on(t.reviewId),
+    check("diary_entries_rating_range", sql`${t.rating} between 1 and 10`),
+    check("diary_entries_day_valid", sql`${t.experiencedOn} between '1900-01-01' and '2200-01-01'`),
   ],
 );

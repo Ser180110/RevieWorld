@@ -13,6 +13,7 @@ import {
   isFollowing,
   getProfileById,
   reviewSortOf,
+  todayInRome,
   type ReviewSort,
 } from "@/lib/data/queries";
 import { ReviewCard } from "@/components/ReviewCard";
@@ -245,6 +246,7 @@ async function CategoryContent({ lang, slug, sort }: { lang: Locale; slug: strin
             t={dict.reviewForm}
             common={dict.common}
             locationT={dict.location}
+            today={todayInRome()}
           />
         ) : (
           <Link href={`/${lang}/login`} className="underline">
