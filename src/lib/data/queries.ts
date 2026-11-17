@@ -218,6 +218,8 @@ export async function getCategoryItems(
     .select("id, name, slug, description, reviews_count, avg_rating")
     .eq("category_id", categoryId)
     .eq("status", "active")
+    // Things whose reviews were all deleted don't count (and are removed by migration 0039).
+    .gt("reviews_count", 0)
     .order("avg_rating", { ascending: false, nullsFirst: false })
     .order("reviews_count", { ascending: false })
     .limit(limit);

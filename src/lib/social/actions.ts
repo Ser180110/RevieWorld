@@ -143,10 +143,14 @@ export async function deleteReview(formData: FormData): Promise<void> {
 
   const { data: before } = await s.supabase
     .from("reviews")
-    .select("item:items(category_id)")
+    .select("item_id, item:items(category_id, slug, category:categories(slug))")
     .eq("id", reviewId)
     .maybeSingle();
-  const categoryId = (before as { item: { category_id: string } | null } | null)?.item?.category_id;
+  const old = before as {
+    item_id: string;
+    item: { category_id: string; slug: string; category: { slug: string } | null } | null;
+  } | null;
+  const categoryId = old?.item?.category_id;
   const { error } = await s.supabase
     .from("reviews")
     .delete()
@@ -158,6 +162,11 @@ export async function deleteReview(formData: FormData): Promise<void> {
   if (categoryId && back.startsWith(`/${lang}/c/`)) {
     const { data: still } = await s.supabase.from("categories").select("id").eq("id", categoryId).maybeSingle();
     if (!still) redirect(`/${lang}/categories`);
+  }
+  // ...and the last review of an item takes the item with it: go to its category.
+  if (old?.item?.category && back.startsWith(`/${lang}/c/${old.item.category.slug}/${old.item.slug}`)) {
+    const { data: item } = await s.supabase.from("items").select("id").eq("id", old.item_id).maybeSingle();
+    if (!item) redirect(`/${lang}/c/${old.item.category.slug}`);
   }
   redirect(back);
 }
