@@ -116,6 +116,7 @@
   "newReview": {
     "emojiPick": "Choose the emoji",
     "emojiOther": "Or type it:",
+    "emojiOnly": "Only an emoji here, no words 🙂",
     "title": "What do you want to review?",
     "step1": "1. Pick the category",
     "categoryLabel": "Category",
@@ -142,6 +143,7 @@
     "editStyle": "Change look",
     "emojiLabel": "Emoji",
     "emojiOther": "Or type it:",
+    "emojiOnly": "Only an emoji here, no words 🙂",
     "colorLabel": "Colour",
     "saveStyle": "Save",
     "cancelStyle": "Cancel",

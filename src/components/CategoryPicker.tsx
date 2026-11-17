@@ -147,6 +147,7 @@ export function CategoryPicker({
               onChange={setChosenEmoji}
               label={t.emojiPick}
               otherLabel={t.emojiOther}
+              onlyEmojiLabel={t.emojiOnly}
             />
             <button
               type="submit"

@@ -116,6 +116,7 @@
   "newReview": {
     "emojiPick": "Scegli l'emoji",
     "emojiOther": "Oppure scrivila:",
+    "emojiOnly": "Qui va solo un’emoji, niente parole 🙂",
     "title": "Cosa vuoi recensire?",
     "step1": "1. Scegli la categoria",
     "categoryLabel": "Categoria",
@@ -142,6 +143,7 @@
     "editStyle": "Cambia aspetto",
     "emojiLabel": "Emoji",
     "emojiOther": "Oppure scrivila:",
+    "emojiOnly": "Qui va solo un’emoji, niente parole 🙂",
     "colorLabel": "Colore",
     "saveStyle": "Salva",
     "cancelStyle": "Annulla",

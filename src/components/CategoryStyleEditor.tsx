@@ -44,7 +44,7 @@ export function CategoryStyleEditor({
       <input type="hidden" name="categoryId" value={categoryId} />
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="color" value={picked} />
-      <EmojiPicker value={icon} onChange={setIcon} label={t.emojiLabel} otherLabel={t.emojiOther} />
+      <EmojiPicker value={icon} onChange={setIcon} label={t.emojiLabel} otherLabel={t.emojiOther} onlyEmojiLabel={t.emojiOnly} />
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <span className="w-16 font-medium">{t.colorLabel}</span>
         {COLORS.map((c) => (
