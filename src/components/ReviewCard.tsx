@@ -13,6 +13,8 @@ import { ReportButton } from "./ReportButton";
 import { Sticker } from "./Sticker";
 import { splitSticker } from "@/lib/stickers";
 import { Stars } from "./Stars";
+import { ReviewText } from "./ReviewText";
+import { detectLang } from "@/lib/translate/detect";
 
 export function ReviewCard({
   review,
@@ -74,9 +76,20 @@ export function ReviewCard({
         </Link>
       </div>
       {text && (
-        <p className="whitespace-pre-line text-zinc-800 dark:text-zinc-200">
-          {text}
-        </p>
+        <ReviewText
+          text={text}
+          reviewId={review.id}
+          from={detectLang(text)}
+          to={lang === "en" ? "en" : "it"}
+          t={{
+            translate: t.translate,
+            showOriginal: t.showOriginal,
+            translating: t.translating,
+            translated: t.translated,
+            failed: t.translateFailed,
+            google: t.translateGoogle,
+          }}
+        />
       )}
       {sticker && (
         <div className="py-1">

@@ -265,7 +265,13 @@
     "confirmDelete": "Delete this review? This can't be undone.",
     "edit": "Edit",
     "comments": "Comments",
-    "openReview": "Open the review"
+    "openReview": "Open the review",
+    "translate": "Translate",
+    "showOriginal": "Show original",
+    "translating": "Translating…",
+    "translated": "Automatically translated",
+    "translateFailed": "Translation failed, try again.",
+    "translateGoogle": "Open in Google Translate"
   },
   "profile": {
     "foundedTitle": "Founded categories",
