@@ -99,7 +99,10 @@
       "same_password": "That's your current password: pick a different one.",
       "expired": "The link has expired, ask for a new one:",
       "generic": "Something went wrong, please try again."
-    }
+    },
+    "google": "Continue with Google",
+    "or": "or with email",
+    "googleError": "Google sign-in failed: try again or use email and password."
   },
   "common": {
     "loading": "Loading…",
@@ -710,7 +713,9 @@
     "following": "Following",
     "start": "Let's go →",
     "skip": "Skip for now",
-    "homeHint": "You don't follow anything yet: pick categories and people →"
+    "homeHint": "You don't follow anything yet: pick categories and people →",
+    "yourName": "Your username is",
+    "changeName": "Change it in Edit profile"
   },
   "moderation": {
     "block": "Block",

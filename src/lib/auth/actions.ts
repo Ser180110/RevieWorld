@@ -184,3 +184,27 @@ export async function signOut(formData: FormData) {
   }
   redirect(`/${lang}`);
 }
+
+/**
+ * "Continua con Google": sends the user to Google, which comes back to
+ * /auth/callback with a code. New users get a profile from the database
+ * trigger (name and photo from Google, username from the email).
+ */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  if (!supabaseEnv()) redirect(`/${lang}/login`);
+  const supabase = await createClient();
+  const site = await siteUrl();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${site}/${lang}/auth/callback`,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error || !data.url) {
+    console.error("signInWithGoogle", error);
+    redirect(`/${lang}/login?google=error`);
+  }
+  redirect(data.url);
+}

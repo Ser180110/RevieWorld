@@ -99,7 +99,10 @@
       "same_password": "È uguale a quella di prima: scegline una diversa.",
       "expired": "Il link è scaduto, chiedine uno nuovo:",
       "generic": "Qualcosa è andato storto, riprova."
-    }
+    },
+    "google": "Continua con Google",
+    "or": "oppure con email",
+    "googleError": "Accesso con Google non riuscito: riprova o usa email e password."
   },
   "common": {
     "loading": "Caricamento…",
@@ -710,7 +713,9 @@
     "following": "Seguito",
     "start": "Inizia →",
     "skip": "Salta per ora",
-    "homeHint": "Non segui ancora niente: scegli categorie e persone →"
+    "homeHint": "Non segui ancora niente: scegli categorie e persone →",
+    "yourName": "Il tuo nome utente è",
+    "changeName": "Cambialo da Modifica profilo"
   },
   "moderation": {
     "block": "Blocca",
