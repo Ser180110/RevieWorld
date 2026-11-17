@@ -81,6 +81,7 @@ export function ReviewCard({
           reviewId={review.id}
           from={detectLang(text)}
           to={lang === "en" ? "en" : "it"}
+          lang={lang}
           t={{
             translate: t.translate,
             showOriginal: t.showOriginal,
@@ -88,6 +89,7 @@ export function ReviewCard({
             translated: t.translated,
             failed: t.translateFailed,
             google: t.translateGoogle,
+            spoiler: t.spoilerShow,
           }}
         />
       )}

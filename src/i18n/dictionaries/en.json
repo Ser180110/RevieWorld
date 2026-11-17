@@ -243,7 +243,17 @@
     "photosError": "A photo wasn't uploaded: try another image (JPG, PNG or WebP).",
     "photosRemove": "Remove photo",
     "dayLabel": "When did you try it?",
-    "dayHint": "The day of the experience, not necessarily today. It goes in your diary."
+    "dayHint": "The day of the experience, not necessarily today. It goes in your diary.",
+    "format": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "spoiler": "Spoiler",
+      "link": "Link",
+      "linkText": "link text",
+      "hint": "Select some words and tap a button. A spoiler hides the words until someone taps them (perfect for the punchline 😏).",
+      "preview": "Preview"
+    }
   },
   "item": {
     "average": "Average",
@@ -271,7 +281,8 @@
     "translating": "Translating…",
     "translated": "Automatically translated",
     "translateFailed": "Translation failed, try again.",
-    "translateGoogle": "Open in Google Translate"
+    "translateGoogle": "Open in Google Translate",
+    "spoilerShow": "Tap to reveal the spoiler"
   },
   "profile": {
     "foundedTitle": "Founded categories",

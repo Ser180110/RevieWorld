@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { SiteLang } from "@/lib/translate/detect";
 import { translateReview } from "@/lib/translate/actions";
+import { RichText } from "./RichText";
 
 type BrowserTranslator = {
   availability(o: {
@@ -57,9 +58,12 @@ export function ReviewText({
   reviewId,
   from,
   to,
+  lang,
   t,
 }: {
   text: string;
+  /** The site's language (for @mention links). */
+  lang: string;
   reviewId: string;
   /** The review's language, or null when unknown (no button). */
   from: SiteLang | null;
@@ -72,6 +76,7 @@ export function ReviewText({
     translated: string;
     failed: string;
     google: string;
+    spoiler: string;
   };
 }) {
   const [translated, setTranslated] = useState<string | null>(null);
@@ -116,7 +121,7 @@ export function ReviewText({
         className="whitespace-pre-line text-zinc-800 dark:text-zinc-200"
         lang={showing ? to : (from ?? undefined)}
       >
-        {showing && translated ? translated : text}
+        <RichText text={showing && translated ? translated : text} lang={lang} spoilerLabel={t.spoiler} />
       </p>
       {canTranslate && (
         <span className="flex flex-wrap items-center gap-x-2 text-xs text-zinc-500">

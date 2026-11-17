@@ -16,6 +16,7 @@ import { ReviewCard } from "@/components/ReviewCard";
 import { MentionText } from "@/components/MentionText";
 import { Sticker } from "@/components/Sticker";
 import { splitSticker } from "@/lib/stickers";
+import { toPlain } from "@/lib/richtext";
 import { ReviewSkeletons } from "@/components/Skeletons";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">): Promise<Metadata> {
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/r/[id]">):
   const dict = await getDictionary(lang);
   const name = review.author?.display_name || `@${review.author?.username ?? "?"}`;
   const title = `${review.item?.name ?? ""} · ${fill(dict.reviewPage.title, { name })}`;
-  const bodyText = splitSticker(review.body).text;
+  const bodyText = toPlain(splitSticker(review.body).text);
   const description = `${"★".repeat(Math.floor(review.rating / 2))} ${review.rating / 2}/5${
     bodyText ? ` · ${bodyText.slice(0, 150)}` : ""
   }`;
