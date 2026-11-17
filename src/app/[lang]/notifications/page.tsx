@@ -70,7 +70,9 @@ async function NotificationList({ lang }: { lang: Locale }) {
                 ? `/${lang}/l/${n.list_id}`
               : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : n.type === "watchlist" ? "" : "#comments"}`;
           const text =
-            n.type === "list_like"
+            n.type === "comment_reaction"
+              ? fill(t.reaction, { name, emoji: n.emoji ?? "" })
+              : n.type === "list_like"
               ? fill(t.listLike, { name, what: n.list?.title ? `«${n.list.title}»` : "" })
               : n.type === "like"
               ? fill(t.like, { name, what })
@@ -94,12 +96,12 @@ async function NotificationList({ lang }: { lang: Locale }) {
                 <span className="relative shrink-0">
                   <Avatar url={n.actor?.avatar_url} name={username} size={40} />
                   <span className="absolute -bottom-1 -right-1 text-sm" aria-hidden>
-                    {n.type === "like" || n.type === "list_like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "mention" ? "📣" : n.type === "watchlist" ? "📌" : "👤"}
+                    {n.type === "comment_reaction" ? (n.emoji ?? "💬") : n.type === "like" || n.type === "list_like" ? "❤️" : n.type === "comment" ? "💬" : n.type === "mention" ? "📣" : n.type === "watchlist" ? "📌" : "👤"}
                   </span>
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">
                   <span className="text-sm">{text}</span>
-                  {(n.type === "comment" || n.type === "mention") && n.comment?.body && (
+                  {(n.type === "comment" || n.type === "mention" || n.type === "comment_reaction") && n.comment?.body && (
                     <span className="line-clamp-2 text-sm text-zinc-500">
                       “{previewText(n.comment.body)}”
                     </span>

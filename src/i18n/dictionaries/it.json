@@ -563,7 +563,8 @@
     "pushBlocked": "Hai bloccato le notifiche per questo sito: riattivale dalle impostazioni del browser (lucchetto accanto all'indirizzo → Notifiche).",
     "pushIos": "Su iPhone: prima aggiungi RevieWorld alla schermata Home (Condividi → Aggiungi alla schermata Home), poi aprila da lì e torna qui.",
     "pushError": "Non è stato possibile attivarle: riprova.",
-    "listLike": "A {name} piace la tua lista {what}"
+    "listLike": "A {name} piace la tua lista {what}",
+    "reaction": "{name} ha reagito {emoji} al tuo commento"
   },
   "feed": {
     "following": "Seguiti",
@@ -783,6 +784,7 @@
   "reactions": {
     "react": "Reagisci",
     "remove": "Togli la reazione",
-    "signIn": "Accedi per reagire"
+    "signIn": "Accedi per reagire",
+    "more": "Tutte le emoji"
   }
 }
