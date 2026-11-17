@@ -136,3 +136,22 @@ export type Comment = {
   user_id: string;
   author: { username: string; display_name: string | null; avatar_url: string | null } | null;
 };
+
+/** One "Provato il…" / "Riprovato il…" in someone's diary. */
+export type DiaryEntry = {
+  id: string;
+  item_id: string;
+  /** Set on the entry that came with the review; null on a quick re-log. */
+  review_id: string | null;
+  rating: number;
+  /** "2026-11-17": the day of the experience. */
+  experienced_on: string;
+  created_at: string;
+  item: {
+    name: string;
+    slug: string;
+    category: { name: string; slug: string; icon?: string | null; color?: string | null } | null;
+  } | null;
+  /** The review written with it (text and likes), when there is one. */
+  review?: { body: string | null; likes_count: number } | null;
+};

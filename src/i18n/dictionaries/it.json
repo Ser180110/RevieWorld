@@ -232,7 +232,8 @@
       "item": "Scrivi il nome di cosa recensisci (2-120 caratteri).",
       "category": "Nome categoria non valido (2-60 caratteri).",
       "auth": "Devi accedere per recensire.",
-      "generic": "Qualcosa è andato storto, riprova."
+      "generic": "Qualcosa è andato storto, riprova.",
+      "date": "Scegli una data valida (non nel futuro)."
     },
     "photosLabel": "Foto (facoltative)",
     "photosAdd": "Galleria",
@@ -240,7 +241,9 @@
     "photosUploading": "Carico…",
     "photosHint": "Fino a 4 foto. Puoi scattarle ora o sceglierle dalla galleria: le rimpiccioliamo noi. La prima diventa la copertina.",
     "photosError": "Una foto non è stata caricata: prova con un'altra immagine (JPG, PNG o WebP).",
-    "photosRemove": "Togli foto"
+    "photosRemove": "Togli foto",
+    "dayLabel": "Quando l'hai provato?",
+    "dayHint": "La data dell'esperienza, non per forza oggi. Finisce nel tuo diario."
   },
   "item": {
     "average": "Media",
@@ -297,14 +300,35 @@
   },
   "diary": {
     "title": "Diario di {name}",
-    "empty": "Il diario è vuoto: ancora nessuna recensione.",
+    "empty": "Il diario è vuoto: ancora nessuna esperienza registrata.",
     "day": "Giorno",
     "item": "Cosa",
     "category": "Categoria",
     "rating": "Voto",
     "likes": "Like",
-    "total": "{n} voci",
-    "totalOne": "1 voce"
+    "total": "{n} in tutto",
+    "totalOne": "1 in tutto",
+    "monthEmpty": "Nessuna esperienza in questo mese.",
+    "goLatest": "Vai all'ultima: {month}",
+    "prev": "Mese prima",
+    "next": "Mese dopo",
+    "today": "Oggi",
+    "tried": "Provato",
+    "again": "Riprovato",
+    "monthCount": "{n} esperienze questo mese",
+    "monthCountOne": "1 esperienza questo mese",
+    "weekdays": [
+      "Lun",
+      "Mar",
+      "Mer",
+      "Gio",
+      "Ven",
+      "Sab",
+      "Dom"
+    ],
+    "byRating": "Recensioni con questo voto",
+    "removeAgain": "Togli questo «Riprovato»",
+    "confirmRemove": "Vuoi togliere questa voce dal diario?"
   },
   "settings": {
     "themeTitle": "Sfondo del profilo",
@@ -717,5 +741,26 @@
       "list": "Lista"
     },
     "userNote": "Per gli utenti: controlla il profilo; puoi rimuovere le singole recensioni o bloccarlo."
+  },
+  "quickLog": {
+    "titleFirst": "⚡ Log veloce",
+    "hintFirst": "Solo le stelle e il giorno, senza scrivere niente. Il testo puoi aggiungerlo dopo.",
+    "titleAgain": "🔁 Riprovato",
+    "hintAgain": "Ci sei tornato? Segna di nuovo stelle e giorno: finisce nel diario senza cambiare la recensione.",
+    "day": "Giorno",
+    "submitFirst": "Registra",
+    "submitAgain": "Registra di nuovo",
+    "saving": "Salvo…",
+    "yourDiary": "📅 Il tuo diario qui",
+    "tried": "Provato il {day}",
+    "again": "Riprovato il {day}",
+    "times": "Ci sei stato {n} volte",
+    "remove": "Togli",
+    "errors": {
+      "auth": "Devi accedere.",
+      "rating": "Scegli quante stelle.",
+      "date": "Scegli una data valida (non nel futuro).",
+      "generic": "Qualcosa è andato storto, riprova."
+    }
   }
 }

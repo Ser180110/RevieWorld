@@ -11,6 +11,7 @@ import { StickerPicker } from "./StickerPicker";
 import { QuickEmoji } from "./QuickEmoji";
 import { splitSticker, type Attachment } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
+import { DayInput } from "./DayInput";
 import { count } from "@/lib/format";
 import { useDebounced } from "./useDebounced";
 
@@ -39,6 +40,10 @@ type Props = {
   locationT: Dictionary["location"];
   /** The review's position, when editing one that has it. */
   location?: { lat: number; lng: number } | null;
+  /** Today in Italy ("2026-11-17"), for the "Quando l'hai provato?" field. */
+  today: string;
+  /** The day of the experience, when editing. */
+  day?: string | null;
 };
 
 export function ReviewForm({
@@ -53,6 +58,8 @@ export function ReviewForm({
   back,
   locationT,
   location,
+  today,
+  day,
 }: Props) {
   const [state, formAction, pending] = useActionState(submitReview, {});
   const initial = splitSticker(existing?.body);
@@ -140,6 +147,8 @@ export function ReviewForm({
         label={t.ratingLabel}
         defaultValue={existing?.rating ?? 0}
       />
+
+      <DayInput label={t.dayLabel} hint={t.dayHint} today={today} value={day} />
 
       <label className="flex flex-col gap-1">
         <span className="text-sm font-medium">{t.bodyLabel}</span>

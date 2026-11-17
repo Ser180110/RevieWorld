@@ -11,6 +11,9 @@ import {
   getViewer,
   getItemStatus,
   getRatingCounts,
+  getItemDiary,
+  todayInRome,
+  romeDay,
   reviewSortOf,
   type ReviewSort,
 } from "@/lib/data/queries";
@@ -26,6 +29,8 @@ import { photoUrl } from "@/lib/photos";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewForm } from "@/components/ReviewForm";
 import { Stars } from "@/components/Stars";
+import { ItemDiary } from "@/components/ItemDiary";
+import { QuickLog } from "@/components/QuickLog";
 
 async function ItemContent({
   lang,
@@ -50,9 +55,10 @@ async function ItemContent({
   const [reviews, ratingCounts] = await Promise.all([getItemReviews(item.id, sort), getRatingCounts({ itemId: item.id })]);
   const viewer = await getViewer(reviews);
   const userId = viewer.id;
-  const [myLists, status] = userId
-    ? await Promise.all([getMyListsFor(userId, item.id), getItemStatus(userId, item.id)])
-    : [[], null];
+  const [myLists, status, diary] = userId
+    ? await Promise.all([getMyListsFor(userId, item.id), getItemStatus(userId, item.id), getItemDiary(userId, item.id)])
+    : [[], null, null];
+  const today = todayInRome();
   const here = `/${lang}/c/${category.slug}/${item.slug}`;
   const mine = userId ? reviews.find((r) => r.user_id === userId) : undefined;
   const sortQuery = sort === "likes" ? "" : `?sort=${sort}`;
@@ -139,6 +145,29 @@ async function ItemContent({
       </header>
       </div>
 
+      {userId && (!mine || diary) && (
+        <section className="flex flex-col gap-5 rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
+          {diary && (
+            <ItemDiary
+              lang={lang}
+              entries={diary}
+              back={here}
+              t={dict.quickLog}
+              confirmRemove={dict.diary.confirmRemove}
+            />
+          )}
+          <QuickLog
+            lang={lang}
+            itemId={item.id}
+            back={here}
+            again={Boolean(mine)}
+            today={today}
+            ratingLabel={dict.reviewForm.ratingLabel}
+            t={dict.quickLog}
+          />
+        </section>
+      )}
+
       <section className="flex flex-col gap-4 rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
         <h2 className="text-xl font-semibold">{dict.reviewForm.yourReview}</h2>
         {userId ? (
@@ -152,6 +181,8 @@ async function ItemContent({
             t={dict.reviewForm}
             common={dict.common}
             locationT={dict.location}
+            today={today}
+            day={mine ? (diary?.find((e) => e.review_id === mine.id)?.experienced_on ?? romeDay(mine.created_at)) : null}
           />
         ) : (
           <Link href={`/${lang}/login`} className="underline">

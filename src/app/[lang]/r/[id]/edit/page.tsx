@@ -4,7 +4,15 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getCategoryFamily, getCurrentUserId, getReview, getReviewLocation } from "@/lib/data/queries";
+import {
+  getCategoryFamily,
+  getCurrentUserId,
+  getReview,
+  getReviewDay,
+  getReviewLocation,
+  romeDay,
+  todayInRome,
+} from "@/lib/data/queries";
 import { MoveReview } from "@/components/MoveReview";
 import { DeleteReviewButton } from "@/components/DeleteReviewButton";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -27,10 +35,11 @@ async function EditReview({
   back: string | null;
 }) {
   const dict = await getDictionary(lang);
-  const [review, userId, location] = await Promise.all([
+  const [review, userId, location, day] = await Promise.all([
     getReview(id),
     getCurrentUserId(),
     getReviewLocation(id),
+    getReviewDay(id),
   ]);
   if (!review) notFound();
   const item = review.item;
@@ -62,7 +71,7 @@ async function EditReview({
         </p>
       </div>
       <ReviewForm
-            userId={userId!}
+        userId={userId!}
         lang={lang}
         categoryId={review.category_id}
         categorySlug={category.slug}
@@ -73,6 +82,8 @@ async function EditReview({
         common={dict.common}
         locationT={dict.location}
         location={location}
+        today={todayInRome()}
+        day={day ?? romeDay(review.created_at)}
       />
       <MoveReview
         lang={lang}

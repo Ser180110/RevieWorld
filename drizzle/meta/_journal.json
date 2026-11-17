@@ -232,6 +232,20 @@
       "when": 1794759298520,
       "tag": "0032_review_location_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1794909571697,
+      "tag": "0033_diary_entries",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1794909583435,
+      "tag": "0034_diary_rules",
+      "breakpoints": true
     }
   ]
 }
