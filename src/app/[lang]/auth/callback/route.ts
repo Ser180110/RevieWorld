@@ -34,6 +34,19 @@ export async function GET(
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     ok = !error;
   }
+  if (ok && type !== "recovery" && next === `/${lang}`) {
+    // Someone who just confirmed their account and hasn't started yet: first steps.
+    const { data } = await supabase.auth.getUser();
+    const userId = data.user?.id;
+    if (userId) {
+      const [people, cats, reviews] = await Promise.all([
+        supabase.from("user_follows").select("followed_id", { count: "exact", head: true }).eq("follower_id", userId),
+        supabase.from("category_follows").select("category_id", { count: "exact", head: true }).eq("user_id", userId),
+        supabase.from("reviews").select("id", { count: "exact", head: true }).eq("user_id", userId),
+      ]);
+      if (!people.count && !cats.count && !reviews.count) next = `/${lang}/welcome`;
+    }
+  }
   if (ok) return NextResponse.redirect(new URL(next, request.url));
   const failed = next.endsWith("/reset-password") ? `/${lang}/forgot-password?expired=1` : `/${lang}/login`;
   return NextResponse.redirect(new URL(failed, request.url));

@@ -8,6 +8,7 @@ import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LikeButton } from "./LikeButton";
 import { ReviewPhotos } from "./ReviewPhotos";
 import { ShareButton } from "./ShareButton";
+import { StoryShareButton } from "./StoryShareButton";
 import { ReportButton } from "./ReportButton";
 import { Sticker } from "./Sticker";
 import { splitSticker } from "@/lib/stickers";
@@ -123,6 +124,7 @@ export function ReviewCard({
           label={t.share}
           copiedLabel={t.copied}
         />
+        <StoryShareButton lang={lang} reviewId={review.id} label={t.story} busyLabel={t.story} errorLabel={t.story} compact />
         {own && (
           <Link
             href={`/${lang}/r/${review.id}/edit?back=${encodeURIComponent(back)}`}
