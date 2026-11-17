@@ -4,7 +4,9 @@ import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { signUp } from "@/lib/auth/actions";
+import { Suspense } from "react";
 import { AuthForm } from "@/components/AuthForm";
+import { GoogleButton } from "@/components/GoogleButton";
 
 export async function generateMetadata({
   params,
@@ -24,7 +26,12 @@ export default async function Page({ params }: PageProps<"/[lang]/signup">) {
     <div className="mx-auto flex max-w-sm flex-col gap-6 px-4 py-16">
       <h1 className="text-2xl font-semibold">{t.signUpTitle}</h1>
       {supabaseEnv() ? (
-        <AuthForm mode="signUp" lang={lang} t={t} action={signUp} />
+        <>
+          <Suspense fallback={null}>
+            <GoogleButton lang={lang} label={t.google} or={t.or} />
+          </Suspense>
+          <AuthForm mode="signUp" lang={lang} t={t} action={signUp} />
+        </>
       ) : (
         <p className="rounded-lg bg-zinc-100 p-4 text-sm dark:bg-zinc-900">{t.notConfigured}</p>
       )}
