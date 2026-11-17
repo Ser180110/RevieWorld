@@ -50,13 +50,12 @@ export async function ActivityFeed({
 
   if (following === 0) {
     return (
-      <p className="text-zinc-500">
-        {t.noFollows}{" "}
-        <Link href={`/${lang}/people`} className="underline">
-          {t.peopleLink}
-        </Link>
-        .
-      </p>
+      <Link
+        href={`/${lang}/welcome`}
+        className="rounded-2xl border border-dashed border-zinc-300 p-4 font-medium hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-100"
+      >
+        👋 {dict.welcome.homeHint}
+      </Link>
     );
   }
   if (reviews.length === 0) {

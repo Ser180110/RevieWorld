@@ -249,6 +249,7 @@
     "inCategory": "in"
   },
   "reviewCard": {
+    "story": "Share to stories",
     "onMap": "See on the map",
     "share": "Share",
     "copied": "Link copied!",
@@ -666,6 +667,25 @@
     "hint": "Move and zoom the map to see the reviews around. Map © OpenStreetMap.",
     "seeOnMap": "See on the map",
     "openInMaps": "Open in Google Maps"
+  },
+  "story": {
+    "cta": "Review anything",
+    "button": "Share to stories",
+    "busy": "Making the picture…",
+    "error": "Couldn't make the picture, try again."
+  },
+  "welcome": {
+    "title": "Welcome to RevieWorld!",
+    "subtitle": "Here you can review anything: pizzas, films, manholes, benches… Pick what you like and your home fills up right away.",
+    "categoriesTitle": "What are you into?",
+    "categoriesHint": "Tap the categories you want to follow: as many as you like.",
+    "peopleTitle": "Who do you want to follow?",
+    "peopleHint": "The most active people: their reviews will show up on your home.",
+    "follow": "Follow",
+    "following": "Following",
+    "start": "Let's go →",
+    "skip": "Skip for now",
+    "homeHint": "You don't follow anything yet: pick categories and people →"
   },
   "moderation": {
     "block": "Block",

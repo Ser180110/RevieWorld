@@ -249,6 +249,7 @@
     "inCategory": "in"
   },
   "reviewCard": {
+    "story": "Condividi nelle storie",
     "onMap": "Vedi sulla mappa",
     "share": "Condividi",
     "copied": "Link copiato!",
@@ -666,6 +667,25 @@
     "hint": "Sposta e ingrandisci la mappa: compaiono le recensioni della zona. Mappa © OpenStreetMap.",
     "seeOnMap": "Vedi sulla mappa",
     "openInMaps": "Apri in Google Maps"
+  },
+  "story": {
+    "cta": "Recensisci qualsiasi cosa",
+    "button": "Condividi nelle storie",
+    "busy": "Preparo l'immagine…",
+    "error": "Immagine non riuscita, riprova."
+  },
+  "welcome": {
+    "title": "Benvenuto su RevieWorld!",
+    "subtitle": "Qui si recensisce qualsiasi cosa: pizze, film, tombini, panchine… Scegli cosa ti interessa e la tua home si riempie subito.",
+    "categoriesTitle": "Cosa ti interessa?",
+    "categoriesHint": "Tocca le categorie che vuoi seguire: puoi sceglierne quante vuoi.",
+    "peopleTitle": "Chi vuoi seguire?",
+    "peopleHint": "Le persone più attive: vedrai le loro recensioni nella tua home.",
+    "follow": "Segui",
+    "following": "Seguito",
+    "start": "Inizia →",
+    "skip": "Salta per ora",
+    "homeHint": "Non segui ancora niente: scegli categorie e persone →"
   },
   "moderation": {
     "block": "Blocca",

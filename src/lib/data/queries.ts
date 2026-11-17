@@ -579,7 +579,7 @@ export async function getReview(
   const { data } = await supabase
     .from("reviews")
     .select(
-      `${REVIEW_FIELDS}, item_id, item:items(name, slug, category_id, category:categories(name, slug))`,
+      `${REVIEW_FIELDS}, item_id, item:items(name, slug, category_id, category:categories(name, slug, icon, color))`,
     )
     .eq("id", id)
     .maybeSingle();
@@ -1154,3 +1154,28 @@ export async function getReviewLocation(reviewId: string): Promise<{ lat: number
   const row = data as { lat: number | null; lng: number | null };
   return row.lat !== null && row.lng !== null ? { lat: row.lat, lng: row.lng } : null;
 }
+
+/** The most active reviewers lately (for the welcome page), without `exclude`. */
+export async function getSuggestedPeople(exclude: string | null, limit = 8): Promise<(ProfileCard & { reviews: number })[]> {
+  const supabase = await db();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("reviews")
+    .select("user_id")
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(500);
+  const counts = new Map<string, number>();
+  for (const r of (data ?? []) as { user_id: string }[]) {
+    if (r.user_id !== exclude) counts.set(r.user_id, (counts.get(r.user_id) ?? 0) + 1);
+  }
+  const top = [...counts].sort((a, b) => b[1] - a[1]).slice(0, limit);
+  if (top.length === 0) return [];
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, username, display_name, avatar_url, bio")
+    .in("id", top.map(([id]) => id));
+  const byId = new Map(((profiles ?? []) as ProfileCard[]).map((p) => [p.id, p]));
+  return top.flatMap(([id, n]) => (byId.has(id) ? [{ ...byId.get(id)!, reviews: n }] : []));
+}
+

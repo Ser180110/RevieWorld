@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { ReportButton } from "@/components/ReportButton";
+import { StoryShareButton } from "@/components/StoryShareButton";
 import { getComments, getLikers, getReview, getReviewLocation, getViewer } from "@/lib/data/queries";
 import { deleteComment } from "@/lib/social/actions";
 import { fill, formatDate } from "@/lib/format";
@@ -69,6 +70,16 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
         t={dict.reviewCard}
         reportT={dict.report}
       />
+
+      <div className="-mt-4 flex flex-wrap items-center gap-2 text-sm">
+        <StoryShareButton
+          lang={lang}
+          reviewId={review.id}
+          label={dict.story.button}
+          busyLabel={dict.story.busy}
+          errorLabel={dict.story.error}
+        />
+      </div>
 
       {location && (
         <div className="-mt-4 flex flex-wrap items-center gap-2 text-sm">

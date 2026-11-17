@@ -401,3 +401,33 @@ export async function fetchUnreadCount(): Promise<number> {
     .is("read_at", null);
   return count ?? 0;
 }
+
+// ---------------------------------------------------------------------------
+// Welcome: the first categories and people to follow
+// ---------------------------------------------------------------------------
+
+export async function finishWelcome(formData: FormData): Promise<void> {
+  const lang = localeOf(formData);
+  const s = await session();
+  if (!s) redirect(`/${lang}`);
+  if (!s.userId) redirect(`/${lang}/login`);
+  const ids = (name: string) =>
+    [...new Set(formData.getAll(name).map(String))].filter((v) => z.guid().safeParse(v).success).slice(0, 50);
+  const categories = ids("category");
+  const people = ids("person").filter((id) => id !== s.userId);
+  if (categories.length) {
+    const { error } = await s.supabase
+      .from("category_follows")
+      .upsert(categories.map((category_id) => ({ user_id: s.userId, category_id })), { ignoreDuplicates: true });
+    if (error) console.error("finishWelcome: categories", error);
+  }
+  if (people.length) {
+    const { error } = await s.supabase
+      .from("user_follows")
+      .upsert(people.map((followed_id) => ({ follower_id: s.userId, followed_id })), { ignoreDuplicates: true });
+    if (error) console.error("finishWelcome: people", error);
+    else after(() => sendPendingPushes(s.supabase));
+  }
+  revalidatePath(`/${lang}`, "layout");
+  redirect(`/${lang}${people.length ? "" : "?feed=all"}`);
+}
