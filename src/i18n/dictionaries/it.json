@@ -779,5 +779,10 @@
       "date": "Scegli una data valida (non nel futuro).",
       "generic": "Qualcosa è andato storto, riprova."
     }
+  },
+  "reactions": {
+    "react": "Reagisci",
+    "remove": "Togli la reazione",
+    "signIn": "Accedi per reagire"
   }
 }

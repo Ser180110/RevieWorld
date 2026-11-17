@@ -779,5 +779,10 @@
       "date": "Pick a valid date (not in the future).",
       "generic": "Something went wrong, try again."
     }
+  },
+  "reactions": {
+    "react": "React",
+    "remove": "Remove reaction",
+    "signIn": "Sign in to react"
   }
 }

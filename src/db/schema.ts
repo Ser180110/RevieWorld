@@ -522,3 +522,23 @@ export const diaryEntries = pgTable(
     check("diary_entries_day_valid", sql`${t.experiencedOn} between '1900-01-01' and '2200-01-01'`),
   ],
 );
+
+// Reactions on comments, like WhatsApp/Instagram: one emoji per person per comment.
+export const commentReactions = pgTable(
+  "comment_reactions",
+  {
+    commentId: uuid("comment_id")
+      .notNull()
+      .references(() => reviewComments.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    emoji: text("emoji").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [
+    primaryKey({ columns: [t.commentId, t.userId] }),
+    index("comment_reactions_comment_idx").on(t.commentId),
+    check("comment_reactions_emoji_known", sql`${t.emoji} in ('👍', '❤️', '😂', '😮', '😢', '🔥')`),
+  ],
+);

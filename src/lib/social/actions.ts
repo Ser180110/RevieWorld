@@ -6,6 +6,7 @@ import { sendPendingPushes } from "@/lib/push/send";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { joinSticker } from "@/lib/stickers";
+import { isReaction } from "@/lib/reactions";
 import { canUseEmoji, isThemeKey, patternEmoji } from "@/lib/profileTheme";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { createClient, getSessionUserId } from "@/lib/supabase/server";
@@ -430,4 +431,28 @@ export async function finishWelcome(formData: FormData): Promise<void> {
   }
   revalidatePath(`/${lang}`, "layout");
   redirect(`/${lang}${people.length ? "" : "?feed=all"}`);
+}
+
+/**
+ * Puts the signed-in user's reaction on a comment (one per person, like
+ * WhatsApp): a new emoji replaces the old one, null removes it.
+ */
+export async function reactToComment(commentId: string, emoji: string | null): Promise<{ ok: boolean }> {
+  const s = await session();
+  if (!s?.userId || !z.guid().safeParse(commentId).success) return { ok: false };
+  if (emoji === null) {
+    const { error } = await s.supabase
+      .from("comment_reactions")
+      .delete()
+      .eq("comment_id", commentId)
+      .eq("user_id", s.userId);
+    if (error) console.error("reactToComment delete", error);
+    return { ok: !error };
+  }
+  if (!isReaction(emoji)) return { ok: false };
+  const { error } = await s.supabase
+    .from("comment_reactions")
+    .upsert({ comment_id: commentId, user_id: s.userId, emoji }, { onConflict: "comment_id,user_id" });
+  if (error) console.error("reactToComment", error);
+  return { ok: !error };
 }

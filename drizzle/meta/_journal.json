@@ -246,6 +246,20 @@
       "when": 1794909583435,
       "tag": "0034_diary_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1794937141740,
+      "tag": "0035_comment_reactions",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1794937142706,
+      "tag": "0036_comment_reactions_rules",
+      "breakpoints": true
     }
   ]
 }

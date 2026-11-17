@@ -6,7 +6,15 @@ import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { ReportButton } from "@/components/ReportButton";
 import { StoryShareButton } from "@/components/StoryShareButton";
-import { getComments, getLikers, getReview, getReviewLocation, getViewer } from "@/lib/data/queries";
+import {
+  getCommentReactions,
+  getComments,
+  getLikers,
+  getReview,
+  getReviewLocation,
+  getViewer,
+} from "@/lib/data/queries";
+import { CommentReactions } from "@/components/CommentReactions";
 import { deleteComment } from "@/lib/social/actions";
 import { fill, formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
@@ -44,6 +52,10 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
     getViewer([review]),
     getReviewLocation(review.id),
   ]);
+  const reactions = await getCommentReactions(
+    comments.map((c) => c.id),
+    viewer.id,
+  );
   const item = review.item;
   const category = item.category!;
   const itemHref = `/${lang}/c/${category.slug}/${item.slug}`;
@@ -173,6 +185,13 @@ async function ReviewContent({ lang, id }: { lang: Locale; id: string }) {
                         <Sticker a={splitSticker(c.body).sticker!} lang={lang} size="sm" />
                       </div>
                     )}
+                    <CommentReactions
+                      commentId={c.id}
+                      initial={reactions[c.id] ?? { counts: {}, mine: null }}
+                      signedIn={viewer.id !== null}
+                      lang={lang}
+                      t={dict.reactions}
+                    />
                   </div>
                 </li>
               );
