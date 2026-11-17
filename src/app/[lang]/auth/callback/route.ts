@@ -8,8 +8,7 @@ const OTP_TYPES: EmailOtpType[] = ["signup", "email", "recovery", "invite", "mag
  * Landing page of the emails (sign-up confirmation, password reset). Supabase
  * sends the user here with a one-time `code` (same browser) or a `token_hash`
  * (any browser or device, when the email template links here directly).
- * Either one is exchanged for a session cookie. "Continua con Google" also
- * comes back here with a `code` (or an `error` when the user cancels).
+ * Either one is exchanged for a session cookie.
  */
 export async function GET(
   request: NextRequest,
@@ -49,10 +48,6 @@ export async function GET(
     }
   }
   if (ok) return NextResponse.redirect(new URL(next, request.url));
-  const failed = next.endsWith("/reset-password")
-    ? `/${lang}/forgot-password?expired=1`
-    : search.get("error")
-      ? `/${lang}/login?google=error`
-      : `/${lang}/login`;
+  const failed = next.endsWith("/reset-password") ? `/${lang}/forgot-password?expired=1` : `/${lang}/login`;
   return NextResponse.redirect(new URL(failed, request.url));
 }
