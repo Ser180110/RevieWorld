@@ -36,7 +36,10 @@ function message(n: Claimed): { title: string; body: string; url: string } {
     case "comment":
       return { title: `💬 ${who} ha commentato`, body: previewText(n.comment) || `La tua recensione di${what}`, url: `${review}#comments` };
     case "mention":
-      return { title: `📣 ${who} ti ha menzionato`, body: previewText(n.comment) || "In un commento", url: `${review}#comments` };
+      // No comment: tagged in the review itself.
+      return n.comment
+        ? { title: `📣 ${who} ti ha taggato in un commento`, body: previewText(n.comment), url: `${review}#comments` }
+        : { title: `📣 ${who} ti ha taggato nella sua recensione`, body: n.item ? `«${n.item}»` : "Apri la recensione", url: review };
     case "watchlist":
       return { title: "📌 Da provare", body: `${who} vuole provare${what || " una cosa"} grazie alla tua recensione`, url: review };
     case "comment_reaction":

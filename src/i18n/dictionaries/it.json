@@ -555,7 +555,7 @@
     "like": "A {name} piace la tua recensione di {what}",
     "comment": "{name} ha commentato la tua recensione di {what}",
     "follow": "{name} ha iniziato a seguirti",
-    "mention": "{name} ti ha menzionato in un commento su {what}",
+    "mention": "{name} ti ha taggato in un commento su {what}",
     "watchlist": "{name} ha messo {what} tra i «Da provare» grazie alla tua recensione",
     "pushOn": "Attiva le notifiche sul telefono",
     "pushHint": "Like, commenti e nuovi follower ti arrivano come un messaggio, anche ad app chiusa.",
@@ -565,7 +565,8 @@
     "pushIos": "Su iPhone: prima aggiungi RevieWorld alla schermata Home (Condividi → Aggiungi alla schermata Home), poi aprila da lì e torna qui.",
     "pushError": "Non è stato possibile attivarle: riprova.",
     "listLike": "A {name} piace la tua lista {what}",
-    "reaction": "{name} ha reagito {emoji} al tuo commento"
+    "reaction": "{name} ha reagito {emoji} al tuo commento",
+    "mentionReview": "{name} ti ha taggato nella sua recensione di {what}"
   },
   "feed": {
     "following": "Seguiti",
