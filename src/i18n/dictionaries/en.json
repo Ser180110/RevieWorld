@@ -555,7 +555,7 @@
     "like": "{name} liked your review of {what}",
     "comment": "{name} commented on your review of {what}",
     "follow": "{name} started following you",
-    "mention": "{name} mentioned you in a comment on {what}",
+    "mention": "{name} tagged you in a comment on {what}",
     "watchlist": "{name} added {what} to “To try” thanks to your review",
     "pushOn": "Turn on phone notifications",
     "pushHint": "Likes, comments and new followers arrive like a message, even with the app closed.",
@@ -565,7 +565,8 @@
     "pushIos": "On iPhone: first add RevieWorld to the Home Screen (Share → Add to Home Screen), then open it from there and come back here.",
     "pushError": "Couldn't turn them on: try again.",
     "listLike": "{name} likes your list {what}",
-    "reaction": "{name} reacted {emoji} to your comment"
+    "reaction": "{name} reacted {emoji} to your comment",
+    "mentionReview": "{name} tagged you in their review of {what}"
   },
   "feed": {
     "following": "Following",

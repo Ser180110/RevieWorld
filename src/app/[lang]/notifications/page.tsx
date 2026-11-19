@@ -68,7 +68,7 @@ async function NotificationList({ lang }: { lang: Locale }) {
               ? `/${lang}/u/${username}`
               : n.type === "list_like"
                 ? `/${lang}/l/${n.list_id}`
-              : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : n.type === "watchlist" ? "" : "#comments"}`;
+              : `/${lang}/r/${n.review_id}${n.type === "like" ? "#likes" : n.type === "watchlist" || (n.type === "mention" && !n.comment) ? "" : "#comments"}`;
           const text =
             n.type === "comment_reaction"
               ? fill(t.reaction, { name, emoji: n.emoji ?? "" })
@@ -79,7 +79,7 @@ async function NotificationList({ lang }: { lang: Locale }) {
               : n.type === "comment"
                 ? fill(t.comment, { name, what })
                 : n.type === "mention"
-                  ? fill(t.mention, { name, what })
+                  ? fill(n.comment ? t.mention : t.mentionReview, { name, what })
                   : n.type === "watchlist"
                     ? fill(t.watchlist, { name, what: what ? `«${what}»` : "" })
                     : fill(t.follow, { name });

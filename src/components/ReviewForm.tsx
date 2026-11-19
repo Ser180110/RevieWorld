@@ -11,6 +11,7 @@ import { StickerPicker } from "./StickerPicker";
 import { QuickEmoji } from "./QuickEmoji";
 import { FormatToolbar } from "./FormatToolbar";
 import { RichText } from "./RichText";
+import { MentionSuggest } from "./MentionSuggest";
 import { splitSticker, type Attachment } from "@/lib/stickers";
 import { StarInput } from "./StarInput";
 import { DayInput } from "./DayInput";
@@ -157,6 +158,7 @@ export function ReviewForm({
       <div className="flex flex-col gap-1">
         <label htmlFor="review-body" className="text-sm font-medium">{t.bodyLabel}</label>
         <FormatToolbar target={bodyRef} t={t.format} />
+        <div className="relative">
         <textarea
           id="review-body"
           onInput={(e) => setDraft(e.currentTarget.value)}
@@ -166,8 +168,10 @@ export function ReviewForm({
           maxLength={4950}
           defaultValue={initial.text}
           placeholder={t.bodyPlaceholder}
-          className={`${field} py-2`}
+          className={`${field} w-full py-2`}
         />
+        <MentionSuggest target={bodyRef} />
+        </div>
         {/\*|__|>!|\]\(/.test(draft) && (
           <div className="rounded-lg bg-zinc-50 px-3 py-2 text-sm dark:bg-zinc-900">
             <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-zinc-500">{t.format.preview}</span>

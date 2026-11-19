@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
+import { sendPendingPushes } from "@/lib/push/send";
 import { z } from "zod";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 import { normalizeName, slugify } from "@/lib/normalize";
@@ -369,6 +371,9 @@ export async function submitReview(
     console.error("submitReview: save review", error);
     return { error: "generic" };
   }
+
+  // People tagged with @ get a notification (database trigger): send the pushes.
+  if (fields.body?.includes("@")) after(() => sendPendingPushes(supabase));
 
   // The diary: "Provato il…" on the chosen day (today by default).
   await saveReviewDay(supabase, { id: saved.id, userId, itemId: item.id, rating: input.rating }, day);
