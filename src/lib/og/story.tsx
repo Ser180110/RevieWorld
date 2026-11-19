@@ -99,7 +99,9 @@ export async function storyCard({
     body = body ? noEmoji(body) || null : null;
     author = noEmoji(author);
   }
-  const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+  const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
+  // One paragraph: line breaks and runs of spaces confuse the image's text wrapping.
+  if (body) body = body.replace(/\s+/g, " ").trim() || null;
   return new ImageResponse(
     (
       <div
@@ -133,7 +135,7 @@ export async function storyCard({
         >
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-            <img src={photo} width={760} height={560} style={{ objectFit: "cover", borderRadius: 40 }} />
+            <img src={photo} width={760} height={460} style={{ objectFit: "cover", borderRadius: 40 }} />
           ) : (
             emoji && <div style={{ fontSize: 220, lineHeight: 1 }}>{emoji}</div>
           )}
@@ -146,8 +148,19 @@ export async function storyCard({
           </div>
           <Stars rating={rating} />
           {body && (
-            <div style={{ fontSize: 46, color: "#3f3f46", lineHeight: 1.35, textAlign: "center" }}>
-              {`“${clip(body, photo ? 140 : 220)}”`}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                fontSize: 46,
+                color: "#3f3f46",
+                lineHeight: 1.35,
+                textAlign: "center",
+                wordBreak: "break-word",
+              }}
+            >
+              {`“${clip(body, photo ? 120 : 220)}”`}
             </div>
           )}
           <div style={{ fontSize: 40, color: "#71717a" }}>{clip(author, 40)}</div>
