@@ -61,7 +61,7 @@ export function ogCard({
             </div>
             {rating !== undefined && <OgStars rating={rating} />}
             {body && (
-              <div style={{ fontSize: 30, color: "#3f3f46", lineHeight: 1.35 }}>{`“${clip(body, photo ? 120 : 160)}”`}</div>
+              <div style={{ fontSize: 30, color: "#3f3f46", lineHeight: 1.35 }}>{`“${clip(body.replace(/\s+/g, " ").trim(), photo ? 120 : 160)}”`}</div>
             )}
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28 }}>
